@@ -17,8 +17,7 @@ app.use(express.json());
 app.use(
   cors({
     credentials: true,
-    origin: "*", // for development
-    // origin: process.env.UI_BASE_URL,
+    origin: process.env.UI_BASE_URL,
   })
 );
 app.use(cookieParser());
