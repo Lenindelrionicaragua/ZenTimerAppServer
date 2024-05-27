@@ -6,8 +6,10 @@ import { logInfo } from "../util/logging.js";
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true, trim: true },
   email: { type: String, required: true, unique: true, trim: true },
-  password: { type: String, required: true, trim: true },
-  dateOfBirth: { type: String, required: true, trim: true },
+  password: { type: String, trim: true },
+  dateOfBirth: { type: String, trim: true },
+  googleId: { type: String },
+  picture: { type: String },
 });
 
 export const validateUser = (
