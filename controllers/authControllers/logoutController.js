@@ -1,4 +1,4 @@
-import { logInfo } from "../../util/logging.js";
+import { logInfo, logError } from "../../util/logging.js";
 
 export const logout = (req, res) => {
   try {

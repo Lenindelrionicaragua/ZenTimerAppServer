@@ -1,7 +1,6 @@
 import express from "express";
 import { signup } from "../controllers/authControllers/signupController.js";
 import { signInWithGoogleController } from "../controllers/authControllers/signInWithGoogleController.js";
-
 import { login } from "../controllers/authControllers/loginController.js";
 import { logout } from "../controllers/authControllers/logoutController.js";
 
