@@ -4,9 +4,15 @@ import { validateUser } from "../../models/userModels.js";
 import User from "../../models/userModels.js";
 import validateAllowedFields from "../../util/validateAllowedFields.js";
 import { v4 as uuidv4 } from "uuid";
+import nodemailer from "nodemailer";
 
 export const signup = async (req, res) => {
   const allowedFields = ["name", "email", "password", "dateOfBirth"];
+  // setting server url
+  const development = "http://localhost:3000/";
+  const production = "https://zen-timer-app-server-7f9db58def4c.herokuapp.com";
+  const currentUrl =
+    process.env.NODE_ENV === "production" ? production : development;
 
   if (!(req.body.user instanceof Object)) {
     return res.status(400).json({
@@ -76,7 +82,6 @@ export const signup = async (req, res) => {
 // send verification email
 const sendVerificationEmail = async (user, res) => {
   const { _id, email } = user;
-  const currentUrl = "http://localhost:3000/";
 
   const uniqueString = uuidv4() + _id;
 
@@ -94,4 +99,14 @@ const sendVerificationEmail = async (user, res) => {
   await sendEmail(mailOptions);
 };
 
-const sendEmail = async (mailOptions) => {};
+const sendEmail = async (mailOptions) => {
+  const transporter = nodemailer.createTransport({
+    service: "gmail", // e.g., 'gmail'
+    auth: {
+      user: process.env.AUTH_EMAIL,
+      pass: process.env.AUTH_PASSWORD,
+    },
+  });
+
+  await transporter.sendMail(mailOptions);
+};

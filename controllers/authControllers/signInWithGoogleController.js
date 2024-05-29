@@ -14,6 +14,12 @@ const clients = {
   Expo: new OAuth2Client(process.env.GOOGLE_CLIENT_ID_EXPO),
 };
 
+// setting server url
+const development = "http://localhost:3000/";
+const production = "https://zen-timer-app-server-7f9db58def4c.herokuapp.com";
+const currentUrl =
+  process.env.NODE_ENV === "production" ? production : development;
+
 export const signInWithGoogleController = async (req, res) => {
   const { token, platform } = req.body;
   logInfo(`Received request with token and platform: ${token}, ${platform}`);
@@ -123,7 +129,6 @@ export const signInWithGoogleController = async (req, res) => {
 // send verification email
 const sendVerificationEmail = async (user, res) => {
   const { _id, email } = user;
-  const currentUrl = "http://localhost:3000/";
 
   const uniqueString = uuidv4() + _id;
 
