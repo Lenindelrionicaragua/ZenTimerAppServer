@@ -3,6 +3,7 @@ import validationErrorMessage from "../../util/validationErrorMessage.js";
 import { validateUser } from "../../models/userModels.js";
 import User from "../../models/userModels.js";
 import validateAllowedFields from "../../util/validateAllowedFields.js";
+import { v4 as uuidv4 } from "uuid";
 
 export const signup = async (req, res) => {
   const allowedFields = ["name", "email", "password", "dateOfBirth"];
@@ -57,10 +58,8 @@ export const signup = async (req, res) => {
         .json({ success: false, msg: "User already exists" });
     }
 
-    const newUser = await User.create(req.body.user).then((result) => {
-      // Handle account verification
-      sendVerificationEmail(result, res);
-    });
+    const newUser = await User.create(req.body.user);
+    await sendVerificationEmail(newUser, res);
     logInfo(`User created successfully: ${newUser.email}`);
 
     return res
@@ -74,16 +73,13 @@ export const signup = async (req, res) => {
   }
 };
 
-const { v4: uuidv4 } = require("uuid");
-
 // send verification email
-const sendVerificationEmail = ({ _id, email }, res) => {
-  // url to be used in the email
-  const currentUrl = "http://localHost:3000/";
+const sendVerificationEmail = async (user, res) => {
+  const { _id, email } = user;
+  const currentUrl = "http://localhost:3000/";
 
   const uniqueString = uuidv4() + _id;
 
-  // email options
   const mailOptions = {
     from: process.env.AUTH_EMAIL,
     to: email,
@@ -94,4 +90,8 @@ const sendVerificationEmail = ({ _id, email }, res) => {
       <p>Press <a href="${currentUrl}user/verify/${_id}${uniqueString}">here</a> to proceed.</p>
     `,
   };
+
+  await sendEmail(mailOptions);
 };
+
+const sendEmail = async (mailOptions) => {};
