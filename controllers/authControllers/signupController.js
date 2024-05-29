@@ -57,7 +57,10 @@ export const signup = async (req, res) => {
         .json({ success: false, msg: "User already exists" });
     }
 
-    const newUser = await User.create(req.body.user);
+    const newUser = await User.create(req.body.user).then((result) => {
+      // Handle account verification
+      sendVerificationEmail(result, res);
+    });
     logInfo(`User created successfully: ${newUser.email}`);
 
     return res
@@ -69,4 +72,26 @@ export const signup = async (req, res) => {
       .status(500)
       .json({ success: false, msg: "Unable to create user, try again later" });
   }
+};
+
+const { v4: uuidv4 } = require("uuid");
+
+// send verification email
+const sendVerificationEmail = ({ _id, email }, res) => {
+  // url to be used in the email
+  const currentUrl = "http://localHost:3000/";
+
+  const uniqueString = uuidv4() + _id;
+
+  // email options
+  const mailOptions = {
+    from: process.env.AUTH_EMAIL,
+    to: email,
+    subject: "Verify your Email",
+    html: `
+      <p>Verify your email address to complete the signup and log into your account.</p>
+      <p>This link <b>expires in 6 hours</b>.</p>
+      <p>Press <a href="${currentUrl}user/verify/${_id}${uniqueString}">here</a> to proceed.</p>
+    `,
+  };
 };
