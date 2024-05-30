@@ -6,6 +6,7 @@ import validateAllowedFields from "../../util/validateAllowedFields.js";
 import { v4 as uuidv4 } from "uuid";
 import nodemailer from "nodemailer";
 import { hasBrowserCrypto } from "google-auth-library/build/src/crypto/crypto.js";
+import transporter from "../../config/emailConfig.js";
 
 export const signup = async (req, res) => {
   const allowedFields = ["name", "email", "password", "dateOfBirth"];
@@ -101,7 +102,6 @@ const sendVerificationEmail = async (user, res) => {
 };
 
 // hash the uniqueString
-
 const saltRounds = 10;
 bcrypt
   .hash(uniqueString, saltRounds)
@@ -123,6 +123,10 @@ bcrypt
             res.json({
               status: "PENDING",
               message: "Verification email sent",
+              data: {
+                userId: _id,
+                email,
+              },
             });
           })
           .catch((err) => {
@@ -130,7 +134,7 @@ bcrypt
               status: "FAILED",
               message: "Verification email failed",
             });
-            console.log(err);
+            logError(err);
           });
       })
       .catch((err) => {
@@ -138,7 +142,7 @@ bcrypt
           status: "FAILED",
           message: "Failed to save verification record",
         });
-        console.log(err);
+        logError(err);
       });
   })
   .catch((err) => {
@@ -146,7 +150,7 @@ bcrypt
       status: "FAILED",
       message: "Failed to hash unique string",
     });
-    console.log(err);
+    logError(err);
   });
 
 const sendEmail = async (mailOptions) => {

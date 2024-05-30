@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import { requireAuth } from "./middleware/authMiddleware.js";
 import userRouter from "./routes/userRoutes.js";
 import authRouter from "./routes/authRoutes.js";
+import { logInfo, logError } from "./util/logging.js";
 
 dotenv.config();
 
@@ -23,6 +24,24 @@ app.use(
   })
 );
 app.use(cookieParser());
+
+let transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.AUTH_EMAIL,
+    pass: process.env.AUTH_PASS,
+  },
+});
+
+// testing success
+transporter.verify((error, success) => {
+  ir (error) {
+   logError(error);
+  } else {
+    logInfo("Ready for messages");
+    logInfo("success");
+  }
+});
 
 /****** Attach routes ******/
 /**

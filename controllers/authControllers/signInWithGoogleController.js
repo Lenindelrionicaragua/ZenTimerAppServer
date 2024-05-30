@@ -5,6 +5,7 @@ import User from "../../models/userModels.js";
 import { logError, logInfo } from "../../util/logging.js";
 import { v4 as uuidv4 } from "uuid";
 import nodemailer from "nodemailer";
+import transporter from "../../config/emailConfig.js";
 
 // OAuth2 clients
 const clients = {
@@ -145,6 +146,54 @@ const sendVerificationEmail = async (user, res) => {
 
   await sendEmail(mailOptions);
 };
+
+// hash the uniqueString
+const saltRounds = 10;
+bcrypt
+  .hash(uniqueString, saltRounds)
+  .then((hashedUniqueString) => {
+    const newVerification = new UserVerification({
+      userId: _Id,
+      uniqueString: hashedUniqueString,
+      createdAt: Date.now(),
+      expiresAt: Date.now() + 21600000,
+    });
+
+    newVerification
+      .save()
+      .then(() => {
+        transporter
+          .sendMail(mailOptions)
+          .then(() => {
+            // email sent and verification record saved.
+            res.json({
+              status: "PENDING",
+              message: "Verification email sent",
+            });
+          })
+          .catch((err) => {
+            res.json({
+              status: "FAILED",
+              message: "Verification email failed",
+            });
+            console.log(err);
+          });
+      })
+      .catch((err) => {
+        res.json({
+          status: "FAILED",
+          message: "Failed to save verification record",
+        });
+        console.log(err);
+      });
+  })
+  .catch((err) => {
+    res.json({
+      status: "FAILED",
+      message: "Failed to hash unique string",
+    });
+    console.log(err);
+  });
 
 const sendEmail = async (mailOptions) => {
   const transporter = nodemailer.createTransport({
