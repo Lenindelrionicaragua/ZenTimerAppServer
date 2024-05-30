@@ -127,6 +127,61 @@ export const signInWithGoogleController = async (req, res) => {
   }
 };
 
+// Verify email
+router.get("/verify/:userId/:uniqueString", (req, res) => {
+  let { userId, uniqueString } = req.params;
+
+  UserVerification.find({ userId })
+    .then((result) => {
+      if (result.length > 0) {
+        // user verification record exists so we proceed
+
+        const { expiresAt } = result[0];
+        const hashedUniqueString = result[0].uniqueString;
+
+        // checking for expired unique string
+        if (expiresAt < Date.now()) {
+          UserVerification.deleteOne({ userId })
+            .then((result) => {
+              //delete expired user
+              User.deleteOne({ _id: userId })
+                .then(() => {
+                  let message = "Link has expired. Please sign up again";
+                  res.redirect(`/user/verified?error=true$message=${message}`);
+                })
+                .catch((error) => {
+                  logError(error);
+                  let message =
+                    "Clearing user with expired unique string failed.";
+                  res.redirect(`/user/verified?error=true&message=${message}`);
+                });
+            })
+            .catch((error) => {
+              logError(error);
+              let message = "Clearing expired user verification record failed.";
+              res.redirect(`/user/verified?error=true&message=${message}`);
+            });
+        }
+      } else {
+        //user verification record doesn't exist
+        let message =
+          "Account record doesn't exist or has been verified already. Please sign up or log in.";
+        res.redirect(`/user/verified?error=true&message=${message}`);
+      }
+    })
+    .catch((error) => {
+      logError(error);
+      let message =
+        "An error occurred while checking for existing user verification record";
+      res.redirect(`/user/verified?error=true&message=${message}`);
+    });
+});
+
+// Verified page route
+router.get("/verified", (_, res) => {
+  res.sendFile(path.join(__dirname, "./../view/verified.html"));
+});
+
 // send verification email
 const sendVerificationEmail = async (user, res) => {
   const { _id, email } = user;
@@ -169,6 +224,10 @@ bcrypt
             res.json({
               status: "PENDING",
               message: "Verification email sent",
+              data: {
+                userId: _id,
+                email,
+              },
             });
           })
           .catch((err) => {
@@ -176,7 +235,7 @@ bcrypt
               status: "FAILED",
               message: "Verification email failed",
             });
-            console.log(err);
+            logError(err);
           });
       })
       .catch((err) => {
@@ -184,7 +243,7 @@ bcrypt
           status: "FAILED",
           message: "Failed to save verification record",
         });
-        console.log(err);
+        logError(err);
       });
   })
   .catch((err) => {
@@ -192,7 +251,7 @@ bcrypt
       status: "FAILED",
       message: "Failed to hash unique string",
     });
-    console.log(err);
+    logError(err);
   });
 
 const sendEmail = async (mailOptions) => {

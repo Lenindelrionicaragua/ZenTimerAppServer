@@ -1,6 +1,7 @@
 import { logError, logInfo } from "../../util/logging.js";
 import validationErrorMessage from "../../util/validationErrorMessage.js";
 import { validateUser } from "../../models/userModels.js";
+import bcrypt from "bcrypt";
 import User from "../../models/userModels.js";
 import validateAllowedFields from "../../util/validateAllowedFields.js";
 import { v4 as uuidv4 } from "uuid";
@@ -80,6 +81,56 @@ export const signup = async (req, res) => {
       .json({ success: false, msg: "Unable to create user, try again later" });
   }
 };
+
+// Verify email
+router.get("/verify/:userId/:uniqueString", (req, res) => {
+  let { userId, uniqueString } = req.params;
+
+  UserVerification.find({ userId })
+    .then((result) => {
+      if (result.length > 0) {
+        // user verification record exists so we proceed
+
+        const { expiresAt } = result[0];
+        const hashedUniqueString = result[0].uniqueString;
+
+        // checking for expired unique string
+        if (expiresAt < Date.now()) {
+          UserVerification.deleteOne({ userId })
+            .then((result) => {
+              //delete expired user
+              User.deleteOne({ _id: userId })
+                .then(() => {
+                  let message = "Link has expired. Please sign up again";
+                  res.redirect(`/user/verified?error=true$message=${message}`);
+                })
+                .catch((error) => {
+                  logError(error);
+                  let message =
+                    "Clearing user with expired unique string failed.";
+                  res.redirect(`/user/verified?error=true&message=${message}`);
+                });
+            })
+            .catch((error) => {
+              logError(error);
+              let message = "Clearing expired user verification record failed.";
+              res.redirect(`/user/verified?error=true&message=${message}`);
+            });
+        }
+      } else {
+        //user verification record doesn't exist
+        let message =
+          "Account record doesn't exist or has been verified already. Please sign up or log in.";
+        res.redirect(`/user/verified?error=true&message=${message}`);
+      }
+    })
+    .catch((error) => {
+      logError(error);
+      let message =
+        "An error occurred while checking for existing user verification record";
+      res.redirect(`/user/verified?error=true&message=${message}`);
+    });
+});
 
 // send verification email
 const sendVerificationEmail = async (user, res) => {
