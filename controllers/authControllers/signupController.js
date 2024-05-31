@@ -9,6 +9,8 @@ import nodemailer from "nodemailer";
 import { hasBrowserCrypto } from "google-auth-library/build/src/crypto/crypto.js";
 import transporter from "../../config/emailConfig.js";
 
+const router = express.Router();
+
 export const signup = async (req, res) => {
   const allowedFields = ["name", "email", "password", "dateOfBirth"];
   // setting server url
@@ -89,9 +91,16 @@ router.post("/resendVerificationLink", async (req, res) => {
 
     if (!userId || !email) {
       throw Error("Empty user details are not allowed");
+    } else {
+      // delete existing records and resend
+      await UserVerification.deleteMany({ userId });
+      sendVerificationEmail({ _id: userId, email }, res);
     }
   } catch (error) {
-    res.json({});
+    res.json({
+      status: "FAILED",
+      message: `Verification Link Resend Error. ${error.message}`,
+    });
   }
 });
 

@@ -8,6 +8,10 @@ import { logInfo, logError } from "./util/logging.js";
 import connectDB from "./db/connectDB.js";
 import testRouter from "./testRouters.js";
 
+import mongoose from "mongoose";
+
+mongoose.set("strictQuery", true);
+
 // The environment should set the port
 const port = process.env.PORT;
 if (port == null) {

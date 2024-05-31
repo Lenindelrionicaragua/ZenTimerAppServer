@@ -7,6 +7,8 @@ import { v4 as uuidv4 } from "uuid";
 import nodemailer from "nodemailer";
 import transporter from "../../config/emailConfig.js";
 
+const router = express.Router();
+
 // OAuth2 clients
 const clients = {
   Web: new OAuth2Client(process.env.GOOGLE_CLIENT_ID_WEB),
@@ -290,14 +292,14 @@ bcrypt
     logError(err);
   });
 
-const sendEmail = async (mailOptions) => {
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.AUTH_EMAIL,
-      pass: process.env.AUTH_PASSWORD,
-    },
-  });
+// const sendEmail = async (mailOptions) => {
+//   const transporter = nodemailer.createTransport({
+//     service: "gmail",
+//     auth: {
+//       user: process.env.AUTH_EMAIL,
+//       pass: process.env.AUTH_PASSWORD,
+//     },
+//   });
 
-  await transporter.sendMail(mailOptions);
-};
+//   await transporter.sendMail(mailOptions);
+// };
