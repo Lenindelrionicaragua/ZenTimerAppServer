@@ -5,11 +5,11 @@ import bcrypt from "bcrypt";
 import User from "../../models/userModels.js";
 import validateAllowedFields from "../../util/validateAllowedFields.js";
 import { v4 as uuidv4 } from "uuid";
-import nodemailer from "nodemailer";
-import { hasBrowserCrypto } from "google-auth-library/build/src/crypto/crypto.js";
 import transporter from "../../config/emailConfig.js";
+import express from "express";
 
 const router = express.Router();
+
 export const signup = async (req, res) => {
   const allowedFields = ["name", "email", "password", "dateOfBirth"];
   // setting server url
@@ -260,15 +260,3 @@ bcrypt
     });
     logError(err);
   });
-
-// const sendEmail = async (mailOptions) => {
-//   const transporter = nodemailer.createTransport({
-//     service: "gmail", // e.g., 'gmail'
-//     auth: {
-//       user: process.env.AUTH_EMAIL,
-//       pass: process.env.AUTH_PASSWORD,
-//     },
-//   });
-
-//   await transporter.sendMail(mailOptions);
-// };

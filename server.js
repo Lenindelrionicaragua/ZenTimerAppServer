@@ -5,11 +5,11 @@ dotenv.config();
 
 import app from "./app.js";
 import { logInfo, logError } from "./util/logging.js";
-import connectDB from "./db/connectDB.js";
 import testRouter from "./testRouters.js";
-
+import connectDB from "./db/connectDB.js";
 import mongoose from "mongoose";
 
+// Set mongoose strictQuery
 mongoose.set("strictQuery", true);
 
 // The environment should set the port
