@@ -5,7 +5,7 @@ import User from "../../models/userModels.js";
 import { logError, logInfo } from "../../util/logging.js";
 import { v4 as uuidv4 } from "uuid";
 import nodemailer from "nodemailer";
-import transporter from "../../config/emailConfig.js";
+import transporter from "../../config/emailConfig.j";
 
 const router = express.Router();
 

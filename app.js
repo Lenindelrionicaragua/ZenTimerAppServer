@@ -5,9 +5,12 @@ import cookieParser from "cookie-parser";
 import { requireAuth } from "./middleware/authMiddleware.js";
 import userRouter from "./routes/userRoutes.js";
 import authRouter from "./routes/authRoutes.js";
-import { logInfo, logError } from "./util/logging.js";
+import mongoose from "mongoose";
 
 dotenv.config();
+
+// Set mongoose strictQuery
+mongoose.set("strictQuery", true);
 
 // Create an express server
 const app = express();

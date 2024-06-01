@@ -10,7 +10,6 @@ import { hasBrowserCrypto } from "google-auth-library/build/src/crypto/crypto.js
 import transporter from "../../config/emailConfig.js";
 
 const router = express.Router();
-
 export const signup = async (req, res) => {
   const allowedFields = ["name", "email", "password", "dateOfBirth"];
   // setting server url
