@@ -45,37 +45,46 @@ export const sendVerificationEmail = async (user, res) => {
           transporter
             .sendMail(mailOptions)
             .then(() => {
-              res.json({
-                status: "PENDING",
-                message: "Verification email sent",
-                data: {
-                  userId: _id,
-                  email,
-                },
-              });
+              logInfo("Verification email sent successfully");
+              if (!res.headersSent) {
+                res.json({
+                  status: "PENDING",
+                  message: "Verification email sent",
+                  data: {
+                    userId: _id,
+                    email,
+                  },
+                });
+              }
             })
             .catch((err) => {
-              res.json({
-                status: "FAILED",
-                message: "Verification email failed",
-              });
-              logError(err);
+              logError("Error sending verification email: ", err);
+              if (!res.headersSent) {
+                res.json({
+                  status: "FAILED",
+                  message: "Verification email failed",
+                });
+              }
             });
         })
         .catch((err) => {
-          res.json({
-            status: "FAILED",
-            message: "Failed to save verification record",
-          });
-          logError(err);
+          logError("Error saving verification record: ", err);
+          if (!res.headersSent) {
+            res.json({
+              status: "FAILED",
+              message: "Failed to save verification record",
+            });
+          }
         });
     })
     .catch((err) => {
-      res.json({
-        status: "FAILED",
-        message: "Failed to hash unique string",
-      });
-      logError(err);
+      logError("Error hashing unique string: ", err);
+      if (!res.headersSent) {
+        res.json({
+          status: "FAILED",
+          message: "Failed to hash unique string",
+        });
+      }
     });
 };
 
@@ -92,11 +101,13 @@ export const resendVerificationLink = async (req, res) => {
       logInfo("Verification link resent"); // Log the info that the verification link has been resent
     }
   } catch (error) {
-    logError(error);
-    res.json({
-      status: "FAILED",
-      message: `Verification Link Resend Error. ${error.message}`,
-    });
+    logError("Error resending verification link: ", error);
+    if (!res.headersSent) {
+      res.json({
+        status: "FAILED",
+        message: `Verification Link Resend Error. ${error.message}`,
+      });
+    }
   }
 };
 
@@ -116,19 +127,32 @@ export const verifyEmail = (req, res) => {
               User.deleteOne({ _id: userId }) // Delete the user
                 .then(() => {
                   let message = "Link has expired. Please sign up again";
-                  res.redirect(`/user/verified?error=true&message=${message}`);
+                  if (!res.headersSent) {
+                    res.redirect(
+                      `/user/verified?error=true&message=${message}`
+                    );
+                  }
                 })
                 .catch((error) => {
-                  logError(error);
+                  logError("Error deleting user with expired link: ", error);
                   let message =
                     "Clearing user with expired unique string failed.";
-                  res.redirect(`/user/verified?error=true&message=${message}`);
+                  if (!res.headersSent) {
+                    res.redirect(
+                      `/user/verified?error=true&message=${message}`
+                    );
+                  }
                 });
             })
             .catch((error) => {
-              logError(error);
+              logError(
+                "Error clearing expired user verification record: ",
+                error
+              );
               let message = "Clearing expired user verification record failed.";
-              res.redirect(`/user/verified?error=true&message=${message}`);
+              if (!res.headersSent) {
+                res.redirect(`/user/verified?error=true&message=${message}`);
+              }
             });
         } else {
           // If the link is still valid
@@ -144,38 +168,48 @@ export const verifyEmail = (req, res) => {
                     );
                   })
                   .catch((error) => {
-                    logError(error);
+                    logError("Error updating user record to verified: ", error);
                     let message =
                       "An error occurred while finalizing successful verification.";
-                    res.redirect(
-                      `/user/verified?error=true&message=${message}`
-                    );
+                    if (!res.headersSent) {
+                      res.redirect(
+                        `/user/verified?error=true&message=${message}`
+                      );
+                    }
                   });
               } else {
                 // If the unique strings do not match
                 let message =
                   "Invalid verification details passed. Check your inbox.";
-                res.redirect(`/user/verified?error=true&message=${message}`);
+                if (!res.headersSent) {
+                  res.redirect(`/user/verified?error=true&message=${message}`);
+                }
               }
             })
             .catch((error) => {
-              logError(error);
+              logError("Error comparing unique strings: ", error);
               let message =
                 "An error occurred while updating user record to show verified.";
-              res.redirect(`/user/verified?error=true&message=${message}`);
+              if (!res.headersSent) {
+                res.redirect(`/user/verified?error=true&message=${message}`);
+              }
             });
         }
       } else {
         // If no verification record is found
         let message =
           "Account record doesn't exist or has been verified already. Please sign up or log in.";
-        res.redirect(`/user/verified?error=true&message=${message}`);
+        if (!res.headersSent) {
+          res.redirect(`/user/verified?error=true&message=${message}`);
+        }
       }
     })
     .catch((error) => {
-      logError(error);
+      logError("Error checking for existing user verification record: ", error);
       let message =
         "An error occurred while checking for existing user verification record";
-      res.redirect(`/user/verified?error=true&message=${message}`);
+      if (!res.headersSent) {
+        res.redirect(`/user/verified?error=true&message=${message}`);
+      }
     });
 };
