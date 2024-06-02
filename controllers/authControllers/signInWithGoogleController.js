@@ -6,8 +6,6 @@ import { logError, logInfo } from "../../util/logging.js";
 import express from "express";
 import { sendVerificationEmail } from "./emailVerificationController.js";
 
-const router = express.Router();
-
 // OAuth2 clients
 const clients = {
   Web: new OAuth2Client(process.env.GOOGLE_CLIENT_ID_WEB),
@@ -44,7 +42,7 @@ export const signInWithGoogleController = async (req, res) => {
         const password = await bcrypt.hash("defaultPassword", 10); // Hash a default password
         user = new User({ name, email, picture, password });
         await user.save();
-        await sendVerificationEmail(user);
+        await sendVerificationEmail(user, res);
         logInfo(`User created successfully: ${user.email}`);
       } else {
         logInfo("User found for Web platform: " + user);
@@ -98,7 +96,7 @@ export const signInWithGoogleController = async (req, res) => {
       logInfo("User not found, creating a new user for platform: " + platform);
       user = new User({ name, email, picture });
       await user.save();
-      await sendVerificationEmail(user);
+      await sendVerificationEmail(user, res);
       logInfo(`User created successfully: ${user.email}`);
     } else {
       logInfo("User found for platform: " + platform + ": " + user);
