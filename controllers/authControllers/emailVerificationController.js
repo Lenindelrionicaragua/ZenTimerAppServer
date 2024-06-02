@@ -1,10 +1,16 @@
 import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
+import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 import transporter from "../../config/emailConfig.js";
 import UserVerification from "../../models/userVerification.js";
 import User from "../../models/userModels.js";
 import { logError, logInfo } from "../../util/logging.js";
+
+// Define __dirname for ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Setting server URL based on the environment
 const development = "http://localhost:3000/";
@@ -17,15 +23,30 @@ export const sendVerificationEmail = async (user, res) => {
   const { _id, email } = user;
   const uniqueString = uuidv4() + _id; // Generate a unique string using uuid and user ID
 
+  // Read the HTML template
+  const templatePath = path.join(
+    __dirname,
+    "../../templates/emailTemplate.html"
+  );
+  let emailTemplate;
+  try {
+    emailTemplate = fs.readFileSync(templatePath, "utf-8");
+  } catch (error) {
+    logError(`Error reading email template: ${error.message}`);
+    if (res) {
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
+  // Replace placeholders with actual values
+  const verifyUrl = `${currentUrl}user/verify/${_id}/${uniqueString}`;
+  emailTemplate = emailTemplate.replace("{{VERIFY_URL}}", verifyUrl);
+
   const mailOptions = {
     from: process.env.AUTH_EMAIL,
     to: email,
     subject: "Verify your Email",
-    html: `
-      <p>Verify your email address to complete the signup and log into your account.</p>
-      <p>This link <b>expires in 6 hours</b>.</p>
-      <p>Press <a href="${currentUrl}user/verify/${_id}/${uniqueString}">here</a> to proceed.</p>
-    `,
+    html: emailTemplate,
   };
 
   const saltRounds = 10;
@@ -58,15 +79,17 @@ export const sendVerificationEmail = async (user, res) => {
               }
             })
             .catch((err) => {
-              res.json({
-                status: "FAILED",
-                message: "Verification email failed",
-              });
-              logError(err);
+              logError(`Verification email failed: ${err.message}`);
+              if (!res.headersSent) {
+                res.json({
+                  status: "FAILED",
+                  message: "Verification email failed",
+                });
+              }
             });
         })
         .catch((err) => {
-          logError("Error sending verification email: ", err);
+          logError(`Failed to save verification record: ${err.message}`);
           if (!res.headersSent) {
             res.json({
               status: "FAILED",
@@ -76,7 +99,7 @@ export const sendVerificationEmail = async (user, res) => {
         });
     })
     .catch((err) => {
-      logError("Error hashing unique string: ", err);
+      logError(`Failed to hash unique string: ${err.message}`);
       if (!res.headersSent) {
         res.json({
           status: "FAILED",

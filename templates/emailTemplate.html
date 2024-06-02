@@ -46,6 +46,10 @@
         border-radius: 5px;
         font-size: 16px;
       }
+      .button a {
+        color: white;
+        text-decoration: none;
+      }
       .footer {
         font-size: 14px;
         color: #666;
@@ -61,7 +65,9 @@
       </p>
       <p>This link <b>expires in 6 hours</b>.</p>
       <div class="button-container">
-        <a href="#" class="button">Verify Email</a>
+        <a href="{{VERIFY_URL}}" class="button" style="color: white !important"
+          >Verify Email</a
+        >
       </div>
       <p class="footer">
         If you did not sign up for this account, you can ignore this email.
