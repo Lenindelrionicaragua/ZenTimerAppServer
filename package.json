@@ -54,6 +54,8 @@
     "google-auth-library": "^9.10.0",
     "jsonwebtoken": "^9.0.2",
     "mongodb-memory-server": "^8.0.3",
-    "mongoose": "^6.0.13"
+    "mongoose": "^6.0.13",
+    "nodemailer": "^6.9.13",
+    "uuid": "^9.0.1"
   }
 }

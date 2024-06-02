@@ -3,6 +3,9 @@ import { logError, logInfo } from "../util/logging.js";
 
 const connectDB = () => {
   return new Promise((resolve, reject) => {
+    // Configuración de strictQuery
+    mongoose.set("strictQuery", false);
+
     mongoose
       .connect(process.env.MONGODB_URI, {
         useNewUrlParser: true,
