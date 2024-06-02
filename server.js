@@ -5,12 +5,8 @@ dotenv.config();
 
 import app from "./app.js";
 import { logInfo, logError } from "./util/logging.js";
-import testRouter from "./testRouters.js";
 import connectDB from "./db/connectDB.js";
-import mongoose from "mongoose";
-
-// Set mongoose strictQuery
-mongoose.set("strictQuery", true);
+import testRouter from "./testRouters.js";
 
 // The environment should set the port
 const port = process.env.PORT;

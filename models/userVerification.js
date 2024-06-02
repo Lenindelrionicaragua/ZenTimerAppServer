@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+import mongoose from "mongoose";
+const { Schema } = mongoose;
 
 const UserVerificationSchema = new Schema({
   userId: {
@@ -25,4 +25,4 @@ const UserVerification = mongoose.model(
   UserVerificationSchema
 );
 
-module.exports = UserVerification;
+export default UserVerification;

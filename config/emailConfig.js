@@ -1,5 +1,8 @@
 import nodemailer from "nodemailer";
 import { logError, logInfo } from "../util/logging.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
