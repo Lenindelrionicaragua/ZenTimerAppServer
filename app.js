@@ -11,7 +11,7 @@ dotenv.config();
 // Create an express server
 const app = express();
 
-// Middleware to force HTTPS
+// Middleware to force HTTPS only if in production
 app.use((req, res, next) => {
   if (
     req.headers["x-forwarded-proto"] !== "https" &&
@@ -22,18 +22,8 @@ app.use((req, res, next) => {
   next();
 });
 
-// Tell express to use the json middleware
+// Middleware to parse JSON
 app.use(express.json());
-
-// Restrict access to only our UI
-app.use(
-  cors({
-    credentials: true,
-    origin: "*", // permit any origin for development
-
-    // origin: process.env.UI_BASE_URL,
-  })
-);
 
 // Configure CORS based on the environment
 const corsOptions = {
