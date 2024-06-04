@@ -31,7 +31,7 @@ const corsOptions = {
   origin:
     process.env.NODE_ENV === "production"
       ? process.env.UI_BASE_URL
-      : "http://localhost:8081",
+      : "http://192.168.178.182:8081",
 };
 
 app.use(cors(corsOptions));
