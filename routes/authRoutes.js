@@ -18,7 +18,4 @@ authRouter.post("/log-out", logout);
 authRouter.post("/resend-verification-link", resendVerificationLink);
 authRouter.get("/verify/:userId/:uniqueString", verifyEmail);
 
-// authRouter.get("/verified", (_, res) => {
-//   res.sendFile(path.join(__dirname, "../views/verified.html"));
-// });
 export default authRouter;

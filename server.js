@@ -29,6 +29,5 @@ const startServer = async () => {
 if (process.env.NODE_ENV !== "production") {
   app.use("/api/test", testRouter);
 }
-
 // Start the server
 startServer();

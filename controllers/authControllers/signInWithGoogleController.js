@@ -3,7 +3,6 @@ import { OAuth2Client } from "google-auth-library";
 import bcrypt from "bcrypt";
 import User from "../../models/userModels.js";
 import { logError, logInfo } from "../../util/logging.js";
-import express from "express";
 import { sendVerificationEmail } from "./emailVerificationController.js";
 
 // OAuth2 clients
@@ -13,12 +12,6 @@ const clients = {
   Android: new OAuth2Client(process.env.GOOGLE_CLIENT_ID_ANDROID),
   Expo: new OAuth2Client(process.env.GOOGLE_CLIENT_ID_EXPO),
 };
-
-// setting server url
-const development = "http://localhost:3000/";
-const production = "https://zen-timer-app-server-7f9db58def4c.herokuapp.com";
-const currentUrl =
-  process.env.NODE_ENV === "production" ? production : development;
 
 export const signInWithGoogleController = async (req, res) => {
   const { token, platform } = req.body;
