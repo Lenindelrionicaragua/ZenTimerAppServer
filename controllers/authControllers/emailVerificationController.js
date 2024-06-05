@@ -39,7 +39,7 @@ export const sendVerificationEmail = async (user, res) => {
   }
 
   // Replace placeholders with actual values
-  const verifyUrl = `${currentUrl}user/verify/${_id}/${uniqueString}`;
+  const verifyUrl = `${currentUrl}/api/auth/verify/${_id}/${uniqueString}`;
   emailTemplate = emailTemplate.replace("{{VERIFY_URL}}", verifyUrl);
 
   const mailOptions = {
