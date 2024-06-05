@@ -13,13 +13,15 @@ const app = express();
 
 // Tell express to use the json middleware
 app.use(express.json());
-// Restrict access to only our UI
+
+// Configuración de CORS
 app.use(
   cors({
     credentials: true,
-    origin: "*", // permit any origin for development
-
-    // origin: process.env.UI_BASE_URL,
+    origin: [
+      "http://localhost:8081",
+      "https://zen-timer-app-server-7f9db58def4c.herokuapp.com",
+    ],
   })
 );
 app.use(cookieParser());
