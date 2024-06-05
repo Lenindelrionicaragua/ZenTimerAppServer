@@ -18,12 +18,10 @@ app.use(express.json());
 app.use(
   cors({
     credentials: true,
-    origin: [
-      "http://localhost:8081",
-      "https://zen-timer-app-server-7f9db58def4c.herokuapp.com",
-    ],
+    origin: "*",
   })
 );
+
 app.use(cookieParser());
 
 /****** Attach routes ******/
