@@ -1,4 +1,3 @@
-
 name: Heroku Deploy on Pull Request
 
 on:
@@ -21,8 +20,8 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    - name: Build project
-      run: npm run build # Ajusta según tu comando de construcción, si es necesario
+    # - name: Build project
+    #   run: npm run build # Comentar o eliminar esta línea si no necesitas un comando de construcción
 
     - name: Deploy to Heroku
       env:
@@ -31,4 +30,3 @@ jobs:
       run: |
         git remote add heroku https://git.heroku.com/${{ secrets.HEROKU_APP_NAME }}.git
         git push heroku HEAD:refs/heads/main --force
-
