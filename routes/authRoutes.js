@@ -17,5 +17,4 @@ authRouter.post("/log-out", logout);
 
 authRouter.post("/resend-verification-link", resendVerificationLink);
 authRouter.get("/verify/:userId/:uniqueString", verifyEmail);
-
 export default authRouter;
