@@ -12,14 +12,4 @@ module.exports = {
   },
   testRegex: "(/__tests__/.*|(\\.|/)(test|spec))\\.[jt]sx?$",
   moduleFileExtensions: ["js", "jsx", "mjs"],
-  presets: [
-    [
-      "@babel/preset-env",
-      {
-        targets: {
-          node: "current",
-        },
-      },
-    ],
-  ],
 };
