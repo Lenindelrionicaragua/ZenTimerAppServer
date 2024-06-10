@@ -35,7 +35,7 @@ export const signInWithGoogleController = async (req, res) => {
         const password = await bcrypt.hash("defaultPassword", 10); // Hash a default password
         user = new User({ name, email, picture, password });
         await user.save();
-        await sendVerificationEmail(user, res);
+        // await sendVerificationEmail(user, res);
         logInfo(`User created successfully: ${user.email}`);
       } else {
         logInfo("User found for Web platform: " + user);

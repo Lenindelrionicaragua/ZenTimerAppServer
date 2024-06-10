@@ -8,7 +8,7 @@ import User from "../../models/userModels.js";
 import { logError, logInfo } from "../../util/logging.js";
 
 // Setting server URL based on the environment
-const development = "http://localhost:3000";
+const development = "http://192.168.178.182:3000";
 const production = "https://zen-timer-app-server-7f9db58def4c.herokuapp.com";
 const currentUrl =
   process.env.NODE_ENV === "production" ? production : development;

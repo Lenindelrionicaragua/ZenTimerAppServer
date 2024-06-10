@@ -8,6 +8,8 @@ import { sendVerificationEmail } from "./emailVerificationController.js";
 export const signup = async (req, res) => {
   const allowedFields = ["name", "email", "password", "dateOfBirth"];
 
+  req.body.user.email = req.body.user.email.toLowerCase();
+
   if (!(req.body.user instanceof Object)) {
     return res.status(400).json({
       success: false,
