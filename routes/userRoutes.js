@@ -5,6 +5,5 @@ import { verifyEmail } from "../controllers/authControllers/emailVerificationCon
 const userRouter = express.Router();
 
 userRouter.get("/", getUsers);
-userRouter.get("/verify/:userId/:uniqueString", verifyEmail);
 
 export default userRouter;
