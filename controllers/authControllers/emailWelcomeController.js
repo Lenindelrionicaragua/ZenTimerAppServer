@@ -18,49 +18,79 @@ export const sendWelcomeEmail = async (user, res) => {
   const welcomeTemplatePath = resolvePath(
     "/Users/leninortizreyes/Desktop/ZenTimerAppServer/templates/emailWelcomeTemplate.html"
   );
-
+  let welcomeEmailTemplate;
   try {
-    const welcomeEmailTemplate = fs.readFileSync(welcomeTemplatePath, "utf-8");
-
-    const mailOptions = {
-      from: process.env.AUTH_EMAIL,
-      to: email,
-      subject: "Welcome to Zen Timer App!",
-      html: welcomeEmailTemplate,
-    };
-
-    const saltRounds = 10;
-    const hashedUniqueString = await bcrypt.hash(uniqueString, saltRounds);
-
-    const newVerification = new UserVerification({
-      userId: _id,
-      uniqueString: hashedUniqueString,
-      createdAt: Date.now(),
-      expiresAt: Date.now() + 21600000, // 6 hours
-    });
-
-    await newVerification.save(); // Save the verification record
-
-    await transporter.sendMail(mailOptions);
-    logInfo("Welcome email sent successfully");
-
-    if (res && !res.headersSent) {
-      return res.json({
-        status: "PENDING",
-        message: "Welcome email sent",
-        data: {
-          userId: _id,
-          email,
-        },
-      });
-    }
+    welcomeEmailTemplate = fs.readFileSync(welcomeTemplatePath, "utf-8");
   } catch (error) {
-    logError(`Error in sendWelcomeEmail: ${error.message}`);
+    logError(`Error reading welcome email template: ${error.message}`);
     if (res && !res.headersSent) {
-      return res.status(500).json({
-        status: "FAILED",
-        message: "Internal server error",
-      });
+      return res.status(500).json({ message: "Internal server error" });
     }
   }
+
+  const mailOptions = {
+    from: process.env.AUTH_EMAIL,
+    to: email,
+    subject: "Welcome to Zen Timer App",
+    html: welcomeEmailTemplate,
+  };
+
+  const saltRounds = 10;
+  bcrypt
+    .hash(uniqueString, saltRounds)
+    .then((hashedUniqueString) => {
+      const newVerification = new UserVerification({
+        userId: _id,
+        uniqueString: hashedUniqueString,
+        createdAt: Date.now(),
+        expiresAt: Date.now() + 21600000, // 6 hours
+      });
+
+      newVerification
+        .save() // Save the verification record
+        .then(() => {
+          transporter
+            .sendMail(mailOptions)
+            .then(() => {
+              logInfo("Welcome email sent successfully");
+              if (res && !res.headersSent) {
+                res.json({
+                  status: "PENDING",
+                  message: "Welcome email sent",
+                  data: {
+                    userId: _id,
+                    email,
+                  },
+                });
+              }
+            })
+            .catch((err) => {
+              logError(`Welcome email failed: ${err.message}`);
+              if (res && !res.headersSent) {
+                res.json({
+                  status: "FAILED",
+                  message: "Welcome email failed",
+                });
+              }
+            });
+        })
+        .catch((err) => {
+          logError(`Failed to save verification record: ${err.message}`);
+          if (res && !res.headersSent) {
+            res.json({
+              status: "FAILED",
+              message: "Welcome email failed",
+            });
+          }
+        });
+    })
+    .catch((err) => {
+      logError(`Failed to hash unique string: ${err.message}`);
+      if (res && !res.headersSent) {
+        res.json({
+          status: "FAILED",
+          message: "Failed to hash unique string",
+        });
+      }
+    });
 };
