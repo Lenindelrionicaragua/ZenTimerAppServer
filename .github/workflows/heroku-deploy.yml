@@ -15,18 +15,28 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '16' # Ajusta la versión de Node.js según tus necesidades
+        node-version: '16' # Adjust Node.js version as needed
 
     - name: Install dependencies
       run: npm install
 
+    # Uncomment if you need a build step
     # - name: Build project
-    #   run: npm run build # Comentar o eliminar esta línea si no necesitas un comando de construcción
+    #   run: npm run build
 
-    - name: Deploy to Heroku
+    - name: Authenticate with Heroku
       env:
         HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
-        HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
+      run: |
+        echo "machine api.heroku.com" > ~/.netrc
+        echo "  login ${{ secrets.HEROKU_EMAIL }}" >> ~/.netrc
+        echo "  password ${{ secrets.HEROKU_API_KEY }}" >> ~/.netrc
+        echo "machine git.heroku.com" >> ~/.netrc
+        echo "  login ${{ secrets.HEROKU_EMAIL }}" >> ~/.netrc
+        echo "  password ${{ secrets.HEROKU_API_KEY }}" >> ~/.netrc
+        chmod 600 ~/.netrc
+
+    - name: Deploy to Heroku
       run: |
         git remote add heroku https://git.heroku.com/${{ secrets.HEROKU_APP_NAME }}.git
         git push heroku HEAD:refs/heads/main --force
