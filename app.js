@@ -14,11 +14,23 @@ const app = express();
 // Tell express to use the json middleware
 app.use(express.json());
 
-// Configuración de CORS
+const allowedOrigins = [
+  "http://localhost:8081",
+  "http://192.168.178.182:3000",
+  "https://habit-tracker-app-front.netlify.app",
+];
+
+// CORS configuration
 app.use(
   cors({
     credentials: true,
-    origin: "*",
+    origin: (origin, callback) => {
+      if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
   })
 );
 
