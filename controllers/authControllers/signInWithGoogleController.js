@@ -3,7 +3,7 @@ import { OAuth2Client } from "google-auth-library";
 import bcrypt from "bcrypt";
 import User from "../../models/userModels.js";
 import { logError, logInfo } from "../../util/logging.js";
-import { sendVerificationEmail } from "./emailVerificationController.js";
+import { sendWelcomeEmail } from "./emailWelcomeController.js";
 
 // OAuth2 clients
 const clients = {
@@ -35,7 +35,8 @@ export const signInWithGoogleController = async (req, res) => {
         const password = await bcrypt.hash("defaultPassword", 10); // Hash a default password
         user = new User({ name, email, picture, password });
         await user.save();
-        await sendVerificationEmail(user, res);
+
+        await sendWelcomeEmail(user, res);
         logInfo(`User created successfully: ${user.email}`);
       } else {
         logInfo("User found for Web platform: " + user);
@@ -89,7 +90,8 @@ export const signInWithGoogleController = async (req, res) => {
       logInfo("User not found, creating a new user for platform: " + platform);
       user = new User({ name, email, picture });
       await user.save();
-      await sendVerificationEmail(user, res);
+
+      await sendWelcomeEmail(user, res);
       logInfo(`User created successfully: ${user.email}`);
     } else {
       logInfo("User found for platform: " + platform + ": " + user);

@@ -7,19 +7,24 @@ import UserVerification from "../../models/userVerification.js";
 import User from "../../models/userModels.js";
 import { logError, logInfo } from "../../util/logging.js";
 
-const templatePath = path.join(__dirname, "../../templates/emailTemplate.html");
-
 // Setting server URL based on the environment
-const development = "http://localhost:3000";
+const development = "http://192.168.178.182:3000";
 const production = "https://zen-timer-app-server-7f9db58def4c.herokuapp.com";
 const currentUrl =
   process.env.NODE_ENV === "production" ? production : development;
+
+const resolvePath = (relativePath) => {
+  return path.resolve(process.cwd(), relativePath);
+};
 
 // Function to send a verification email
 export const sendVerificationEmail = async (user, res) => {
   const { _id, email } = user;
   const uniqueString = uuidv4() + _id; // Generate a unique string using uuid and user ID
 
+  const templatePath = resolvePath(
+    "/Users/leninortizreyes/Desktop/ZenTimerAppServer/templates/emailTemplate.html"
+  );
   let emailTemplate;
   try {
     emailTemplate = fs.readFileSync(templatePath, "utf-8");
@@ -30,7 +35,6 @@ export const sendVerificationEmail = async (user, res) => {
     }
   }
 
-  // Replace placeholders with actual values
   const verifyUrl = `${currentUrl}/api/auth/verify/${_id}/${uniqueString}`;
   emailTemplate = emailTemplate.replace("{{VERIFY_URL}}", verifyUrl);
 
@@ -124,6 +128,10 @@ export const resendVerificationLink = async (req, res) => {
 
 // Function to verify the email
 export const verifyEmail = (req, res) => {
+  const verifySuccessFilePath = resolvePath(
+    "/Users/leninortizreyes/Desktop/ZenTimerAppServer/views/verified.html"
+  );
+
   logInfo("verifyEmail function called");
   let { userId, uniqueString } = req.params;
   logInfo(`Params - userId: ${userId}, uniqueString: ${uniqueString}`); // Log the received params
@@ -143,6 +151,7 @@ export const verifyEmail = (req, res) => {
                 .then(() => {
                   let message = "Link has expired. Please sign up again";
                   logInfo(message);
+                  verifySuccessMessage = fs.readFileSync(templatePath, "utf-8");
                   res.redirect(`/user/verified?error=true&message=${message}`);
                 })
                 .catch((error) => {
@@ -169,9 +178,7 @@ export const verifyEmail = (req, res) => {
                 User.updateOne({ _id: userId }, { verified: true }) // Update the user's verified status
                   .then(() => {
                     logInfo("User verification status updated successfully");
-                    res.sendFile(
-                      path.join(__dirname, "../../views/verified.html")
-                    );
+                    res.sendFile(verifySuccessFilePath);
                   })
                   .catch((error) => {
                     logError(error);
@@ -198,6 +205,7 @@ export const verifyEmail = (req, res) => {
             });
         }
       } else {
+        // If no verification record is found
         let message =
           "Account record doesn't exist or has been verified already. Please sign up or log in.";
         logInfo(message);

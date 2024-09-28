@@ -17,6 +17,10 @@ export const signup = async (req, res) => {
     });
   }
 
+  if (req.body.user && req.body.user.email) {
+    req.body.user.email = req.body.user.email.toLowerCase();
+  }
+
   const invalidFieldsError = validateAllowedFields(
     req.body.user,
     allowedFields
