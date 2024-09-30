@@ -52,9 +52,11 @@ export const signInWithGoogleController = async (req, res) => {
       res.cookie("session", jwtToken, { httpOnly: true });
       logInfo("Session cookie set for Web platform");
 
-      return res
-        .status(200)
-        .json({ message: "User signed in successfully", token: jwtToken });
+      return res.status(200).json({
+        success: true,
+        message: "User signed in successfully",
+        token: jwtToken,
+      });
     } catch (error) {
       logError("Error during Web sign-in process: " + error.message);
       return res
