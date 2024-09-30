@@ -23,34 +23,38 @@ export const signInWithGoogleController = async (req, res) => {
     return res.status(400).json({ error: "Invalid platform" });
   }
 
+  // Special handling for web platform in development/testing
   if (platform === "Web" && !token) {
     try {
       const { email, name, picture } = req.body;
 
+      // Check if user already exists
       let user = await User.findOne({ email });
       if (!user) {
         logInfo("User not found, creating a new user for Web platform...");
-        const password = await bcrypt.hash("defaultPassword", 10);
+        const password = await bcrypt.hash("defaultPassword", 10); // Hash a default password
         user = new User({ name, email, picture, password });
         await user.save();
+
         await sendWelcomeEmail(user, res);
         logInfo(`User created successfully: ${user.email}`);
       } else {
         logInfo("User found for Web platform: " + user);
       }
 
+      // Generate JWT token
       const jwtToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
         expiresIn: "72h",
       });
       logInfo("JWT Token generated for Web platform: " + jwtToken);
+
+      // Set the session cookie
       res.cookie("session", jwtToken, { httpOnly: true });
       logInfo("Session cookie set for Web platform");
 
-      return res.status(200).json({
-        success: true,
-        message: "User signed in successfully",
-        token: jwtToken,
-      });
+      return res
+        .status(200)
+        .json({ message: "User signed in successfully", token: jwtToken });
     } catch (error) {
       logError("Error during Web sign-in process: " + error.message);
       return res
@@ -59,6 +63,7 @@ export const signInWithGoogleController = async (req, res) => {
     }
   }
 
+  // Handling for mobile platforms (iOS, Android, Expo)
   if (!token) {
     logError("idToken from Google is missing for platform: " + platform);
     return res.status(400).json({ error: "idToken from Google is missing." });
@@ -79,21 +84,26 @@ export const signInWithGoogleController = async (req, res) => {
 
     const { name, email, picture } = payload;
 
+    // Check if user already exists
     let user = await User.findOne({ email });
     if (!user) {
       logInfo("User not found, creating a new user for platform: " + platform);
       user = new User({ name, email, picture });
       await user.save();
+
       await sendWelcomeEmail(user, res);
       logInfo(`User created successfully: ${user.email}`);
     } else {
       logInfo("User found for platform: " + platform + ": " + user);
     }
 
+    // Generate JWT token
     const jwtToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: "72h",
     });
     logInfo("JWT Token generated for platform: " + platform + ": " + jwtToken);
+
+    // Set the session cookie
     res.cookie("session", jwtToken, { httpOnly: true });
     logInfo("Session cookie set for platform: " + platform);
 
