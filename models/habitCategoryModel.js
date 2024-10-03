@@ -1,97 +1,88 @@
-import HabitCategory from "../models/HabitCategory.js";
+import mongoose from "mongoose";
 import { logInfo } from "../util/logging.js";
 
-// Validate the input for habit categories
-const validateCategoryInput = (data) => {
-  const errors = [];
+// Define the habit category schema
+const habitCategorySchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  totalMinutes: {
+    type: Number,
+    default: 0,
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+    required: true,
+  },
+});
 
-  // Validate category name: only letters, spaces, and hyphens; max length 10
-  const namePattern = /^[A-Za-z\s-]{1,10}$/; // Match letters, spaces, and hyphens, up to 10 characters
-  if (!data.name || !namePattern.test(data.name)) {
-    errors.push(
-      "Category name is required and must contain only letters, spaces, or hyphens, with a maximum length of 10 characters."
+// Validation function for the category
+export const validateCategory = (categoryObject) => {
+  const errorList = [];
+
+  // Validate name
+  if (!categoryObject.name || typeof categoryObject.name !== "string") {
+    errorList.push("Category name is required.");
+    logInfo("Category validation failed: Name is required.");
+  } else if (!/^[A-Za-z\s\-!]{1,10}$/.test(categoryObject.name)) {
+    // Updated regex
+    errorList.push(
+      "Category name must contain only letters, spaces, hyphens, or exclamation marks, and have a maximum length of 10 characters."
     );
-    logInfo("Validation failed: Category name must be valid.");
+    logInfo("Category validation failed: Invalid category name.");
   }
 
-  // Validate total minutes: must be a positive number, not zero, and no more than 1440
-  if (
-    typeof data.totalMinutes !== "number" ||
-    data.totalMinutes <= 0 ||
-    data.totalMinutes > 1440
-  ) {
-    errors.push(
-      "Total minutes must be a positive number (greater than 0) and cannot exceed 1440 minutes (24 hours)."
-    );
-    logInfo(
-      "Validation failed: Total minutes must be a positive number and within the allowed range."
-    );
-  }
-
-  return errors;
-};
-
-// Create a new habit category
-export const createCategory = async (req, res) => {
-  const { name, totalMinutes } = req.body;
-
-  // Validate the input
-  const errors = validateCategoryInput({ name, totalMinutes });
-  if (errors.length > 0) {
-    return res.status(400).json({ errors });
-  }
-
-  try {
-    const newCategory = new HabitCategory({
-      name,
-      createdBy: req.user._id,
-      totalMinutes,
-    });
-    await newCategory.save();
-    res.status(201).json({
-      message: "Category created successfully.",
-      category: newCategory,
-    });
-  } catch (error) {
-    res.status(500).json({ message: "Error creating category.", error });
-  }
-};
-
-// Update time in a habit category
-export const updateCategoryTime = async (req, res) => {
-  const { categoryId } = req.params;
-  const { totalMinutes } = req.body;
-
-  // Validate that the category ID is a valid ObjectId
-  if (!mongoose.Types.ObjectId.isValid(categoryId)) {
-    return res.status(400).json({ message: "Invalid category ID." });
+  // Validate createdBy
+  if (!categoryObject.createdBy) {
+    errorList.push("Creator is required.");
+    logInfo("Category validation failed: Creator is required.");
   }
 
   // Validate total minutes
   if (
-    typeof totalMinutes !== "number" ||
-    totalMinutes <= 0 ||
-    totalMinutes > 1440
+    categoryObject.totalMinutes == null ||
+    typeof categoryObject.totalMinutes !== "number"
   ) {
-    return res.status(400).json({
-      message:
-        "Total minutes must be a positive number (greater than 0) and cannot exceed 1440 minutes (24 hours).",
-    });
+    errorList.push("Total minutes is required.");
+    logInfo("Category validation failed: Total minutes are required.");
+  } else if (categoryObject.totalMinutes < 0) {
+    errorList.push("Total minutes cannot be negative.");
+    logInfo("Category validation failed: Total minutes cannot be negative.");
+  } else if (categoryObject.totalMinutes > 1440) {
+    errorList.push("Total minutes cannot exceed 1440 minutes (24 hours).");
+    logInfo("Category validation failed: Invalid total minutes.");
   }
 
-  try {
-    const category = await HabitCategory.findById(categoryId);
-    if (!category) {
-      return res.status(404).json({ message: "Category not found." });
-    }
-
-    category.totalMinutes += totalMinutes; // Add the time
-    await category.save();
-
-    res
-      .status(200)
-      .json({ message: "Category updated successfully.", category });
-  } catch (error) {
-    res.status(500).json({ message: "Error updating category time.", error });
+  // Validate createdAt
+  if (!categoryObject.createdAt) {
+    errorList.push("Creation date is required.");
+    logInfo("Category validation failed: Creation date is required.");
   }
+
+  return errorList;
 };
+
+// Middleware to validate before saving
+habitCategorySchema.pre("save", function (next) {
+  const validationErrors = validateCategory(this);
+
+  if (validationErrors.length > 0) {
+    logInfo("Validation failed: " + validationErrors.join(", "));
+    return next(new Error(validationErrors.join(", ")));
+  }
+
+  next();
+});
+
+const HabitCategory = mongoose.model("HabitCategory", habitCategorySchema);
+
+export default HabitCategory;

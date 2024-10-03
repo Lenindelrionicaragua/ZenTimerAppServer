@@ -1,73 +1,141 @@
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
+import validateAllowedFields from "../util/validateAllowedFields.js";
 import { logInfo } from "../util/logging.js";
 
-// Define the habit category schema
-const habitCategorySchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  createdBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
-  totalMinutes: {
-    type: Number,
-    default: 0,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
+const userSchema = new mongoose.Schema({
+  name: { type: String, required: true, trim: true },
+  email: { type: String, required: true, unique: true, trim: true },
+  password: { type: String, trim: true },
+  dateOfBirth: { type: String, trim: true },
+  googleId: { type: String },
+  picture: { type: String },
 });
 
-// Validation function for the category
-export const validateCategory = (categoryObject) => {
+export const validateUser = (
+  userObject,
+  requirePassword = true,
+  requireName = true,
+  requireEmail = true,
+  requireDateOfBirth = true
+) => {
   const errorList = [];
+  const allowedKeys = ["name", "email", "password", "dateOfBirth"];
 
-  // Validate name
-  if (!categoryObject.name || typeof categoryObject.name !== "string") {
-    errorList.push("Category name is required.");
-    logInfo("Category validation failed: Name is required.");
-  } else if (!/^[A-Za-z\s-]{1,10}$/.test(categoryObject.name)) {
-    errorList.push(
-      "Category name must contain only letters, spaces, or hyphens, and have a maximum length of 10 characters."
-    );
-    logInfo("Category validation failed: Invalid category name.");
+  const validatedKeysMessage = validateAllowedFields(userObject, allowedKeys);
+
+  if (validatedKeysMessage.length > 0) {
+    errorList.push(validatedKeysMessage);
   }
 
-  // Validate total minutes
+  if ((requireName && userObject.name == null) || userObject.name == "") {
+    errorList.push("Name is a required field");
+    logInfo("user Create Validation failed: Name is required field");
+  }
+
   if (
-    categoryObject.totalMinutes == null ||
-    typeof categoryObject.totalMinutes !== "number"
+    requireName &&
+    !/^(?:[a-zA-Z0-9]+(?:\s+[a-zA-Z0-9]+)*)?$/.test(userObject.name)
   ) {
-    errorList.push("Total minutes is required.");
-    logInfo("Category validation failed: Total minutes are required.");
-  } else if (categoryObject.totalMinutes < 0) {
-    errorList.push("Total minutes cannot be negative.");
-    logInfo("Category validation failed: Total minutes cannot be negative.");
-  } else if (categoryObject.totalMinutes > 1440) {
-    errorList.push("Total minutes cannot exceed 1440 minutes (24 hours).");
-    logInfo("Category validation failed: Invalid total minutes.");
+    errorList.push(
+      "Name can only contain letters, numbers, and a single space between words"
+    );
+    logInfo(
+      "User create Validation failed: Name can only contain letters, numbers, and a single space between words"
+    );
+  }
+
+  if ((requireEmail && userObject.email == null) || userObject.email == "") {
+    errorList.push("Email is a required field");
+    logInfo("User create Validation failed: Email is required field");
+  }
+
+  if (
+    requireEmail &&
+    !/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(userObject.email)
+  ) {
+    errorList.push("Email is not in a valid format");
+    logInfo("User create Validation failed: Email is not in a valid format");
+  }
+
+  if (
+    requirePassword &&
+    (userObject.password == null || userObject.password === "")
+  ) {
+    errorList.push("Password is a required field");
+    logInfo("User create Validation failed: Password is required field");
+  }
+
+  if (
+    requirePassword &&
+    (!userObject.password || userObject.password.length < 8)
+  ) {
+    errorList.push("Password must be at least 8 characters long");
+    logInfo(
+      "User create Validation failed: Password must be at least 8 characters long"
+    );
+  }
+
+  if (requirePassword && !/[A-Z]/.test(userObject.password)) {
+    errorList.push("Password must contain at least one uppercase letter");
+    logInfo(
+      "User create Validation failed: Password must contain at least one uppercase letter"
+    );
+  }
+
+  if (requirePassword && !/[^A-Za-z0-9]/.test(userObject.password)) {
+    errorList.push("Password must contain at least one special character");
+    logInfo(
+      "User create Validation failed: Password must contain at least one special character"
+    );
+  }
+
+  if (
+    (requireDateOfBirth && userObject.dateOfBirth == null) ||
+    userObject.dateOfBirth == ""
+  ) {
+    errorList.push("Date Of Birth is a required field");
+    logInfo("User create Validation failed: Date Of Birth is required field");
+  }
+
+  const isValidDateOfBirth = /^[A-Z][a-z]{2} [A-Z][a-z]{2} \d{2} \d{4}$/.test(
+    userObject.dateOfBirth
+  );
+
+  if (requireDateOfBirth && (!userObject.dateOfBirth || !isValidDateOfBirth)) {
+    errorList.push(
+      "Date Of Birth is a required field with valid format (MM/DD/YYYY)"
+    );
+    logInfo(
+      "User create Validation failed: Date Of Birth is required field with valid format (MM/DD/YYYY)"
+    );
   }
 
   return errorList;
 };
 
-// Middleware to validate before saving
-habitCategorySchema.pre("save", function (next) {
-  const validationErrors = validateCategory(this);
-
-  if (validationErrors.length > 0) {
-    logInfo("Validation failed: " + validationErrors.join(", "));
-    return next(new Error(validationErrors.join(", ")));
+userSchema.pre("save", async function (next) {
+  // Hash the password before saving to the database
+  if (this.isModified("password")) {
+    try {
+      const salt = await bcrypt.genSalt(10);
+      this.password = await bcrypt.hash(this.password, salt);
+      // Log to verify that the password is hashed successfully
+      logInfo(
+        `Password hashed successfully for user: ${this.email}. Hash: ${this.password}`
+      );
+      next();
+    } catch (error) {
+      logInfo(`Error hashing password: ${error}`);
+      next(error);
+    }
+  } else {
+    next();
+    // Log to indicate that no password modification occurred
+    logInfo("No password modification detected.");
   }
-
-  next();
 });
 
-const HabitCategory = mongoose.model("HabitCategory", habitCategorySchema);
+const User = mongoose.model("user", userSchema);
 
-export default HabitCategory;
+export default User;

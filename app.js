@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import { requireAuth } from "./middleware/authMiddleware.js";
 import userRouter from "./routes/userRoutes.js";
 import authRouter from "./routes/authRoutes.js";
+import habitCategoriesRouter from "./routes/habitCategoriesRouter.js";
 
 dotenv.config();
 
@@ -46,7 +47,5 @@ app.use(cookieParser());
 app.use("/api/auth", authRouter);
 app.use("/api/user", requireAuth, userRouter);
 app.use("/api/habit-categories", requireAuth, habitCategoriesRouter);
-
-// app.use("/api/user", userRouter);
 
 export default app;
