@@ -1,9 +1,7 @@
 import express from "express";
-import {
-  getCategories,
-  createCategory,
-  updateCategoryTime,
-} from "../controllers/habitCategoriesControllers/habitCategoriesControllers";
+import { getCategories } from "../controllers/habitCategoriesControllers/getCategoriesController";
+import { createCategory } from "../controllers/habitCategoriesControllers/createCategoryController";
+import { updateCategoryTime } from "../controllers/habitCategoriesControllers/updateCategoryTimeController";
 
 const habitCategoriesRouter = express.Router();
 
