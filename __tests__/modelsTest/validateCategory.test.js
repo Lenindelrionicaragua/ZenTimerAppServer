@@ -1,10 +1,10 @@
-import { validateCategory } from "../../models/habitCategoryModel";
+import { validateCategory } from "../../models/habitCategory";
 
 describe("validateCategory function", () => {
   test("should return an empty array if all required fields are provided correctly", () => {
     const category = {
       name: "Fitness!",
-      createdBy: "60c72b2f9b1e8e3d88d23a1e", // mock ObjectId
+      createdBy: "60c72b2f9b1e8e3d88d23a1e",
       totalMinutes: 30,
       createdAt: new Date(),
     };
@@ -28,7 +28,7 @@ describe("validateCategory function", () => {
   test("should return an error message if the name is null", () => {
     const category = {
       name: null,
-      createdBy: "60c72b2f9b1e8e3d88d23a1e", // mock ObjectId
+      createdBy: "60c72b2f9b1e8e3d88d23a1e",
       totalMinutes: 30,
       createdAt: new Date(),
     };
@@ -42,7 +42,7 @@ describe("validateCategory function", () => {
   test("should return an error message if the name is an empty string", () => {
     const category = {
       name: "",
-      createdBy: "60c72b2f9b1e8e3d88d23a1e", // mock ObjectId
+      createdBy: "60c72b2f9b1e8e3d88d23a1e",
       totalMinutes: 30,
       createdAt: new Date(),
     };
@@ -56,20 +56,20 @@ describe("validateCategory function", () => {
   test("should return an error message if the name contains invalid characters", () => {
     const category = {
       name: "Fitness!",
-      createdBy: "60c72b2f9b1e8e3d88d23a1e", // mock ObjectId
+      createdBy: "60c72b2f9b1e8e3d88d23a1e",
       totalMinutes: 30,
       createdAt: new Date(),
     };
 
     const errors = validateCategory(category);
 
-    expect(errors).toHaveLength(0); // No error for valid name now
+    expect(errors).toHaveLength(0);
   });
 
   test("should return an error message if the name exceeds 10 characters", () => {
     const category = {
       name: "ThisNameIsWayTooLong",
-      createdBy: "60c72b2f9b1e8e3d88d23a1e", // mock ObjectId
+      createdBy: "60c72b2f9b1e8e3d88d23a1e",
       totalMinutes: 30,
       createdAt: new Date(),
     };
@@ -85,7 +85,7 @@ describe("validateCategory function", () => {
   test("should return an error message if totalMinutes is null", () => {
     const category = {
       name: "Fitness",
-      createdBy: "60c72b2f9b1e8e3d88d23a1e", // mock ObjectId
+      createdBy: "60c72b2f9b1e8e3d88d23a1e",
       totalMinutes: null,
       createdAt: new Date(),
     };
@@ -99,7 +99,7 @@ describe("validateCategory function", () => {
   test("should return an error message if totalMinutes is negative", () => {
     const category = {
       name: "Fitness",
-      createdBy: "60c72b2f9b1e8e3d88d23a1e", // mock ObjectId
+      createdBy: "60c72b2f9b1e8e3d88d23a1e",
       totalMinutes: -10,
       createdAt: new Date(),
     };
@@ -113,7 +113,7 @@ describe("validateCategory function", () => {
   test("should return an error message if totalMinutes exceeds 1440 minutes", () => {
     const category = {
       name: "Fitness",
-      createdBy: "60c72b2f9b1e8e3d88d23a1e", // mock ObjectId
+      createdBy: "60c72b2f9b1e8e3d88d23a1e",
       totalMinutes: 1500,
       createdAt: new Date(),
     };
@@ -141,7 +141,7 @@ describe("validateCategory function", () => {
   test("should return an error message if createdAt is missing", () => {
     const category = {
       name: "Fitness",
-      createdBy: "60c72b2f9b1e8e3d88d23a1e", // mock ObjectId
+      createdBy: "60c72b2f9b1e8e3d88d23a1e",
       totalMinutes: 30,
     };
 
