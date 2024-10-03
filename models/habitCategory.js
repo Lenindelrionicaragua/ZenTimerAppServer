@@ -32,19 +32,15 @@ export const validateCategory = (categoryObject) => {
   // Validate name
   if (!categoryObject.name || typeof categoryObject.name !== "string") {
     errorList.push("Category name is required.");
-    logInfo("Category validation failed: Name is required.");
   } else if (!/^[A-Za-z\s\-!]{1,10}$/.test(categoryObject.name)) {
-    // Updated regex
     errorList.push(
       "Category name must contain only letters, spaces, hyphens, or exclamation marks, and have a maximum length of 10 characters."
     );
-    logInfo("Category validation failed: Invalid category name.");
   }
 
   // Validate createdBy
   if (!categoryObject.createdBy) {
     errorList.push("Creator is required.");
-    logInfo("Category validation failed: Creator is required.");
   }
 
   // Validate total minutes
@@ -53,19 +49,20 @@ export const validateCategory = (categoryObject) => {
     typeof categoryObject.totalMinutes !== "number"
   ) {
     errorList.push("Total minutes is required.");
-    logInfo("Category validation failed: Total minutes are required.");
   } else if (categoryObject.totalMinutes < 0) {
     errorList.push("Total minutes cannot be negative.");
-    logInfo("Category validation failed: Total minutes cannot be negative.");
   } else if (categoryObject.totalMinutes > 1440) {
     errorList.push("Total minutes cannot exceed 1440 minutes (24 hours).");
-    logInfo("Category validation failed: Invalid total minutes.");
   }
 
   // Validate createdAt
   if (!categoryObject.createdAt) {
     errorList.push("Creation date is required.");
-    logInfo("Category validation failed: Creation date is required.");
+  }
+
+  // If there are validation errors, log them
+  if (errorList.length > 0) {
+    logInfo("Category validation failed: " + errorList.join(", "));
   }
 
   return errorList;
