@@ -45,13 +45,11 @@ export const validateCategory = (categoryObject) => {
   ) {
     errorList.push("Total minutes is required.");
     logInfo("Category validation failed: Total minutes are required.");
-  } else if (
-    categoryObject.totalMinutes <= 0 ||
-    categoryObject.totalMinutes > 1440
-  ) {
-    errorList.push(
-      "Total minutes must be a positive number and cannot exceed 1440 minutes (24 hours)."
-    );
+  } else if (categoryObject.totalMinutes < 0) {
+    errorList.push("Total minutes cannot be negative.");
+    logInfo("Category validation failed: Total minutes cannot be negative.");
+  } else if (categoryObject.totalMinutes > 1440) {
+    errorList.push("Total minutes cannot exceed 1440 minutes (24 hours).");
     logInfo("Category validation failed: Invalid total minutes.");
   }
 
