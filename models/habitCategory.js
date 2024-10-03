@@ -71,18 +71,6 @@ export const validateCategory = (categoryObject) => {
   return errorList;
 };
 
-// Middleware to validate before saving
-habitCategorySchema.pre("save", function (next) {
-  const validationErrors = validateCategory(this);
-
-  if (validationErrors.length > 0) {
-    logInfo("Validation failed: " + validationErrors.join(", "));
-    return next(new Error(validationErrors.join(", ")));
-  }
-
-  next();
-});
-
 const HabitCategory = mongoose.model("HabitCategory", habitCategorySchema);
 
 export default HabitCategory;
