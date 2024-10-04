@@ -1,125 +1,67 @@
-import mongoose from "mongoose";
-import validateAllowedFields from "../util/validateAllowedFields.js";
-import { logInfo } from "../util/logging.js";
+import { logError, logInfo } from "../../util/logging.js";
+import validationErrorMessage from "../../util/validationErrorMessage.js";
+import HabitCategory, { validateCategory } from "../../models/habitCategory.js";
+import validateAllowedFields from "../../util/validateAllowedFields.js";
 
-// Define the habit category schema
-const habitCategorySchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  createdBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
-  totalMinutes: {
-    type: Number,
-    default: 0,
-    required: true,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-    required: true,
-  },
-});
+export const createCategory = async (req, res) => {
+  const allowedFields = ["name", "createdBy", "totalMinutes", "createdAt"];
 
-// Validation function for the category
-export const validateCategory = (
-  categoryObject,
-  requireName = true,
-  requireCreatedBy = true,
-  requireTotalMinutes = true,
-  requireCreatedAt = true
-) => {
-  const errorList = [];
+  if (!(req.body.habitCategory instanceof Object)) {
+    return res.status(400).json({
+      success: false,
+      msg: `Invalid request: You need to provide a valid 'habitCategory' object. Received: ${JSON.stringify(
+        req.body.habitCategory
+      )}`,
+    });
+  }
 
-  const allowedKeys = ["name", "createdBy", "totalMinutes", "createdAt"];
-
-  logInfo("Starting validation for category object:", categoryObject);
-
-  // Validate allowed fields
-  const validatedKeysMessage = validateAllowedFields(
-    categoryObject,
-    allowedKeys
+  const invalidFieldsError = validateAllowedFields(
+    req.body.habitCategory,
+    allowedFields
   );
-
-  if (validatedKeysMessage.length > 0) {
-    errorList.push(validatedKeysMessage);
-    logInfo("Validation failed for allowed fields: ", validatedKeysMessage);
-  } else {
-    logInfo("Allowed fields validation passed.");
+  if (invalidFieldsError) {
+    return res
+      .status(400)
+      .json({ success: false, msg: `Invalid request: ${invalidFieldsError}` });
   }
 
-  // Validate name
-  if (
-    requireName &&
-    (!categoryObject.name || typeof categoryObject.name !== "string")
-  ) {
-    errorList.push("Category name is required.");
-    logInfo(
-      "Validation failed for name: Category name is required or invalid."
-    );
-  } else if (
-    requireName &&
-    !/^[A-Za-z\s\-!]{1,10}$/.test(categoryObject.name)
-  ) {
-    errorList.push(
-      "Category name must contain only letters, spaces, hyphens, or exclamation marks, and have a maximum length of 10 characters."
-    );
-    logInfo("Validation failed for name: Invalid format or length.");
-  } else {
-    logInfo("Category name validation passed.");
-  }
+  try {
+    const errorList = validateCategory(req.body.habitCategory);
+    if (errorList.length > 0) {
+      return res
+        .status(400)
+        .json({ success: false, msg: validationErrorMessage(errorList) });
+    }
 
-  // Validate createdBy
-  if (requireCreatedBy && !categoryObject.createdBy) {
-    errorList.push("Creator is required.");
-    logInfo("Validation failed for createdBy: Creator is required.");
-  } else {
-    logInfo("createdBy validation passed.");
-  }
+    const existingCategory = await HabitCategory.findOne({
+      name: req.body.habitCategory.name,
+      createdBy: req.body.habitCategory.createdBy,
+    });
 
-  // Validate total minutes
-  if (
-    requireTotalMinutes &&
-    (categoryObject.totalMinutes == null ||
-      typeof categoryObject.totalMinutes !== "number")
-  ) {
-    errorList.push("Total minutes is required.");
-    logInfo(
-      "Validation failed for totalMinutes: Required field or invalid type."
-    );
-  } else if (requireTotalMinutes && categoryObject.totalMinutes < 0) {
-    errorList.push("Total minutes cannot be negative.");
-    logInfo("Validation failed for totalMinutes: Negative value.");
-  } else if (requireTotalMinutes && categoryObject.totalMinutes > 1440) {
-    errorList.push("Total minutes cannot exceed 1440 minutes (24 hours).");
-    logInfo("Validation failed for totalMinutes: Value exceeds 1440 minutes.");
-  } else {
-    logInfo("totalMinutes validation passed.");
-  }
+    if (existingCategory) {
+      return res
+        .status(400)
+        .json({ success: false, msg: "Category already exists." });
+    }
 
-  // Validate createdAt
-  if (requireCreatedAt && !categoryObject.createdAt) {
-    errorList.push("Creation date is required.");
-    logInfo("Validation failed for createdAt: Creation date is required.");
-  } else {
-    logInfo("createdAt validation passed.");
-  }
+    const newCategory = new HabitCategory({
+      name: req.body.habitCategory.name,
+      createdBy: req.body.habitCategory.createdBy,
+      totalMinutes: req.body.habitCategory.totalMinutes || 0,
+      createdAt: req.body.habitCategory.createdAt || Date.now(),
+    });
 
-  // If there are validation errors, log them
-  if (errorList.length > 0) {
-    logInfo("Category validation failed: " + errorList.join(", "));
-  } else {
-    logInfo("Category validation passed without errors.");
-  }
+    await newCategory.save();
 
-  return errorList;
+    res.status(201).json({
+      success: true,
+      message: "Category created successfully.",
+      category: newCategory,
+    });
+  } catch (error) {
+    logError("Error creating category:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Error creating category.", error });
+  }
 };
-
-const HabitCategory = mongoose.model("HabitCategory", habitCategorySchema);
-
-export default HabitCategory;
