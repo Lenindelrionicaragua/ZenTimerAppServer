@@ -1,11 +1,11 @@
 import express from "express";
-// import { getCategories } from "../controllers/habitCategoriesControllers/getCategoriesController";
-// import { createCategory } from "../controllers/habitCategoriesControllers/createCategoryController";
-// import { updateCategoryTime } from "../controllers/habitCategoriesControllers/updateCategoryTimeController";
+import { createCategory } from "../controllers/habitCategoriesControllers/createCategory.js";
+// import { getCategories } from "../controllers/habitCategoriesControllers/getCategories.js";
+// import { updateCategoryTime } from "../controllers/habitCategoriesControllers/updateCategoryTime.js";
 
 const habitCategoriesRouter = express.Router();
 
-// habitCategoriesRouter.post("/create", createCategory);
+habitCategoriesRouter.post("/create", createCategory);
 
 // habitCategoriesRouter.get("/", getCategories);
 
