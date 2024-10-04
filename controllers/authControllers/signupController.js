@@ -2,7 +2,6 @@ import { logError, logInfo } from "../../util/logging.js";
 import validationErrorMessage from "../../util/validationErrorMessage.js";
 import { validateUser } from "../../models/userModels.js";
 import User from "../../models/userModels.js";
-import validateAllowedFields from "../../util/validateAllowedFields.js";
 import { sendVerificationEmail } from "./emailVerificationController.js";
 
 export const signup = async (req, res) => {
