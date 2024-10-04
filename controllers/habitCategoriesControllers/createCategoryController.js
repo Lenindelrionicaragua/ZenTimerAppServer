@@ -6,6 +6,7 @@ import validateAllowedFields from "../../util/validateAllowedFields.js";
 export const createCategory = async (req, res) => {
   const allowedFields = ["name", "createdBy", "totalMinutes", "createdAt"];
 
+  // Check if the habitCategory object is valid
   if (!(req.body.habitCategory instanceof Object)) {
     return res.status(400).json({
       success: false,
@@ -15,6 +16,7 @@ export const createCategory = async (req, res) => {
     });
   }
 
+  // Validate allowed fields for the habitCategory object
   const invalidFieldsError = validateAllowedFields(
     req.body.habitCategory,
     allowedFields
@@ -26,6 +28,7 @@ export const createCategory = async (req, res) => {
   }
 
   try {
+    // Validate the habitCategory details
     const errorList = validateCategory(req.body.habitCategory);
     if (errorList.length > 0) {
       return res
@@ -33,6 +36,7 @@ export const createCategory = async (req, res) => {
         .json({ success: false, msg: validationErrorMessage(errorList) });
     }
 
+    // Check if a category with the same name already exists for the user
     const existingCategory = await HabitCategory.findOne({
       name: req.body.habitCategory.name,
       createdBy: req.body.habitCategory.createdBy,
@@ -44,21 +48,25 @@ export const createCategory = async (req, res) => {
         .json({ success: false, msg: "Category already exists." });
     }
 
+    // Create a new HabitCategory instance
     const newCategory = new HabitCategory({
       name: req.body.habitCategory.name,
       createdBy: req.body.habitCategory.createdBy,
-      totalMinutes: req.body.habitCategory.totalMinutes || 0,
-      createdAt: req.body.habitCategory.createdAt || Date.now(),
+      totalMinutes: req.body.habitCategory.totalMinutes || 0, // Default to 0 if not provided
+      createdAt: req.body.habitCategory.createdAt || Date.now(), // Default to now if not provided
     });
 
+    // Save the new category to the database
     await newCategory.save();
 
+    // Respond with success message and the created category details
     res.status(201).json({
       success: true,
       message: "Category created successfully.",
       category: newCategory,
     });
   } catch (error) {
+    // Log and respond with an error if category creation fails
     logError("Error creating category:", error);
     res
       .status(500)
