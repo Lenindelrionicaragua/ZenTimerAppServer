@@ -1,3 +1,7 @@
+import HabitCategory from "../../models/habitCategory";
+import { validateCategory } from "../../models/habitCategory";
+import validationErrorMessage from "../../util/validationErrorMessage";
+
 export const createCategory = async (req, res) => {
   const { userId, categoryName } = req.body;
 
