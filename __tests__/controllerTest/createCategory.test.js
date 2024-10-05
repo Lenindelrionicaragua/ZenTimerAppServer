@@ -69,4 +69,121 @@ describe("Create a new habit-category (test route)", () => {
       newCategory.habitCategory.totalMinutes
     );
   });
+
+  it("should fail if the category name contains invalid characters", async () => {
+    const invalidCategory = {
+      habitCategory: {
+        name: "Invalid@Name#",
+        createdBy: userId,
+        totalMinutes: 120,
+        createdAt: new Date(),
+      },
+    };
+
+    const response = await request
+      .post("/api/test/habit-categories/create")
+      .send(invalidCategory);
+
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.msg).toContain(
+      "Category name must contain only letters, spaces, hyphens, or exclamation marks"
+    );
+  });
+
+  it("should fail if createdBy is not a valid ObjectId", async () => {
+    const invalidCategory = {
+      habitCategory: {
+        name: "ValidName",
+        createdBy: "invalid-object-id", // Invalid ObjectId format
+        totalMinutes: 120,
+        createdAt: new Date(),
+      },
+    };
+
+    const response = await request
+      .post("/api/test/habit-categories/create")
+      .send(invalidCategory);
+
+    // Check for 400 status instead of 500
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.msg).toContain("'createdBy' must be a valid ObjectId");
+  });
+
+  it("should fail if createdBy is null", async () => {
+    const invalidCategory = {
+      habitCategory: {
+        name: "ValidName",
+        createdBy: null,
+        totalMinutes: 120,
+        createdAt: new Date(),
+      },
+    };
+
+    const response = await request
+      .post("/api/test/habit-categories/create")
+      .send(invalidCategory);
+
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.msg).toContain("Creator is required.");
+  });
+
+  it("should fail if createdBy is not a valid ObjectId", async () => {
+    const invalidCategory = {
+      habitCategory: {
+        name: "ValidName",
+        createdBy: "invalid-object-id", // Invalid ObjectId format
+        totalMinutes: 120,
+        createdAt: new Date(),
+      },
+    };
+
+    const response = await request
+      .post("/api/test/habit-categories/create")
+      .send(invalidCategory);
+
+    // Check for 400 status instead of 500
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.msg).toContain("'createdBy' must be a valid ObjectId");
+  });
+
+  it("should fail if the createdAt date is missing", async () => {
+    const invalidCategory = {
+      habitCategory: {
+        name: "ValidName",
+        createdBy: userId,
+        totalMinutes: 120,
+      },
+    };
+
+    const response = await request
+      .post("/api/test/habit-categories/create")
+      .send(invalidCategory);
+
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.msg).toContain("Creation date is required.");
+  });
+
+  it("should fail if totalMinutes is negative", async () => {
+    const invalidCategory = {
+      habitCategory: {
+        name: "ValidName",
+        createdBy: userId,
+        totalMinutes: -10,
+        createdAt: new Date(),
+      },
+    };
+
+    const response = await request
+      .post("/api/test/habit-categories/create")
+      .send(invalidCategory);
+
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.msg).toContain("Total minutes cannot be negative.");
+  });
 });
