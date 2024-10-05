@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
-import { logError, logInfo } from "../../util/logging.js";
-import validationErrorMessage from "../../util/validationErrorMessage.js";
 import HabitCategory, { validateCategory } from "../../models/habitCategory.js";
+import validationErrorMessage from "../../util/validationErrorMessage.js";
 import validateAllowedFields from "../../util/validateAllowedFields.js";
+import { logError, logInfo } from "../../util/logging.js";
 
 export const createCategory = async (req, res) => {
   const allowedFields = ["name", "createdBy", "totalMinutes", "createdAt"];
