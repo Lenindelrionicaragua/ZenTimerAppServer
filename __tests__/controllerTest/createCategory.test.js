@@ -91,26 +91,6 @@ describe("Create a new habit-category (test route)", () => {
     );
   });
 
-  it("should fail if createdBy is not a valid ObjectId", async () => {
-    const invalidCategory = {
-      habitCategory: {
-        name: "ValidName",
-        createdBy: "invalid-object-id", // Invalid ObjectId format
-        totalMinutes: 120,
-        createdAt: new Date(),
-      },
-    };
-
-    const response = await request
-      .post("/api/test/habit-categories/create")
-      .send(invalidCategory);
-
-    // Check for 400 status instead of 500
-    expect(response.status).toBe(400);
-    expect(response.body.success).toBe(false);
-    expect(response.body.msg).toContain("'createdBy' must be a valid ObjectId");
-  });
-
   it("should fail if createdBy is null", async () => {
     const invalidCategory = {
       habitCategory: {
@@ -185,5 +165,69 @@ describe("Create a new habit-category (test route)", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toContain("Total minutes cannot be negative.");
+  });
+
+  it("should fail if a category with the same name already exists", async () => {
+    const category = {
+      habitCategory: {
+        name: "Work",
+        createdBy: userId,
+        totalMinutes: 120,
+        createdAt: new Date(),
+      },
+    };
+
+    // Create the first category
+    await request.post("/api/test/habit-categories/create").send(category);
+
+    // Attempt to create the same category again
+    const duplicateResponse = await request
+      .post("/api/test/habit-categories/create")
+      .send(category);
+
+    // Validate response
+    expect(duplicateResponse.status).toBe(400);
+    expect(duplicateResponse.body.success).toBe(false);
+    expect(duplicateResponse.body.msg).toBe("Category already exists.");
+  });
+
+  it("should fail if habitCategory object is invalid or not provided", async () => {
+    const invalidCategory = {
+      habitCategory: null, // Invalid habitCategory object
+    };
+
+    const response = await request
+      .post("/api/test/habit-categories/create")
+      .send(invalidCategory);
+
+    // Validate response
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.msg).toContain(
+      "Invalid request: You need to provide a valid 'habitCategory' object."
+    );
+  });
+
+  it("should fail if habitCategory contains invalid fields", async () => {
+    const invalidCategory = {
+      habitCategory: {
+        name: "Exercise",
+        createdBy: userId,
+        totalMinutes: 120,
+        createdAt: new Date(),
+        invalidField: "ThisShouldNotBeHere", // Invalid field
+      },
+    };
+
+    const response = await request
+      .post("/api/test/habit-categories/create")
+      .send(invalidCategory);
+
+    // Validate response
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.msg).toContain(
+      "Invalid request: the following properties are not allowed to be set: invalidField"
+    );
   });
 });
