@@ -1,9 +1,25 @@
 import HabitCategory from "../../models/habitCategory.js";
 import { logInfo, logError } from "../../util/logging.js";
+import validationErrorMessage from "../../util/validationErrorMessage.js";
 
 export const getCategoriesTime = async (req, res) => {
   const userId = req.user.id;
   const { periodType, startDate, endDate } = req.query;
+
+  // Validate input parameters
+  const validPeriodTypes = ["day", "week", "month", "year"];
+
+  if (!validPeriodTypes.includes(periodType)) {
+    return validationErrorMessage(res, "Invalid period type.");
+  }
+
+  // Validate dates
+  if (!isValidDate(startDate) || (endDate && !isValidDate(endDate))) {
+    return validationErrorMessage(
+      res,
+      "Invalid date format. Expected format: YYYY-MM-DD."
+    );
+  }
 
   try {
     logInfo(
@@ -12,11 +28,13 @@ export const getCategoriesTime = async (req, res) => {
 
     const filter = { createdBy: userId };
 
-    // Define the filter based on the period type
+    // Filter based on the period type
     if (periodType === "day") {
       filter.createdAt = {
         $gte: new Date(startDate),
-        $lt: new Date(startDate).setDate(new Date(startDate).getDate() + 1),
+        $lt: new Date(
+          new Date(startDate).setDate(new Date(startDate).getDate() + 1)
+        ),
       };
     } else if (periodType === "week") {
       filter.createdAt = { $gte: new Date(startDate), $lt: new Date(endDate) };
@@ -36,7 +54,6 @@ export const getCategoriesTime = async (req, res) => {
       };
     }
 
-    // Fetch categories based on the defined filter
     const categories = await HabitCategory.find(filter);
 
     if (!categories || categories.length === 0) {
@@ -45,7 +62,6 @@ export const getCategoriesTime = async (req, res) => {
         .json({ message: "No categories found for this user." });
     }
 
-    // Map the fetched categories to the desired format
     const categoryData = categories.map((category) => ({
       name: category.name,
       totalMinutes: category.totalMinutes,
@@ -56,4 +72,10 @@ export const getCategoriesTime = async (req, res) => {
     logError(`Error fetching category data: ${error}`);
     res.status(500).json({ message: "Error fetching category data.", error });
   }
+};
+
+// Function to validate date format
+const isValidDate = (dateString) => {
+  const date = new Date(dateString);
+  return !isNaN(date.getTime());
 };
