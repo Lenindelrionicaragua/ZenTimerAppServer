@@ -46,7 +46,7 @@ describe("Update category time", () => {
     expect(response.status).toBe(200);
     expect(response.body.message).toBe("Category updated successfully.");
     expect(response.body.category.totalMinutes).toBe(
-      testCategory.totalMinutes + updateData.totalMinutes // Add the correct field name here
+      testCategory.totalMinutes + updateData.totalMinutes
     );
   });
 });

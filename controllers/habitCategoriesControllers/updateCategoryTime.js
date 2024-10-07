@@ -5,11 +5,11 @@ import { logError, logInfo } from "../../util/logging.js";
 
 export const updateCategoryTime = async (req, res) => {
   const { categoryId } = req.params;
-  const { totalMinutes } = req.body; // Cambiar 'minutes' a 'totalMinutes'
+  const { totalMinutes } = req.body;
 
-  const allowedKeys = ["totalMinutes"]; // Cambiar a 'totalMinutes'
+  const allowedKeys = ["totalMinutes"];
 
-  // Validar campos permitidos
+  // Validate incoming request body against allowed keys
   const validatedKeysMessage = validateAllowedFields(req.body, allowedKeys);
   if (validatedKeysMessage.length > 0) {
     logInfo(`Validation failed: ${validatedKeysMessage}`);
@@ -18,14 +18,14 @@ export const updateCategoryTime = async (req, res) => {
       .json({ message: validationErrorMessage(validatedKeysMessage) });
   }
 
-  // Validar la categoría
+  // Validate the overall category object for required fields
   const errorList = validateCategory(req.body, false, false, true, false);
   if (errorList.length > 0) {
     logInfo(`Validation failed: ${errorList}`);
     return res.status(400).json({ message: validationErrorMessage(errorList) });
   }
 
-  // Validaciones adicionales
+  // Check if totalMinutes is valid (not negative and finite)
   if (totalMinutes < 0) {
     logInfo("Total minutes cannot be negative.");
     return res
@@ -39,6 +39,7 @@ export const updateCategoryTime = async (req, res) => {
   }
 
   try {
+    // Attempt to find the category by ID
     logInfo(`Searching for category with ID: ${categoryId}`);
     const category = await HabitCategory.findById(categoryId);
 
@@ -48,9 +49,10 @@ export const updateCategoryTime = async (req, res) => {
     }
 
     logInfo(
-      `Updating category ${categoryId} with new total minutes: ${totalMinutes}.`
+      `Updating category ${categoryId} with total minutes: ${totalMinutes}.`
     );
-    category.totalMinutes = totalMinutes; // Cambiar la actualización a totalMinutes
+
+    category.totalMinutes += totalMinutes;
 
     await category.save();
     logInfo(`Category ${categoryId} updated successfully.`);
