@@ -5,7 +5,11 @@
 
 // errorList should be an array of strings
 const validationErrorMessage = (errorList) => {
-  return `BAD REQUEST: ${errorList.join(", ")}`;
+  if (Array.isArray(errorList)) {
+    return `BAD REQUEST: ${errorList.join(", ")}`;
+  } else {
+    return "BAD REQUEST: An unknown error occurred.";
+  }
 };
 
 export default validationErrorMessage;

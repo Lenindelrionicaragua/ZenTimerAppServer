@@ -5,10 +5,11 @@ import { logError, logInfo } from "../../util/logging.js";
 
 export const updateCategoryTime = async (req, res) => {
   const { categoryId } = req.params;
-  const { minutes } = req.body;
+  const { totalMinutes } = req.body; // Cambiar 'minutes' a 'totalMinutes'
 
-  const allowedKeys = ["minutes"];
+  const allowedKeys = ["totalMinutes"]; // Cambiar a 'totalMinutes'
 
+  // Validar campos permitidos
   const validatedKeysMessage = validateAllowedFields(req.body, allowedKeys);
   if (validatedKeysMessage.length > 0) {
     logInfo(`Validation failed: ${validatedKeysMessage}`);
@@ -17,22 +18,24 @@ export const updateCategoryTime = async (req, res) => {
       .json({ message: validationErrorMessage(validatedKeysMessage) });
   }
 
+  // Validar la categoría
   const errorList = validateCategory(req.body, false, false, true, false);
   if (errorList.length > 0) {
     logInfo(`Validation failed: ${errorList}`);
     return res.status(400).json({ message: validationErrorMessage(errorList) });
   }
 
-  if (minutes < 0) {
+  // Validaciones adicionales
+  if (totalMinutes < 0) {
     logInfo("Total minutes cannot be negative.");
     return res
       .status(400)
       .json({ message: "Total minutes cannot be negative." });
-  } else if (!Number.isFinite(minutes)) {
-    logInfo("Minutes must be a finite number.");
+  } else if (!Number.isFinite(totalMinutes)) {
+    logInfo("Total minutes must be a finite number.");
     return res
       .status(400)
-      .json({ message: "Minutes must be a finite number." });
+      .json({ message: "Total minutes must be a finite number." });
   }
 
   try {
@@ -45,9 +48,9 @@ export const updateCategoryTime = async (req, res) => {
     }
 
     logInfo(
-      `Updating category ${categoryId} with additional ${minutes} minutes.`
+      `Updating category ${categoryId} with new total minutes: ${totalMinutes}.`
     );
-    category.totalMinutes += minutes;
+    category.totalMinutes = totalMinutes; // Cambiar la actualización a totalMinutes
 
     await category.save();
     logInfo(`Category ${categoryId} updated successfully.`);

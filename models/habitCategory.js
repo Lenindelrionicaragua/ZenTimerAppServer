@@ -18,6 +18,8 @@ const habitCategorySchema = new mongoose.Schema({
     type: Number,
     default: 0,
     required: true,
+    min: 0,
+    max: 1440, // Optional: you can set this in the schema to enforce the limit
   },
   createdAt: {
     type: Date,
@@ -35,7 +37,6 @@ export const validateCategory = (
   requireCreatedAt = true
 ) => {
   const errorList = [];
-
   const allowedKeys = ["name", "createdBy", "totalMinutes", "createdAt"];
 
   logInfo("Starting validation for category object:", categoryObject);
@@ -45,72 +46,47 @@ export const validateCategory = (
     categoryObject,
     allowedKeys
   );
-
   if (validatedKeysMessage.length > 0) {
     errorList.push(validatedKeysMessage);
     logInfo("Validation failed for allowed fields: ", validatedKeysMessage);
-  } else {
-    logInfo("Allowed fields validation passed.");
   }
 
   // Validate name
-  if (
-    requireName &&
-    (!categoryObject.name || typeof categoryObject.name !== "string")
-  ) {
-    errorList.push("Category name is required.");
-    logInfo(
-      "Validation failed for name: Category name is required or invalid."
-    );
-  } else if (
-    requireName &&
-    !/^[A-Za-z\s\-!]{1,10}$/.test(categoryObject.name)
-  ) {
-    errorList.push(
-      "Category name must contain only letters, spaces, hyphens, or exclamation marks, and have a maximum length of 10 characters."
-    );
-    logInfo("Validation failed for name: Invalid format or length.");
-  } else {
-    logInfo("Category name validation passed.");
+  if (requireName) {
+    if (!categoryObject.name || typeof categoryObject.name !== "string") {
+      errorList.push("Category name is required.");
+    } else if (!/^[A-Za-z\s\-!]{1,10}$/.test(categoryObject.name)) {
+      errorList.push(
+        "Category name must contain only letters, spaces, hyphens, or exclamation marks, and have a maximum length of 10 characters."
+      );
+    }
   }
 
   // Validate createdBy
   if (requireCreatedBy && !categoryObject.createdBy) {
     errorList.push("Creator is required.");
-    logInfo("Validation failed for createdBy: Creator is required.");
-  } else {
-    logInfo("createdBy validation passed.");
   }
 
   // Validate total minutes
-  if (
-    requireTotalMinutes &&
-    (categoryObject.totalMinutes == null ||
-      typeof categoryObject.totalMinutes !== "number")
-  ) {
-    errorList.push("Total minutes is required.");
-    logInfo(
-      "Validation failed for totalMinutes: Required field or invalid type."
-    );
-  } else if (requireTotalMinutes && categoryObject.totalMinutes < 0) {
-    errorList.push("Total minutes cannot be negative.");
-    logInfo("Validation failed for totalMinutes: Negative value.");
-  } else if (requireTotalMinutes && categoryObject.totalMinutes > 1440) {
-    errorList.push("Total minutes cannot exceed 1440 minutes (24 hours).");
-    logInfo("Validation failed for totalMinutes: Value exceeds 1440 minutes.");
-  } else {
-    logInfo("totalMinutes validation passed.");
+  if (requireTotalMinutes) {
+    if (
+      categoryObject.totalMinutes == null ||
+      typeof categoryObject.totalMinutes !== "number"
+    ) {
+      errorList.push("Total minutes is required.");
+    } else if (categoryObject.totalMinutes < 0) {
+      errorList.push("Total minutes cannot be negative.");
+    } else if (categoryObject.totalMinutes > 1440) {
+      errorList.push("Total minutes cannot exceed 1440 minutes (24 hours).");
+    }
   }
 
   // Validate createdAt
   if (requireCreatedAt && !categoryObject.createdAt) {
     errorList.push("Creation date is required.");
-    logInfo("Validation failed for createdAt: Creation date is required.");
-  } else {
-    logInfo("createdAt validation passed.");
   }
 
-  // If there are validation errors, log them
+  // Log and return errors if any
   if (errorList.length > 0) {
     logInfo("Category validation failed: " + errorList.join(", "));
   } else {
