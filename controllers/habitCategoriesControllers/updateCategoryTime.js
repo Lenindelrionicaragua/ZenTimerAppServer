@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import HabitCategory, { validateCategory } from "../../models/habitCategory.js";
 import validationErrorMessage from "../../util/validationErrorMessage.js";
 import validateAllowedFields from "../../util/validateAllowedFields.js";
@@ -8,6 +9,14 @@ export const updateCategoryTime = async (req, res) => {
   const { totalMinutes } = req.body;
 
   const allowedKeys = ["totalMinutes"];
+
+  // Validate the categoryId
+  if (!mongoose.Types.ObjectId.isValid(categoryId)) {
+    logInfo(`Invalid category ID: ${categoryId}`);
+    return res
+      .status(400)
+      .json({ message: "BAD REQUEST: Invalid category ID." });
+  }
 
   // Validate incoming request body against allowed keys
   const validatedKeysMessage = validateAllowedFields(req.body, allowedKeys);

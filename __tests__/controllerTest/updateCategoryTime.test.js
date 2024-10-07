@@ -88,4 +88,29 @@ describe("Update category time", () => {
       "BAD REQUEST: Total minutes cannot exceed 1440 minutes (24 hours)."
     );
   });
+
+  it("should return an error when totalMinutes is missing in the request body", async () => {
+    const updateData = {};
+
+    const response = await request
+      .put(`/api/test/habit-categories/${categoryId}`)
+      .send(updateData);
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe(
+      "BAD REQUEST: Total minutes is required."
+    );
+  });
+
+  it("should return an error when there is an invalid categoryId", async () => {
+    const updateData = { totalMinutes: 30 };
+    const invalidCategoryId = "1234";
+
+    const response = await request
+      .put(`/api/test/habit-categories/${invalidCategoryId}`)
+      .send(updateData);
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe("BAD REQUEST: Invalid category ID.");
+  });
 });
