@@ -113,4 +113,68 @@ describe("Update category time", () => {
     expect(response.status).toBe(400);
     expect(response.body.message).toBe("BAD REQUEST: Invalid category ID.");
   });
+
+  it("should return an error when categoryId does not exist", async () => {
+    const updateData = { totalMinutes: 30 };
+    const nonExistentCategoryId = "60d5ec49c88e1f15c485f8d7";
+
+    const response = await request
+      .put(`/api/test/habit-categories/${nonExistentCategoryId}`)
+      .send(updateData);
+
+    expect(response.status).toBe(404);
+    expect(response.body.message).toBe("Category not found.");
+  });
+
+  it("should return an error if totalMinutes is Infinity", async () => {
+    const updateData = { totalMinutes: Infinity };
+
+    const response = await request
+      .put(`/api/test/habit-categories/${categoryId}`)
+      .send(updateData);
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe(
+      "BAD REQUEST: Total minutes is required."
+    );
+  });
+
+  it("should return an error if totalMinutes is NaN", async () => {
+    const updateData = { totalMinutes: NaN };
+
+    const response = await request
+      .put(`/api/test/habit-categories/${categoryId}`)
+      .send(updateData);
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe(
+      "BAD REQUEST: Total minutes is required."
+    );
+  });
+
+  it("should return an error if totalMinutes is a non-numeric string", async () => {
+    const updateData = { totalMinutes: "invalid" };
+
+    const response = await request
+      .put(`/api/test/habit-categories/${categoryId}`)
+      .send(updateData);
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe(
+      "BAD REQUEST: Total minutes is required."
+    );
+  });
+
+  it("should return an error if totalMinutes is the string 'Infinity'", async () => {
+    const updateData = { totalMinutes: "Infinity" };
+
+    const response = await request
+      .put(`/api/test/habit-categories/${categoryId}`)
+      .send(updateData);
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe(
+      "BAD REQUEST: Total minutes is required."
+    );
+  });
 });
