@@ -1,101 +1,77 @@
-import mongoose from "mongoose";
-import validateAllowedFields from "../util/validateAllowedFields.js";
-import { logInfo } from "../util/logging.js";
+import HabitCategory from "../../models/habitCategory.js";
+import { logInfo, logError } from "../../util/logging.js";
+import { validateError } from "../../util/validation.js";
 
-// Define the habit category schema
-const habitCategorySchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  createdBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
-  totalMinutes: {
-    type: Number,
-    default: 0,
-    required: true,
-    min: 0,
-    max: 1440, // Optional: you can set this in the schema to enforce the limit
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-    required: true,
-  },
-});
+export const getCategoriesTime = async (req, res) => {
+  const userId = req.user.id;
+  const { periodType, startDate, endDate } = req.query;
 
-// Validation function for the category
-export const validateCategory = (
-  categoryObject,
-  requireName = true,
-  requireCreatedBy = true,
-  requireTotalMinutes = true,
-  requireCreatedAt = true
-) => {
-  const errorList = [];
-  const allowedKeys = ["name", "createdBy", "totalMinutes", "createdAt"];
+  const validPeriodTypes = ["day", "week", "month", "year"];
 
-  logInfo("Starting validation for category object:", categoryObject);
-
-  // Validate allowed fields
-  const validatedKeysMessage = validateAllowedFields(
-    categoryObject,
-    allowedKeys
-  );
-  if (validatedKeysMessage.length > 0) {
-    errorList.push(validatedKeysMessage);
-    logInfo("Validation failed for allowed fields: ", validatedKeysMessage);
+  if (!validPeriodTypes.includes(periodType)) {
+    return validateError(res, "Invalid period type.");
   }
 
-  // Validate name
-  if (requireName) {
-    if (!categoryObject.name || typeof categoryObject.name !== "string") {
-      errorList.push("Category name is required.");
-    } else if (!/^[A-Za-z\s\-!]{1,10}$/.test(categoryObject.name)) {
-      errorList.push(
-        "Category name must contain only letters, spaces, hyphens, or exclamation marks, and have a maximum length of 10 characters."
-      );
+  if (!isValidDate(startDate) || (endDate && !isValidDate(endDate))) {
+    return validateError(
+      res,
+      "Invalid date format. Expected format: YYYY-MM-DD."
+    );
+  }
+
+  try {
+    logInfo(
+      `Fetching categories for user ID: ${userId} for period: ${periodType}`
+    );
+
+    const filter = { createdBy: userId };
+
+    if (periodType === "day") {
+      filter.createdAt = {
+        $gte: new Date(startDate),
+        $lt: new Date(
+          new Date(startDate).setDate(new Date(startDate).getDate() + 1)
+        ),
+      };
+    } else if (periodType === "week") {
+      filter.createdAt = { $gte: new Date(startDate), $lt: new Date(endDate) };
+    } else if (periodType === "month") {
+      filter.createdAt = {
+        $gte: new Date(startDate),
+        $lt: new Date(
+          new Date(startDate).setMonth(new Date(startDate).getMonth() + 1)
+        ),
+      };
+    } else if (periodType === "year") {
+      filter.createdAt = {
+        $gte: new Date(startDate),
+        $lt: new Date(
+          new Date(startDate).setFullYear(new Date(startDate).getFullYear() + 1)
+        ),
+      };
     }
-  }
 
-  // Validate createdBy
-  if (requireCreatedBy && !categoryObject.createdBy) {
-    errorList.push("Creator is required.");
-  }
+    const categories = await HabitCategory.find(filter);
 
-  // Validate total minutes
-  if (requireTotalMinutes) {
-    if (
-      categoryObject.totalMinutes == null ||
-      typeof categoryObject.totalMinutes !== "number"
-    ) {
-      errorList.push("Total minutes is required.");
-    } else if (categoryObject.totalMinutes < 0) {
-      errorList.push("Total minutes cannot be negative.");
-    } else if (categoryObject.totalMinutes > 1440) {
-      errorList.push("Total minutes cannot exceed 1440 minutes (24 hours).");
+    if (!categories || categories.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No categories found for this user." });
     }
-  }
 
-  // Validate createdAt
-  if (requireCreatedAt && !categoryObject.createdAt) {
-    errorList.push("Creation date is required.");
-  }
+    const categoryData = categories.map((category) => ({
+      name: category.name,
+      totalMinutes: category.totalMinutes,
+    }));
 
-  // Log and return errors if any
-  if (errorList.length > 0) {
-    logInfo("Category validation failed: " + errorList.join(", "));
-  } else {
-    logInfo("Category validation passed without errors.");
+    res.status(200).json({ categoryData });
+  } catch (error) {
+    logError(`Error fetching category data: ${error}`);
+    res.status(500).json({ message: "Error fetching category data.", error });
   }
-
-  return errorList;
 };
 
-const HabitCategory = mongoose.model("HabitCategory", habitCategorySchema);
-
-export default HabitCategory;
+const isValidDate = (dateString) => {
+  const date = new Date(dateString);
+  return !isNaN(date.getTime());
+};

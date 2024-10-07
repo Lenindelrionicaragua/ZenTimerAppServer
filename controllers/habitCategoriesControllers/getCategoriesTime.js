@@ -2,18 +2,17 @@ import HabitCategory from "../../models/habitCategory.js";
 import { logInfo, logError } from "../../util/logging.js";
 
 export const getCategoriesTime = async (req, res) => {
-  const userId = req.user.id; // Assuming user ID is stored in the token
-  const { periodType, startDate, endDate } = req.query; // Periodo que el usuario quiere consultar
+  const userId = req.user.id;
+  const { periodType, startDate, endDate } = req.query;
 
   try {
     logInfo(
       `Fetching categories for user ID: ${userId} for period: ${periodType}`
     );
 
-    // Filtrado de categorías creadas por el usuario
     const filter = { createdBy: userId };
 
-    // Establecer filtros basados en el tipo de periodo
+    // Define the filter based on the period type
     if (periodType === "day") {
       filter.createdAt = {
         $gte: new Date(startDate),
@@ -28,8 +27,16 @@ export const getCategoriesTime = async (req, res) => {
           new Date(startDate).setMonth(new Date(startDate).getMonth() + 1)
         ),
       };
+    } else if (periodType === "year") {
+      filter.createdAt = {
+        $gte: new Date(startDate),
+        $lt: new Date(
+          new Date(startDate).setFullYear(new Date(startDate).getFullYear() + 1)
+        ),
+      };
     }
 
+    // Fetch categories based on the defined filter
     const categories = await HabitCategory.find(filter);
 
     if (!categories || categories.length === 0) {
@@ -38,6 +45,7 @@ export const getCategoriesTime = async (req, res) => {
         .json({ message: "No categories found for this user." });
     }
 
+    // Map the fetched categories to the desired format
     const categoryData = categories.map((category) => ({
       name: category.name,
       totalMinutes: category.totalMinutes,
