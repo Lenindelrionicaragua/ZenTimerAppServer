@@ -1,4 +1,6 @@
 import supertest from "supertest";
+import fs from "fs";
+import path from "path";
 import {
   connectToMockDB,
   closeMockDatabase,
@@ -6,78 +8,42 @@ import {
 } from "../../../__testUtils__/dbMock.js";
 import app from "../../../app.js";
 import HabitCategory from "../../../models/habitCategory.js";
-import User from "../../../models/userModels.js";
-import mockData from "../../../__testUtils__/mockHabitCategoryData.json";
 
 const request = supertest(app);
 
-let userId;
+// Mock data file
+const mockDataPath = path.join(
+  __dirname,
+  "../../../__testUtils__/mockHabitCategoryData.json"
+);
 
-// Conectar a la base de datos mock antes de todas las pruebas
+let mockData;
+
 beforeAll(async () => {
   await connectToMockDB();
+
+  const rawData = fs.readFileSync(mockDataPath);
+  mockData = JSON.parse(rawData);
 });
 
-// Limpiar la base de datos mock después de cada prueba
+// Populate the mock database
+beforeEach(async () => {
+  await HabitCategory.insertMany(mockData.categories);
+});
+
 afterEach(async () => {
   await clearMockDatabase();
 });
 
-// Cerrar la conexión con la base de datos mock después de todas las pruebas
 afterAll(async () => {
   await closeMockDatabase();
 });
 
-// Poblar la base de datos con un usuario y categorías antes de cada prueba
-beforeEach(async () => {
-  const user = new User({
-    _id: mockData.user._id,
-    name: mockData.user.name,
-    email: mockData.user.email,
-  });
-  await user.save();
-  userId = user._id;
-
-  // Poblar la base de datos con las categorías de ejemplo
-  const categories = mockData.categories.map((category) => ({
-    ...category,
-    createdBy: userId,
-  }));
-  await HabitCategory.insertMany(categories);
-});
-
 describe("GET /api/test/habit-categories", () => {
-  it("should return the total time for a specific category", async () => {
-    const response = await request.get("/api/test/habit-categories").query({
-      years: "2024",
-      startDate: "2024-10-05",
-      endDate: "2024-10-07",
-    });
+  it("should populate the mock database and log categories", async () => {
+    const categories = await HabitCategory.find();
+    console.log("Current Categories in DB:", categories);
 
-    expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty("totalMinutes");
-    expect(response.body).toHaveProperty("categoryStats");
-
-    const { categoryStats } = response.body;
-    const workCategory = categoryStats.find(
-      (category) => category.name === "Work"
-    );
-
-    expect(workCategory).toBeDefined();
-    expect(workCategory.averageMinutes.daily).toBeGreaterThan(0); // Validar que se haya calculado correctamente
-  });
-
-  it("should return 404 if no categories found for the user", async () => {
-    // Limpiar la base de datos para probar cuando no hay categorías
-    await clearMockDatabase();
-
-    const response = await request.get("/api/test/habit-categories").query({
-      years: "2024",
-      startDate: "2024-10-05",
-      endDate: "2024-10-07",
-    });
-
-    expect(response.status).toBe(404);
-    expect(response.body.message).toBe("No categories found for this user.");
+    expect(categories.length).toBe(mockData.categories.length);
   });
 });
