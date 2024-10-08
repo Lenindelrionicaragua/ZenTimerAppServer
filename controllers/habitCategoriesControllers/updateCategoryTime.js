@@ -27,14 +27,12 @@ export const updateCategoryTime = async (req, res) => {
       .json({ message: validationErrorMessage(validatedKeysMessage) });
   }
 
-  // Validate the overall category object for required fields
   const errorList = validateCategory(req.body, false, false, true, false);
   if (errorList.length > 0) {
     logInfo(`Validation failed: ${errorList}`);
     return res.status(400).json({ message: validationErrorMessage(errorList) });
   }
 
-  // Check if totalMinutes is valid (not negative and finite)
   if (totalMinutes < 0) {
     logInfo("Total minutes cannot be negative.");
     return res
@@ -48,7 +46,6 @@ export const updateCategoryTime = async (req, res) => {
   }
 
   try {
-    // Attempt to find the category by ID
     logInfo(`Searching for category with ID: ${categoryId}`);
     const category = await HabitCategory.findById(categoryId);
 
@@ -63,6 +60,7 @@ export const updateCategoryTime = async (req, res) => {
 
     category.totalMinutes += totalMinutes;
 
+    // Save the updated category back to the database
     await category.save();
     logInfo(`Category ${categoryId} updated successfully.`);
 
@@ -70,7 +68,7 @@ export const updateCategoryTime = async (req, res) => {
       .status(200)
       .json({ message: "Category updated successfully.", category });
   } catch (error) {
-    logInfo(`Error updating category time: ${error}`);
+    logError(`Error updating category time: ${error}`);
     res.status(500).json({ message: "Error updating category time.", error });
   }
 };

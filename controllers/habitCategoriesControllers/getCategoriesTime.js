@@ -4,21 +4,32 @@ import validationErrorMessage from "../../util/validationErrorMessage.js";
 
 export const getCategoriesTime = async (req, res) => {
   const userId = req.user.id;
-  const { periodType, startDate, endDate } = req.query;
+
+  const { periodType, startDate, endDate } = req.body;
 
   // Validate input parameters
   const validPeriodTypes = ["day", "week", "month", "year"];
+  let errorList = [];
 
+  // Validate period type
   if (!validPeriodTypes.includes(periodType)) {
-    return validationErrorMessage(res, "Invalid period type.");
+    errorList.push("Invalid period type.");
   }
 
-  // Validate dates
-  if (!isValidDate(startDate) || (endDate && !isValidDate(endDate))) {
-    return validationErrorMessage(
-      res,
-      "Invalid date format. Expected format: YYYY-MM-DD."
-    );
+  // Validate date formats
+  if (!isValidDate(startDate)) {
+    errorList.push("Invalid start date format. Expected format: YYYY-MM-DD.");
+  }
+
+  if (endDate && !isValidDate(endDate)) {
+    errorList.push("Invalid end date format. Expected format: YYYY-MM-DD.");
+  }
+
+  // Return validation errors if any
+  if (errorList.length > 0) {
+    return res.status(400).json({
+      message: validationErrorMessage(errorList),
+    });
   }
 
   try {
