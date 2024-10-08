@@ -60,7 +60,7 @@ describe("Habit Category Tests", () => {
         createdAt: new Date("2024-07-05"),
       },
       {
-        name: "Leisure",
+        name: "Study", // Updated category name from "Leisure" to "Study"
         totalMinutes: 90,
         createdBy: userId,
         createdAt: new Date("2024-07-10"),
@@ -127,5 +127,145 @@ describe("Habit Category Tests", () => {
     );
     expect(exerciseCategory).toBeDefined();
     expect(exerciseCategory.totalMinutes).toBe(60); // Expect total minutes for July
+  });
+
+  it("should return 404 if no categories found", async () => {
+    // Clear the categories to test the case with no categories
+    await clearMockDatabase();
+
+    const response = await request
+      .get("/api/test/habit-categories/time")
+      .query({
+        userId,
+        periodType: "month",
+        startDate: "2024-07-01",
+        endDate: "2024-07-31",
+      });
+
+    expect(response.status).toBe(404);
+    expect(response.body).toHaveProperty(
+      "message",
+      "No categories found for this user."
+    );
+  });
+
+  it("should return 400 if invalid period type", async () => {
+    const response = await request
+      .get("/api/test/habit-categories/time")
+      .query({
+        userId,
+        periodType: "invalid",
+        startDate: "2024-07-01",
+        endDate: "2024-07-31",
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty(
+      "message",
+      "BAD REQUEST: Invalid period type."
+    );
+  });
+
+  it("should return 400 if invalid start date format", async () => {
+    const response = await request
+      .get("/api/test/habit-categories/time")
+      .query({
+        userId,
+        periodType: "month",
+        startDate: "invalid-date",
+        endDate: "2024-07-31",
+      });
+
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty(
+      "message",
+      "BAD REQUEST: Invalid start date format. Expected format: YYYY-MM-DD."
+    );
+  });
+
+  it("should return categories for a specific day", async () => {
+    const response = await request
+      .get("/api/test/habit-categories/time")
+      .query({
+        userId,
+        periodType: "day",
+        startDate: "2024-07-05",
+        endDate: "2024-07-05",
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty("categoryData");
+
+    const categoryData = response.body.categoryData;
+    const exerciseCategory = categoryData.find(
+      (cat) => cat.name === "Exercise"
+    );
+    expect(exerciseCategory).toBeDefined();
+    expect(exerciseCategory.totalMinutes).toBe(60); // Expect total minutes for that day
+  });
+
+  it("should return categories for a specific week", async () => {
+    const response = await request
+      .get("/api/test/habit-categories/time")
+      .query({
+        userId,
+        periodType: "week",
+        startDate: "2024-07-01",
+        endDate: "2024-07-07",
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty("categoryData");
+
+    const categoryData = response.body.categoryData;
+    const workCategory = categoryData.find((cat) => cat.name === "Work");
+    expect(workCategory).toBeDefined();
+    expect(workCategory.totalMinutes).toBe(120); // Expect total minutes for the week
+  });
+
+  it("should return categories for a specific month", async () => {
+    const response = await request
+      .get("/api/test/habit-categories/time")
+      .query({
+        userId,
+        periodType: "month",
+        startDate: "2024-07-01",
+        endDate: "2024-07-31",
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty("categoryData");
+
+    const categoryData = response.body.categoryData;
+
+    // Check 'Work' category
+    const workCategory = categoryData.find((cat) => cat.name === "Work");
+    expect(workCategory).toBeDefined();
+    expect(workCategory.totalMinutes).toBe(120); // Expect total minutes for July
+
+    // Check 'Study' category
+    const studyCategory = categoryData.find((cat) => cat.name === "Study");
+    expect(studyCategory).toBeDefined();
+    expect(studyCategory.totalMinutes).toBe(90); // Expect total minutes for July
+  });
+
+  it("should return categories for a specific year", async () => {
+    const response = await request
+      .get("/api/test/habit-categories/time")
+      .query({
+        userId,
+        periodType: "year",
+        startDate: "2024-01-01",
+        endDate: "2024-12-31",
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty("categoryData");
+
+    const categoryData = response.body.categoryData;
+    // Check 'Study' category total minutes for the year
+    const studyCategory = categoryData.find((cat) => cat.name === "Study");
+    expect(studyCategory).toBeDefined();
+    expect(studyCategory.totalMinutes).toBe(90); // Expect total minutes for the year
   });
 });
