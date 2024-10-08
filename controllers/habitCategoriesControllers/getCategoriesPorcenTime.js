@@ -2,16 +2,19 @@ import HabitCategory from "../../models/habitCategory.js";
 import { logInfo, logError } from "../../util/logging.js";
 import validationErrorMessage from "../../util/validationErrorMessage.js";
 
+// Utility to validate year format
 const isValidYear = (yearString) => {
   const year = parseInt(yearString, 10);
   return !isNaN(year) && year > 0;
 };
 
+// Utility to validate date format
 const isValidDate = (dateString) => {
   const date = new Date(dateString);
   return !isNaN(date.getTime());
 };
 
+// Utility to calculate average per day for a given year
 const calculateAveragePerDay = (totalMinutes, yearArray) => {
   let totalDays = 0;
   yearArray.forEach((year) => {
@@ -19,20 +22,22 @@ const calculateAveragePerDay = (totalMinutes, yearArray) => {
       totalDays += calculateDaysInMonth(new Date(year, month, 1));
     }
   });
-  return totalDays > 0 ? totalMinutes / totalDays : 0; // Return 0 if no days
+  return totalDays > 0 ? totalMinutes / totalDays : 0;
 };
 
+// Utility to calculate days in a month
 const calculateDaysInMonth = (date) => {
   return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
 };
 
+// Controller to handle percentage time calculations for habit categories
 export const getCategoriesPorcenTime = async (req, res) => {
-  const userId = req.user.id;
+  const userId = req.user.id; // Retrieve the user ID from the authenticated request
 
-  // Desestructurar los parámetros del cuerpo de la solicitud
-  const { years, startDate, endDate } = req.body;
+  // Extract parameters from query (for GET requests)
+  const { years, startDate, endDate } = req.query;
 
-  // Validar parámetros requeridos: ambos startDate y endDate deben ser proporcionados juntos
+  // Validate required parameters: both startDate and endDate must be provided together
   if (!years || (startDate && !endDate)) {
     return validationErrorMessage(
       res,
@@ -40,7 +45,7 @@ export const getCategoriesPorcenTime = async (req, res) => {
     );
   }
 
-  // Validar formato de año
+  // Validate year format
   const yearArray = years ? years.split(",") : [];
   if (yearArray.some((year) => !isValidYear(year))) {
     return validationErrorMessage(
@@ -49,7 +54,7 @@ export const getCategoriesPorcenTime = async (req, res) => {
     );
   }
 
-  // Validar formatos de fecha
+  // Validate date formats
   if (
     startDate &&
     (!isValidDate(startDate) || (endDate && !isValidDate(endDate)))
@@ -60,7 +65,7 @@ export const getCategoriesPorcenTime = async (req, res) => {
     );
   }
 
-  // Validar que los rangos de fecha estén dentro de los años especificados
+  // Validate that the date range is within the specified years
   if (startDate && endDate) {
     const startYear = new Date(startDate).getFullYear();
     const endYear = new Date(endDate).getFullYear();
@@ -82,7 +87,7 @@ export const getCategoriesPorcenTime = async (req, res) => {
 
     const filter = { createdBy: userId };
 
-    // Establecer filtro para rango de fechas
+    // Set filter for date range if provided
     if (startDate) {
       filter.createdAt = { $gte: new Date(startDate) };
     }
@@ -91,20 +96,21 @@ export const getCategoriesPorcenTime = async (req, res) => {
         ...filter.createdAt,
         $lt: new Date(
           new Date(endDate).setDate(new Date(endDate).getDate() + 1)
-        ), // Fecha de fin inclusiva
+        ), // Make end date inclusive
       };
     }
 
-    // Manejar filtros de varios años
+    // Handle year-based filtering
     if (yearArray.length > 0) {
       const yearFilters = yearArray.map((year) => {
         const startOfYear = new Date(year, 0, 1);
         const endOfYear = new Date(year, 11, 31, 23, 59, 59, 999);
         return { createdAt: { $gte: startOfYear, $lt: endOfYear } };
       });
-      filter.$or = yearFilters; // Combinar con lógica OR
+      filter.$or = yearFilters; // Combine with OR logic
     }
 
+    // Query the database for categories matching the filter
     const categories = await HabitCategory.find(filter);
     if (!categories || categories.length === 0) {
       return res
@@ -112,25 +118,28 @@ export const getCategoriesPorcenTime = async (req, res) => {
         .json({ message: "No categories found for this user." });
     }
 
+    // Calculate total minutes and averages
     const totalMinutes = categories.reduce(
       (sum, category) => sum + category.totalMinutes,
       0
     );
     const averagePerDay = calculateAveragePerDay(totalMinutes, yearArray);
-    const averagePerWeek = totalMinutes / 4; // Simplificado
+    const averagePerWeek = totalMinutes / 4; // Simplified
     const averagePerMonth = totalMinutes / (12 * yearArray.length);
 
+    // Calculate stats per category
     const categoryStats = categories.map((category) => ({
       name: category.name,
       averageMinutes: {
         daily:
           category.totalMinutes /
           calculateDaysInMonth(new Date(category.createdAt)),
-        weekly: category.totalMinutes / 4, // Simplificado
-        monthly: category.totalMinutes / 12, // Simplificado
+        weekly: category.totalMinutes / 4, // Simplified
+        monthly: category.totalMinutes / 12, // Simplified
       },
     }));
 
+    // Send the calculated data in response
     res.status(200).json({
       totalMinutes,
       averagePerDay,

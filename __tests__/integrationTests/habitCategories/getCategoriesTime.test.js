@@ -5,7 +5,6 @@ import {
   clearMockDatabase,
 } from "../../../__testUtils__/dbMock.js";
 import app from "../../../app.js";
-import HabitCategory from "../../../models/habitCategory.js";
 import { logInfo } from "../../../util/logging.js";
 
 const request = supertest(app);
@@ -84,16 +83,16 @@ describe("Habit Category Tests", () => {
 
   it("should return total minutes of 'Work' category in July 2024", async () => {
     const response = await request
-      .post("/test/api/habit-categories/time") // Use POST instead of GET since we're sending data in the body
-      .send({
-        userId, // Include userId in the body
+      .get("/api/test/habit-categories/time")
+      .query({
+        userId, // Enviar userId como query param
         periodType: "month",
         startDate: "2024-07-01",
         endDate: "2024-07-31",
       });
 
-    logInfo(`User ID: ${userId}`); // Verify userId is defined
-    logInfo(`Response: ${JSON.stringify(response.body)}`); // Inspect the response
+    logInfo(`User ID: ${userId}`);
+    logInfo(`Response: ${JSON.stringify(response.body)}`);
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty("categoryData");
@@ -107,13 +106,16 @@ describe("Habit Category Tests", () => {
 
   it("should return total minutes of 'Exercise' category in July 2024", async () => {
     const response = await request
-      .post("/test/api/habit-categories/time") // Use POST instead of GET since we're sending data in the body
-      .send({
-        userId, // Include userId in the body
+      .get("/api/test/habit-categories/time") // Mantener GET
+      .query({
+        userId, // Enviar userId como query param
         periodType: "month",
         startDate: "2024-07-01",
         endDate: "2024-07-31",
       });
+
+    logInfo(`User ID: ${userId}`);
+    logInfo(`Response: ${JSON.stringify(response.body)}`);
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty("categoryData");
