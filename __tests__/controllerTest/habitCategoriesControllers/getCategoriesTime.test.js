@@ -12,8 +12,8 @@ describe("getCategoriesTime Controller", () => {
   beforeEach(() => {
     // Create a mock request and response
     req = {
-      user: { id: "testUserId" }, // Mock user ID
-      body: {
+      query: {
+        userId: "testUserId", // Set userId directly in query
         periodType: "month",
         startDate: "2024-01-01",
         endDate: "2024-01-31",
@@ -61,7 +61,7 @@ describe("getCategoriesTime Controller", () => {
   });
 
   it("should return 400 if invalid period type", async () => {
-    req.body.periodType = "invalid";
+    req.query.periodType = "invalid";
     await getCategoriesTime(req, res);
 
     expect(res.status).toHaveBeenCalledWith(400);
@@ -71,7 +71,7 @@ describe("getCategoriesTime Controller", () => {
   });
 
   it("should return 400 if invalid date format", async () => {
-    req.body.startDate = "invalid-date";
+    req.query.startDate = "invalid-date";
     await getCategoriesTime(req, res);
 
     expect(res.status).toHaveBeenCalledWith(400);
@@ -99,9 +99,9 @@ describe("getCategoriesTime Controller", () => {
 
   // Test cases for specific time periods
   it("should return categories for a specific day", async () => {
-    req.body.periodType = "day";
-    req.body.startDate = "2024-07-15";
-    req.body.endDate = "2024-07-15";
+    req.query.periodType = "day";
+    req.query.startDate = "2024-07-15";
+    req.query.endDate = "2024-07-15";
 
     HabitCategory.find.mockResolvedValue([
       { name: "Work", totalMinutes: 120, createdAt: new Date("2024-07-15") },
@@ -120,9 +120,9 @@ describe("getCategoriesTime Controller", () => {
   });
 
   it("should return categories for a specific week", async () => {
-    req.body.periodType = "week";
-    req.body.startDate = "2024-07-01";
-    req.body.endDate = "2024-07-07";
+    req.query.periodType = "week";
+    req.query.startDate = "2024-07-01";
+    req.query.endDate = "2024-07-07";
 
     HabitCategory.find.mockResolvedValue([
       { name: "Work", totalMinutes: 120, createdAt: new Date("2024-07-01") },
@@ -141,9 +141,9 @@ describe("getCategoriesTime Controller", () => {
   });
 
   it("should return categories for a specific month", async () => {
-    req.body.periodType = "month";
-    req.body.startDate = "2024-07-01";
-    req.body.endDate = "2024-07-31";
+    req.query.periodType = "month";
+    req.query.startDate = "2024-07-01";
+    req.query.endDate = "2024-07-31";
 
     HabitCategory.find.mockResolvedValue([
       { name: "Work", totalMinutes: 120, createdAt: new Date("2024-07-15") },
@@ -162,9 +162,9 @@ describe("getCategoriesTime Controller", () => {
   });
 
   it("should return categories for a specific year", async () => {
-    req.body.periodType = "year";
-    req.body.startDate = "2024-01-01";
-    req.body.endDate = "2024-12-31";
+    req.query.periodType = "year";
+    req.query.startDate = "2024-01-01";
+    req.query.endDate = "2024-12-31";
 
     HabitCategory.find.mockResolvedValue([
       { name: "Work", totalMinutes: 120, createdAt: new Date("2024-07-15") },

@@ -3,7 +3,7 @@ import { logInfo, logError } from "../../util/logging.js";
 import validationErrorMessage from "../../util/validationErrorMessage.js";
 
 export const getCategoriesTime = async (req, res) => {
-  const userId = req.query.userId; // Cambiar a req.query
+  const userId = req.query.userId;
   const { periodType, startDate, endDate } = req.query;
 
   // Validate input parameters
