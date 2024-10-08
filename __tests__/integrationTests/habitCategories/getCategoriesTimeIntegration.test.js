@@ -85,7 +85,7 @@ describe("Habit Category Tests", () => {
     const response = await request
       .get("/api/test/habit-categories/time")
       .query({
-        userId, // Enviar userId como query param
+        userId,
         periodType: "month",
         startDate: "2024-07-01",
         endDate: "2024-07-31",
@@ -106,16 +106,13 @@ describe("Habit Category Tests", () => {
 
   it("should return total minutes of 'Exercise' category in July 2024", async () => {
     const response = await request
-      .get("/api/test/habit-categories/time") // Mantener GET
+      .get("/api/test/habit-categories/time")
       .query({
-        userId, // Enviar userId como query param
+        userId,
         periodType: "month",
         startDate: "2024-07-01",
         endDate: "2024-07-31",
       });
-
-    logInfo(`User ID: ${userId}`);
-    logInfo(`Response: ${JSON.stringify(response.body)}`);
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty("categoryData");
