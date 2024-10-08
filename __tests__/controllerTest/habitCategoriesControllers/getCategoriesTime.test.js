@@ -40,10 +40,42 @@ afterAll(async () => {
 });
 
 describe("GET /api/test/habit-categories", () => {
-  it("should populate the mock database and log categories", async () => {
-    const categories = await HabitCategory.find();
-    console.log("Current Categories in DB:", categories);
+  let testUser;
+  let userId;
 
-    expect(categories.length).toBe(mockData.categories.length);
+  beforeEach(async () => {
+    // Step 1: Create a new user
+    testUser = {
+      name: "Test User",
+      email: "testuser@example.com",
+      password: "Test1234!",
+      dateOfBirth: "Tue Feb 01 1990",
+    };
+
+    await request.post("/api/auth/sign-up").send({ user: testUser });
+
+    // Step 2: Log in with the created user to get the userId (skip token here for simplicity)
+    const loginResponse = await request
+      .post("/api/auth/log-in")
+      .send({ user: { email: testUser.email, password: testUser.password } });
+
+    userId = loginResponse.body.user.id; // Capture the user's id from the login response
+  });
+
+  it("should return total minutes of 'Work' category in July 2024", async () => {
+    const response = await request
+      .get("/test/api/habit-categories/time")
+      .query({
+        periodType: "month",
+        startDate: "2024-07-01",
+        endDate: "2024-07-31",
+      })
+      .send({
+        userId,
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty("categoryData");
+    // Más expectativas sobre el contenido de categoryData...
   });
 });

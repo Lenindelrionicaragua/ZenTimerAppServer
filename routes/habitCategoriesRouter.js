@@ -7,8 +7,8 @@ import { getCategoriesPorcenTime } from "../controllers/habitCategoriesControlle
 const habitCategoriesRouter = express.Router();
 
 habitCategoriesRouter.post("/create", createCategory);
-habitCategoriesRouter.get("/", getCategoriesTime);
-habitCategoriesRouter.get("/", getCategoriesPorcenTime);
+habitCategoriesRouter.get("/time", getCategoriesTime);
+habitCategoriesRouter.get("/porcent-time", getCategoriesPorcenTime);
 habitCategoriesRouter.put("/:categoryId", updateCategoryTime);
 
 export default habitCategoriesRouter;
