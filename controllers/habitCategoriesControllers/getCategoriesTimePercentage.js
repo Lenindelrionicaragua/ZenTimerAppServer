@@ -32,15 +32,15 @@ const calculateDaysInMonth = (date) => {
 
 // Controller to handle percentage time calculations for habit categories
 export const getCategoriesTimePercentage = async (req, res) => {
-  const userId = req.user.id; // Retrieve the user ID from the authenticated request
+  const userId = req.query.userId; // Get userId from query params
+  const { years, startDate, endDate, periodType } = req.query;
 
-  // Extract parameters from query (for GET requests)
-  const { years, startDate, endDate } = req.query;
+  // Error list to collect all validation errors
+  let errorList = [];
 
-  // Validate required parameters: both startDate and endDate must be provided together
-  if (!years || (startDate && !endDate)) {
-    return validationErrorMessage(
-      res,
+  // Validate required parameters:
+  if (!years || (!startDate && !endDate)) {
+    errorList.push(
       "Both startDate and endDate are required if specifying a date range."
     );
   }
@@ -48,34 +48,29 @@ export const getCategoriesTimePercentage = async (req, res) => {
   // Validate year format
   const yearArray = years ? years.split(",") : [];
   if (yearArray.some((year) => !isValidYear(year))) {
-    return validationErrorMessage(
-      res,
-      "Invalid year format. Expected format: YYYY."
-    );
+    errorList.push("Invalid year format. Expected format: YYYY.");
   }
 
   // Validate date formats
-  if (
-    startDate &&
-    (!isValidDate(startDate) || (endDate && !isValidDate(endDate)))
-  ) {
-    return validationErrorMessage(
-      res,
-      "Invalid date format. Expected format: YYYY-MM-DD."
-    );
+  if (startDate && !isValidDate(startDate)) {
+    errorList.push("Invalid start date format. Expected format: YYYY-MM-DD.");
+  }
+  if (endDate && !isValidDate(endDate)) {
+    errorList.push("Invalid end date format. Expected format: YYYY-MM-DD.");
   }
 
   // Validate that the date range is within the specified years
   if (startDate && endDate) {
     const startYear = new Date(startDate).getFullYear();
     const endYear = new Date(endDate).getFullYear();
-
     if (yearArray.some((year) => year < startYear || year > endYear)) {
-      return validationErrorMessage(
-        res,
-        "Start and end dates must be within the specified years."
-      );
+      errorList.push("Start and end dates must be within the specified years.");
     }
+  }
+
+  // Return validation errors if any
+  if (errorList.length > 0) {
+    return res.status(400).json({ message: validationErrorMessage(errorList) });
   }
 
   try {
@@ -85,9 +80,10 @@ export const getCategoriesTimePercentage = async (req, res) => {
       )}`
     );
 
+    // Initialize filter for querying habit categories
     const filter = { createdBy: userId };
 
-    // Set filter for date range if provided
+    // Apply date range filter if provided
     if (startDate) {
       filter.createdAt = { $gte: new Date(startDate) };
     }
@@ -100,57 +96,66 @@ export const getCategoriesTimePercentage = async (req, res) => {
       };
     }
 
-    // Handle year-based filtering
+    // Handle year and month-based filtering if years are provided
     if (yearArray.length > 0) {
       const yearFilters = yearArray.map((year) => {
-        const startOfYear = new Date(year, 0, 1);
-        const endOfYear = new Date(year, 11, 31, 23, 59, 59, 999);
-        return { createdAt: { $gte: startOfYear, $lt: endOfYear } };
+        if (periodType === "month") {
+          const monthStart = new Date(year, 0, 1); // Start of the year
+          const monthEnd = new Date(year, 11, 31, 23, 59, 59, 999); // End of the year
+          return { createdAt: { $gte: monthStart, $lt: monthEnd } }; // Entire year range
+        } else {
+          const startOfYear = new Date(year, 0, 1);
+          const endOfYear = new Date(year, 11, 31, 23, 59, 59, 999);
+          return { createdAt: { $gte: startOfYear, $lt: endOfYear } };
+        }
       });
-      filter.$or = yearFilters; // Combine with OR logic
+      filter.$or = yearFilters; // Combine year filters with OR logic
     }
 
     // Query the database for categories matching the filter
     const categories = await HabitCategory.find(filter);
+
+    // If no categories are found, return a 404 error
     if (!categories || categories.length === 0) {
       return res
         .status(404)
         .json({ message: "No categories found for this user." });
     }
 
-    // Calculate total minutes and averages
+    // Calculate total minutes for all categories
     const totalMinutes = categories.reduce(
       (sum, category) => sum + category.totalMinutes,
       0
     );
-    const averagePerDay = calculateAveragePerDay(totalMinutes, yearArray);
-    const averagePerWeek = totalMinutes / 4; // Simplified
-    const averagePerMonth = totalMinutes / (12 * yearArray.length);
 
-    // Calculate stats per category
-    const categoryStats = categories.map((category) => ({
+    // Calculate average time per day, week, and month
+    const averagePerDay = calculateAveragePerDay(totalMinutes, yearArray);
+    const averagePerWeek = totalMinutes / 4; // Simplified weekly calculation
+    const averagePerMonth = totalMinutes / (12 * yearArray.length); // Simplified monthly calculation
+
+    // Generate category data to return
+    const categoryData = categories.map((category) => ({
       name: category.name,
+      totalMinutes: category.totalMinutes,
       averageMinutes: {
         daily:
           category.totalMinutes /
           calculateDaysInMonth(new Date(category.createdAt)),
-        weekly: category.totalMinutes / 4, // Simplified
-        monthly: category.totalMinutes / 12, // Simplified
+        weekly: category.totalMinutes / 4, // Simplified weekly calculation
+        monthly: category.totalMinutes / 12, // Simplified monthly calculation
       },
     }));
 
-    // Send the calculated data in response
+    // Send the calculated stats in the response
     res.status(200).json({
       totalMinutes,
-      averagePerDay,
-      averagePerWeek,
-      averagePerMonth,
-      categoryStats,
+      categoryData, // Return the category data consistently
     });
   } catch (error) {
     logError(`Error fetching average category data: ${error}`);
-    res
-      .status(500)
-      .json({ message: "Error fetching average category data.", error });
+    return res.status(500).json({
+      message: "Error fetching average category data.",
+      error: error.message,
+    });
   }
 };

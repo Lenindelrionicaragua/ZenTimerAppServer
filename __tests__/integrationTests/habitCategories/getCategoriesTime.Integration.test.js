@@ -60,7 +60,7 @@ describe("Habit Category Tests", () => {
         createdAt: new Date("2024-07-05"),
       },
       {
-        name: "Study", // Updated category name from "Leisure" to "Study"
+        name: "Study",
         totalMinutes: 90,
         createdBy: userId,
         createdAt: new Date("2024-07-10"),
@@ -72,6 +72,8 @@ describe("Habit Category Tests", () => {
         createdAt: new Date("2024-08-01"),
       },
     ];
+
+    logInfo(`Populate MockDB: ${JSON.stringify(categories, null, 2)}`);
 
     // Loop through the categories and create them in the database
     for (const category of categories) {
@@ -244,6 +246,26 @@ describe("Habit Category Tests", () => {
     const studyCategory = categoryData.find((cat) => cat.name === "Study");
     expect(studyCategory).toBeDefined();
     expect(studyCategory.totalMinutes).toBe(90); // Expect total minutes for July
+  });
+
+  it("should return categories for a specific year", async () => {
+    const response = await request
+      .get("/api/test/habit-categories/time")
+      .query({
+        userId,
+        periodType: "year",
+        startDate: "2024-01-01",
+        endDate: "2024-12-31",
+      });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty("categoryData");
+
+    const categoryData = response.body.categoryData;
+    // Check 'Study' category total minutes for the year
+    const studyCategory = categoryData.find((cat) => cat.name === "Study");
+    expect(studyCategory).toBeDefined();
+    expect(studyCategory.totalMinutes).toBe(90); // Expect total minutes for the year
   });
 
   it("should return categories for a specific year", async () => {

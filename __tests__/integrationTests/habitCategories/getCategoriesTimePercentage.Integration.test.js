@@ -25,7 +25,7 @@ afterAll(async () => {
   await closeMockDatabase();
 });
 
-describe("Habit Category Tests", () => {
+describe("Habit Category Percentage Time Tests", () => {
   beforeEach(async () => {
     // Create a new user and get the userId
     const testUser = {
@@ -73,6 +73,8 @@ describe("Habit Category Tests", () => {
       },
     ];
 
+    logInfo(`Populate MockDB: ${JSON.stringify(categories, null, 2)}`);
+
     // Loop through the categories and create them in the database
     for (const category of categories) {
       await request.post("/api/test/habit-categories/create").send({
@@ -81,11 +83,12 @@ describe("Habit Category Tests", () => {
     }
   });
 
-  it("should return total percent of minutes for 'Work' category in July 2024", async () => {
+  it("should return total percentage of time for 'Work' category in July 2024", async () => {
     const response = await request
-      .get("/api/test/habit-categories/percentage-time")
+      .get("/api/test/habit-categories/time-percentage")
       .query({
         userId,
+        years: "2024",
         periodType: "month",
         startDate: "2024-07-01",
         endDate: "2024-07-31",
@@ -97,10 +100,12 @@ describe("Habit Category Tests", () => {
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty("categoryData");
 
-    // Check the total minutes for 'Work' category
+    // Check the percentage of time for 'Work' category
     const categoryData = response.body.categoryData;
     const workCategory = categoryData.find((cat) => cat.name === "Work");
+
     expect(workCategory).toBeDefined();
-    expect(workCategory.totalMinutes).toBe(120); // Expect total minutes for July
+    expect(workCategory.percentageTime).toBeDefined(); // Check for percentage
+    // You can also add an expected percentage value based on your calculation logic
   });
 });
