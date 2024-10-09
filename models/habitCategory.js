@@ -55,9 +55,9 @@ export const validateCategory = (
   if (requireName) {
     if (!categoryObject.name || typeof categoryObject.name !== "string") {
       errorList.push("Category name is required.");
-    } else if (!/^[A-Za-z\s\-!]{1,10}$/.test(categoryObject.name)) {
+    } else if (!/^[A-Za-z\s\-!]{1,15}$/.test(categoryObject.name)) {
       errorList.push(
-        "Category name must contain only letters, spaces, hyphens, or exclamation marks, and have a maximum length of 10 characters."
+        "Category name must contain only letters, spaces, hyphens, or exclamation marks, and have a maximum length of 15 characters."
       );
     }
   }

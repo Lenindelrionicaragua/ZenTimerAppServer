@@ -14,16 +14,16 @@ const isValidDate = (dateString) => {
   return !isNaN(date.getTime());
 };
 
-// Utility to calculate total days in a month
-const calculateDaysInMonth = (year, month) => {
-  return new Date(year, month + 1, 0).getDate();
-};
-
 // Controller to handle percentage time calculations for habit categories
 export const getCategoriesTimePercentage = async (req, res) => {
   const userId = req.query.userId;
   const { years, startDate, endDate } = req.query;
   let errorList = [];
+
+  // Validate userId
+  if (!userId) {
+    errorList.push("User ID is required.");
+  }
 
   // Validate required parameters
   if (!years || (!startDate && !endDate)) {
@@ -67,7 +67,6 @@ export const getCategoriesTimePercentage = async (req, res) => {
     }
     if (endDate) {
       filter.createdAt = {
-        ...filter.createdAt,
         $lt: new Date(
           new Date(endDate).setDate(new Date(endDate).getDate() + 1)
         ), // Make end date inclusive
@@ -103,7 +102,7 @@ export const getCategoriesTimePercentage = async (req, res) => {
     // Send the calculated stats in the response
     res.status(200).json({
       totalMinutes,
-      categoryDataPercentage: categoryStats, // Changed to categoryDataPercentage to avoid naming conflict
+      categoryDataPercentage: categoryStats,
     });
   } catch (error) {
     logError(`Error fetching average category data: ${error}`);

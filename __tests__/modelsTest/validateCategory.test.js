@@ -66,7 +66,7 @@ describe("validateCategory function", () => {
     expect(errors).toHaveLength(0);
   });
 
-  test("should return an error message if the name exceeds 10 characters", () => {
+  test("should return an error message if the name exceeds 15 characters", () => {
     const category = {
       name: "ThisNameIsWayTooLong",
       createdBy: "60c72b2f9b1e8e3d88d23a1e",
@@ -78,7 +78,7 @@ describe("validateCategory function", () => {
 
     expect(errors).toHaveLength(1);
     expect(errors).toContain(
-      "Category name must contain only letters, spaces, hyphens, or exclamation marks, and have a maximum length of 10 characters."
+      "Category name must contain only letters, spaces, hyphens, or exclamation marks, and have a maximum length of 15 characters."
     );
   });
 

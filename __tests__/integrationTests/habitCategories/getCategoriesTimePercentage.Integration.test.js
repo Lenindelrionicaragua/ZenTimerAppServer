@@ -71,6 +71,18 @@ describe("Habit Category Percentage Time Tests", () => {
         createdBy: userId,
         createdAt: new Date("2024-08-01"),
       },
+      {
+        name: "Rest",
+        totalMinutes: 45,
+        createdBy: userId,
+        createdAt: new Date("2024-01-01"),
+      },
+      {
+        name: "Family-Time",
+        totalMinutes: 300,
+        createdBy: userId,
+        createdAt: new Date("2023-12-15"),
+      },
     ];
 
     logInfo(`Populate MockDB: ${JSON.stringify(categories, null, 2)}`);
@@ -83,7 +95,7 @@ describe("Habit Category Percentage Time Tests", () => {
     }
   });
 
-  it("should return total percentage of time for 'Work' category in July 2024", async () => {
+  it("should return total percentage of time with all the categories for July 2024", async () => {
     const response = await request
       .get("/api/test/habit-categories/time-percentage")
       .query({
@@ -98,16 +110,82 @@ describe("Habit Category Percentage Time Tests", () => {
     logInfo(`Response: ${JSON.stringify(response.body)}`);
 
     expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty("categoryData");
+    expect(response.body).toHaveProperty("totalMinutes");
+    expect(response.body).toHaveProperty("categoryDataPercentage");
 
-    // Check the percentage of time for 'Work' category
-    const categoryDataPercentage = response.body.categoryDataPercentage;
+    const { totalMinutes, categoryDataPercentage } = response.body;
+
+    // Check the totalMinutes calculation
+    const expectedTotalMinutes = 120 + 60 + 90; // Total for July
+    expect(totalMinutes).toBe(expectedTotalMinutes);
+
+    // Check the category percentages
     const workCategory = categoryDataPercentage.find(
-      (cat) => cat.name === "Work"
+      (cat) =>
+        cat.name === "Work" &&
+        cat.createdAt >= new Date("2024-07-01") &&
+        cat.createdAt <= new Date("2024-07-31")
+    );
+    const exerciseCategory = categoryDataPercentage.find(
+      (cat) =>
+        cat.name === "Exercise" &&
+        cat.createdAt >= new Date("2024-07-01") &&
+        cat.createdAt <= new Date("2024-07-31")
+    );
+    const studyCategory = categoryDataPercentage.find(
+      (cat) =>
+        cat.name === "Study" &&
+        cat.createdAt >= new Date("2024-07-01") &&
+        cat.createdAt <= new Date("2024-07-31")
     );
 
-    expect(workCategory).toBeDefined();
-    expect(workCategory.percentageTime).toBeDefined(); // Check for percentage
-    // You can also add an expected percentage value based on your calculation logic
+    const expectedWorkPercentage = ((120 / expectedTotalMinutes) * 100).toFixed(
+      2
+    );
+    const expectedExercisePercentage = (
+      (60 / expectedTotalMinutes) *
+      100
+    ).toFixed(2);
+    const expectedStudyPercentage = ((90 / expectedTotalMinutes) * 100).toFixed(
+      2
+    );
+
+    expect(workCategory.percentage).toBe(expectedWorkPercentage);
+    expect(exerciseCategory.percentage).toBe(expectedExercisePercentage);
+    expect(studyCategory.percentage).toBe(expectedStudyPercentage);
   });
+
+  // it("should return 404 if no categories found for the specified month", async () => {
+  //   const response = await request
+  //     .get("/api/test/habit-categories/time-percentage")
+  //     .query({
+  //       userId,
+  //       years: "2024",
+  //       periodType: "month",
+  //       startDate: "2024-09-01",
+  //       endDate: "2024-09-30",
+  //     });
+
+  //   expect(response.status).toBe(404);
+  //   expect(response.body).toHaveProperty(
+  //     "message",
+  //     "No categories found for this user."
+  //   );
+  // });
+
+  // it("should return validation error if required parameters are missing", async () => {
+  //   const response = await request
+  //     .get("/api/test/habit-categories/time-percentage")
+  //     .query({
+  //       userId,
+  //       years: "2024",
+  //       // Missing startDate and endDate
+  //     });
+
+  //   expect(response.status).toBe(400);
+  //   expect(response.body).toHaveProperty("message");
+  //   expect(response.body.message).toContain(
+  //     "Both startDate and endDate are required if specifying a date range."
+  //   );
+  // });
 });
