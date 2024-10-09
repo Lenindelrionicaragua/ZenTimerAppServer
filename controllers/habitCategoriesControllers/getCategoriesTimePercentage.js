@@ -17,7 +17,7 @@ const isValidDate = (dateString) => {
 // Controller to handle percentage time calculations for habit categories
 export const getCategoriesTimePercentage = async (req, res) => {
   const userId = req.query.userId;
-  const { years, startDate, endDate } = req.query;
+  const { years, periodType, startDate, endDate } = req.query;
   let errorList = [];
 
   // Validate userId
@@ -26,10 +26,8 @@ export const getCategoriesTimePercentage = async (req, res) => {
   }
 
   // Validate required parameters
-  if (!years || (!startDate && !endDate)) {
-    errorList.push(
-      "Both startDate and endDate are required if specifying a date range."
-    );
+  if (!years || !periodType || (!startDate && !endDate)) {
+    errorList.push("Years, periodType, startDate and endDate are required.");
   }
 
   // Validate year format
@@ -61,16 +59,16 @@ export const getCategoriesTimePercentage = async (req, res) => {
     // Initialize filter for querying habit categories
     const filter = { createdBy: userId };
 
-    // Apply date range filter if provided
-    if (startDate) {
-      filter.createdAt = { $gte: new Date(startDate) };
-    }
-    if (endDate) {
-      filter.createdAt = {
-        $lt: new Date(
-          new Date(endDate).setDate(new Date(endDate).getDate() + 1)
-        ), // Make end date inclusive
-      };
+    // Set startDate and endDate based on periodType
+    if (periodType === "month") {
+      const year = yearArray[0]; // Assuming only one year is passed
+      const month = new Date(startDate).getMonth(); // Get month from startDate
+      const startOfMonth = new Date(year, month, 1);
+      const endOfMonth = new Date(year, month + 1, 0, 23, 59, 59, 999); // Last day of the month
+
+      filter.createdAt = { $gte: startOfMonth, $lte: endOfMonth }; // Filtering for the month
+    } else if (startDate && endDate) {
+      filter.createdAt = { $gte: new Date(startDate), $lt: new Date(endDate) };
     }
 
     // Query the database for categories matching the filter

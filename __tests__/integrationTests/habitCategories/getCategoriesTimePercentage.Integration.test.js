@@ -119,24 +119,15 @@ describe("Habit Category Percentage Time Tests", () => {
     const expectedTotalMinutes = 120 + 60 + 90; // Total for July
     expect(totalMinutes).toBe(expectedTotalMinutes);
 
-    // Check the category percentages
+    // Check the category percentages using find
     const workCategory = categoryDataPercentage.find(
-      (cat) =>
-        cat.name === "Work" &&
-        cat.createdAt >= new Date("2024-07-01") &&
-        cat.createdAt <= new Date("2024-07-31")
+      (cat) => cat.name === "Work"
     );
     const exerciseCategory = categoryDataPercentage.find(
-      (cat) =>
-        cat.name === "Exercise" &&
-        cat.createdAt >= new Date("2024-07-01") &&
-        cat.createdAt <= new Date("2024-07-31")
+      (cat) => cat.name === "Exercise"
     );
     const studyCategory = categoryDataPercentage.find(
-      (cat) =>
-        cat.name === "Study" &&
-        cat.createdAt >= new Date("2024-07-01") &&
-        cat.createdAt <= new Date("2024-07-31")
+      (cat) => cat.name === "Study"
     );
 
     const expectedWorkPercentage = ((120 / expectedTotalMinutes) * 100).toFixed(
@@ -150,6 +141,7 @@ describe("Habit Category Percentage Time Tests", () => {
       2
     );
 
+    // Assertions using the found categories
     expect(workCategory.percentage).toBe(expectedWorkPercentage);
     expect(exerciseCategory.percentage).toBe(expectedExercisePercentage);
     expect(studyCategory.percentage).toBe(expectedStudyPercentage);
