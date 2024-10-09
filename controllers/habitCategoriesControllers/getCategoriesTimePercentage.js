@@ -31,7 +31,7 @@ const calculateDaysInMonth = (date) => {
 };
 
 // Controller to handle percentage time calculations for habit categories
-export const getCategoriesPorcenTime = async (req, res) => {
+export const getCategoriesTimePercentage = async (req, res) => {
   const userId = req.user.id; // Retrieve the user ID from the authenticated request
 
   // Extract parameters from query (for GET requests)
