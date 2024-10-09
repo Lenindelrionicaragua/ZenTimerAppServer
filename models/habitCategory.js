@@ -19,8 +19,22 @@ const habitCategorySchema = new mongoose.Schema({
     default: 0,
     required: true,
     min: 0,
-    max: 1440, // Optional: you can set this in the schema to enforce the limit
+    max: 1440, // Optional: total minutes cannot exceed 24 hours in a day
   },
+  dailyRecords: [
+    {
+      date: {
+        type: Date,
+        required: true,
+      },
+      minutes: {
+        type: Number,
+        default: 0,
+        min: 0,
+        max: 1440, // Minutes for a specific day cannot exceed 24 hours
+      },
+    },
+  ],
   createdAt: {
     type: Date,
     default: Date.now,
@@ -37,7 +51,13 @@ export const validateCategory = (
   requireCreatedAt = true
 ) => {
   const errorList = [];
-  const allowedKeys = ["name", "createdBy", "totalMinutes", "createdAt"];
+  const allowedKeys = [
+    "name",
+    "createdBy",
+    "totalMinutes",
+    "dailyRecords",
+    "createdAt",
+  ];
 
   logInfo("Starting validation for category object:", categoryObject);
 
@@ -67,7 +87,7 @@ export const validateCategory = (
     errorList.push("Creator is required.");
   }
 
-  // Validate total minutes
+  // Validate total minutes (for the entire category)
   if (requireTotalMinutes) {
     if (
       categoryObject.totalMinutes == null ||
@@ -79,6 +99,22 @@ export const validateCategory = (
     } else if (categoryObject.totalMinutes > 1440) {
       errorList.push("Total minutes cannot exceed 1440 minutes (24 hours).");
     }
+  }
+
+  // Validate daily records (individual day entries)
+  if (categoryObject.dailyRecords) {
+    categoryObject.dailyRecords.forEach((record) => {
+      if (!record.date) {
+        errorList.push("Each daily record must have a valid date.");
+      }
+      if (record.minutes < 0) {
+        errorList.push("Minutes for a daily record cannot be negative.");
+      } else if (record.minutes > 1440) {
+        errorList.push(
+          "Minutes for a daily record cannot exceed 1440 minutes (24 hours)."
+        );
+      }
+    });
   }
 
   // Validate createdAt

@@ -53,13 +53,13 @@ export const getCategoriesTimePercentage = async (req, res) => {
     logInfo(
       `Fetching category data for user ID: ${userId}, years: ${yearArray.join(
         ", "
-      )}`
+      )}, periodType: ${periodType}, startDate: ${startDate}, endDate: ${endDate}`
     );
 
     // Initialize filter for querying habit categories
     const filter = { createdBy: userId };
 
-    // Set startDate and endDate based on periodType
+    // Set date filters based on the periodType
     if (periodType === "month") {
       const year = yearArray[0]; // Assuming only one year is passed
       const month = new Date(startDate).getMonth(); // Get month from startDate
@@ -67,8 +67,29 @@ export const getCategoriesTimePercentage = async (req, res) => {
       const endOfMonth = new Date(year, month + 1, 0, 23, 59, 59, 999); // Last day of the month
 
       filter.createdAt = { $gte: startOfMonth, $lte: endOfMonth }; // Filtering for the month
+    } else if (periodType === "day") {
+      if (startDate) {
+        const year = new Date(startDate).getFullYear(); // Get the year from startDate
+        const startOfDay = new Date(
+          `${year}-${startDate.split("-")[1]}-${startDate.split("-")[2]}`
+        );
+        const endOfDay = new Date(startOfDay);
+        endOfDay.setHours(23, 59, 59, 999); // End of the day
+
+        filter.createdAt = { $gte: startOfDay, $lte: endOfDay };
+      }
+    } else if (periodType === "week") {
+      // Filter by week, ensuring the year is respected
+      if (startDate && endDate) {
+        const startOfWeek = new Date(startDate);
+        const endOfWeek = new Date(endDate);
+        endOfWeek.setHours(23, 59, 59, 999); // End of the week (Sunday)
+
+        filter.createdAt = { $gte: startOfWeek, $lte: endOfWeek };
+      }
     } else if (startDate && endDate) {
-      filter.createdAt = { $gte: new Date(startDate), $lt: new Date(endDate) };
+      // General date range filter
+      filter.createdAt = { $gte: new Date(startDate), $lte: new Date(endDate) };
     }
 
     // Query the database for categories matching the filter
@@ -78,7 +99,10 @@ export const getCategoriesTimePercentage = async (req, res) => {
     if (!categories || categories.length === 0) {
       return res
         .status(404)
-        .json({ message: "No categories found for this user." });
+        .json({
+          message:
+            "No categories found for this user in the given time period.",
+        });
     }
 
     // Calculate total minutes for all categories
@@ -103,9 +127,9 @@ export const getCategoriesTimePercentage = async (req, res) => {
       categoryDataPercentage: categoryStats,
     });
   } catch (error) {
-    logError(`Error fetching average category data: ${error}`);
+    logError(`Error fetching category data: ${error}`);
     return res.status(500).json({
-      message: "Error fetching average category data.",
+      message: "Error fetching category data.",
       error: error.message,
     });
   }
