@@ -101,8 +101,10 @@ describe("Habit Category Percentage Time Tests", () => {
     expect(response.body).toHaveProperty("categoryData");
 
     // Check the percentage of time for 'Work' category
-    const categoryData = response.body.categoryData;
-    const workCategory = categoryData.find((cat) => cat.name === "Work");
+    const categoryDataPercentage = response.body.categoryDataPercentage;
+    const workCategory = categoryDataPercentage.find(
+      (cat) => cat.name === "Work"
+    );
 
     expect(workCategory).toBeDefined();
     expect(workCategory.percentageTime).toBeDefined(); // Check for percentage
