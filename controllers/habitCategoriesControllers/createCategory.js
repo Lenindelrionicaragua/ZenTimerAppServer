@@ -23,18 +23,20 @@ export const createCategory = async (req, res) => {
     allowedFields
   );
   if (invalidFieldsError) {
-    return res
-      .status(400)
-      .json({ success: false, msg: `Invalid request: ${invalidFieldsError}` });
+    return res.status(400).json({
+      success: false,
+      msg: `Invalid request: ${invalidFieldsError}`,
+    });
   }
 
   try {
     // Validate the habitCategory details
     const errorList = validateCategory(req.body.habitCategory);
     if (errorList.length > 0) {
-      return res
-        .status(400)
-        .json({ success: false, msg: validationErrorMessage(errorList) });
+      return res.status(400).json({
+        success: false,
+        msg: validationErrorMessage(errorList),
+      });
     }
 
     // Validate the ObjectId format for createdBy
@@ -45,6 +47,19 @@ export const createCategory = async (req, res) => {
       });
     }
 
+    // Check how many categories the user currently has
+    const existingCategoriesCount = await HabitCategory.countDocuments({
+      createdBy: req.body.habitCategory.createdBy,
+    });
+
+    // Check if the user has reached the maximum limit of categories
+    if (existingCategoriesCount >= 7) {
+      return res.status(400).json({
+        success: false,
+        msg: "You have reached the maximum limit of 7 categories allowed.",
+      });
+    }
+
     // Check if a category with the same name already exists for the user
     const existingCategory = await HabitCategory.findOne({
       name: req.body.habitCategory.name,
@@ -52,17 +67,18 @@ export const createCategory = async (req, res) => {
     });
 
     if (existingCategory) {
-      return res
-        .status(400)
-        .json({ success: false, msg: "Category already exists." });
+      return res.status(400).json({
+        success: false,
+        msg: "Category already exists for this user.",
+      });
     }
 
     // Create a new HabitCategory instance
     const newCategory = new HabitCategory({
       name: req.body.habitCategory.name,
       createdBy: req.body.habitCategory.createdBy,
-      dailyRecords: req.body.habitCategory.dailyRecords || [], // Default to empty array if not provided
-      createdAt: req.body.habitCategory.createdAt || Date.now(), // Default to now if not provided
+      dailyRecords: req.body.habitCategory.dailyRecords || [],
+      createdAt: req.body.habitCategory.createdAt || Date.now(),
     });
 
     // Save the new category to the database
@@ -77,8 +93,10 @@ export const createCategory = async (req, res) => {
   } catch (error) {
     // Log and respond with an error if category creation fails
     logError("Error creating category:", error);
-    res
-      .status(500)
-      .json({ success: false, message: "Error creating category.", error });
+    res.status(500).json({
+      success: false,
+      message: "Error creating category.",
+      error,
+    });
   }
 };

@@ -43,6 +43,72 @@ describe("Create a new habit-category (test route)", () => {
     userId = loginResponse.body.user.id; // Capture the user's id from the login response
   });
 
+  it("should fail if a category with the same name already exists", async () => {
+    const category = {
+      habitCategory: {
+        name: "Work",
+        createdBy: userId,
+        createdAt: new Date(),
+        dailyRecords: [],
+      },
+    };
+
+    // Create the first category
+    await request.post("/api/test/habit-categories/create").send(category);
+
+    // Attempt to create the same category again
+    const duplicateResponse = await request
+      .post("/api/test/habit-categories/create")
+      .send(category);
+
+    // Validate response
+    expect(duplicateResponse.status).toBe(400);
+    expect(duplicateResponse.body.success).toBe(false);
+    expect(duplicateResponse.body.msg).toBe("Category already exists.");
+  });
+
+  it("should fail if the category name contains invalid characters", async () => {
+    const invalidCategory = {
+      habitCategory: {
+        name: "Invalid@Name#", // Contains invalid characters
+        createdBy: userId,
+        createdAt: new Date(),
+        dailyRecords: [],
+      },
+    };
+
+    const response = await request
+      .post("/api/test/habit-categories/create")
+      .send(invalidCategory);
+
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.msg).toContain(
+      "Category name must contain only letters, spaces, hyphens, or exclamation marks"
+    );
+  });
+
+  it("should fail if the category name exceeds 15 characters", async () => {
+    const longCategory = {
+      habitCategory: {
+        name: "ThisCategoryNameIsWayTooLong",
+        createdBy: userId,
+        createdAt: new Date(),
+        dailyRecords: [],
+      },
+    };
+
+    const response = await request
+      .post("/api/test/habit-categories/create")
+      .send(longCategory);
+
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.msg).toContain(
+      "Category name must contain only letters, spaces, hyphens, or exclamation marks, and have a maximum length of 15 characters."
+    );
+  });
+
   it("should create a new category if it does not exist (test route)", async () => {
     // Step 3: Create a new habit category using the captured userId
     const newCategory = {
@@ -207,6 +273,74 @@ describe("Create a new habit-category (test route)", () => {
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toContain(
       "Invalid request: the following properties are not allowed to be set: invalidField"
+    );
+  });
+});
+
+describe("Category Limit Tests", () => {
+  let testUser;
+  let userId;
+
+  beforeEach(async () => {
+    // Step 1: Create a new user
+    testUser = {
+      name: "Test User",
+      email: "testuser@example.com",
+      password: "Test1234!",
+      dateOfBirth: "Tue Feb 01 1990",
+    };
+
+    await request.post("/api/auth/sign-up").send({ user: testUser });
+
+    // Step 2: Log in with the created user to get the userId
+    const loginResponse = await request
+      .post("/api/auth/log-in")
+      .send({ user: { email: testUser.email, password: testUser.password } });
+
+    userId = loginResponse.body.user.id; // Capture the user's id from the login response
+
+    // Step 3: Create 7 categories
+    const categories = [
+      { name: "Category 1", createdBy: userId },
+      { name: "Category 2", createdBy: userId },
+      { name: "Category 3", createdBy: userId },
+      { name: "Category 4", createdBy: userId },
+      { name: "Category 5", createdBy: userId },
+      { name: "Category 6", createdBy: userId },
+      { name: "Category 7", createdBy: userId },
+    ];
+
+    for (const category of categories) {
+      await request.post("/api/test/habit-categories/create").send({
+        habitCategory: {
+          ...category,
+          createdAt: new Date(),
+          dailyRecords: [],
+        },
+      });
+    }
+  });
+
+  it("should fail if a user tries to create more than 7 categories", async () => {
+    // Attempt to create an 8th category
+    const eighthCategory = {
+      habitCategory: {
+        name: "Category 8",
+        createdBy: userId,
+        createdAt: new Date(),
+        dailyRecords: [],
+      },
+    };
+
+    const duplicateResponse = await request
+      .post("/api/test/habit-categories/create")
+      .send(eighthCategory);
+
+    // Validate response for the 8th category attempt
+    expect(duplicateResponse.status).toBe(400);
+    expect(duplicateResponse.body.success).toBe(false);
+    expect(duplicateResponse.body.msg).toBe(
+      "You have reached the maximum limit of 7 categories allowed."
     );
   });
 });

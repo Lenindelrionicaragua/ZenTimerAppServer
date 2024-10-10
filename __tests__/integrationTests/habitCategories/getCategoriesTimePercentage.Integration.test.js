@@ -41,72 +41,11 @@ describe("Habit Category Percentage Time Tests", () => {
     userId = loginResponse.body.user.id;
 
     const categories = [
-      {
-        name: "Family-Time",
-        totalMinutes: 300,
-        createdBy: userId,
-        createdAt: new Date("2022-12-15"),
-      },
-      {
-        name: "Rest",
-        totalMinutes: 25,
-        createdBy: userId,
-        createdAt: new Date("2022-12-15"),
-      },
-      {
-        name: "Exercise",
-        totalMinutes: 14,
-        createdBy: userId,
-        createdAt: new Date("2023-12-11"),
-      },
-      {
-        name: "Family-Time",
-        totalMinutes: 300,
-        createdBy: userId,
-        createdAt: new Date("2023-12-13"),
-      },
-      {
-        name: "Study",
-        totalMinutes: 300,
-        createdBy: userId,
-        createdAt: new Date("2023-12-15"),
-      },
-      {
-        name: "Rest",
-        totalMinutes: 300,
-        createdBy: userId,
-        createdAt: new Date("2023-12-18"),
-      },
-      {
-        name: "Rest",
-        totalMinutes: 45,
-        createdBy: userId,
-        createdAt: new Date("2024-01-01"),
-      },
-      {
-        name: "Work",
-        totalMinutes: 120,
-        createdBy: userId,
-        createdAt: new Date("2024-07-01"),
-      },
-      {
-        name: "Exercise",
-        totalMinutes: 60,
-        createdBy: userId,
-        createdAt: new Date("2024-07-05"),
-      },
-      {
-        name: "Study",
-        totalMinutes: 90,
-        createdBy: userId,
-        createdAt: new Date("2024-07-10"),
-      },
-      {
-        name: "Work",
-        totalMinutes: 45,
-        createdBy: userId,
-        createdAt: new Date("2024-08-01"),
-      },
+      { name: "Family-Time", createdBy: userId },
+      { name: "Rest", createdBy: userId },
+      { name: "Exercise", createdBy: userId },
+      { name: "Study", createdBy: userId },
+      { name: "Work", createdBy: userId },
     ];
 
     logInfo(`Populate MockDB: ${JSON.stringify(categories, null, 2)}`);
@@ -116,49 +55,149 @@ describe("Habit Category Percentage Time Tests", () => {
         habitCategory: category,
       });
     }
+
+    // Updating categories with their total minutes for specific dates
+    await request.post("/api/test/habit-categories/update").send({
+      habitCategory: {
+        name: "Family-Time",
+        totalMinutes: 300,
+        date: "2022-12-15",
+        createdBy: userId,
+      },
+    });
+
+    await request.post("/api/test/habit-categories/update").send({
+      habitCategory: {
+        name: "Rest",
+        totalMinutes: 25,
+        date: "2022-12-15",
+        createdBy: userId,
+      },
+    });
+
+    await request.post("/api/test/habit-categories/update").send({
+      habitCategory: {
+        name: "Exercise",
+        totalMinutes: 14,
+        date: "2023-12-11",
+        createdBy: userId,
+      },
+    });
+
+    await request.post("/api/test/habit-categories/update").send({
+      habitCategory: {
+        name: "Family-Time",
+        totalMinutes: 300,
+        date: "2023-12-13",
+        createdBy: userId,
+      },
+    });
+
+    await request.post("/api/test/habit-categories/update").send({
+      habitCategory: {
+        name: "Study",
+        totalMinutes: 300,
+        date: "2023-12-15",
+        createdBy: userId,
+      },
+    });
+
+    await request.post("/api/test/habit-categories/update").send({
+      habitCategory: {
+        name: "Rest",
+        totalMinutes: 300,
+        date: "2023-12-18",
+        createdBy: userId,
+      },
+    });
+
+    await request.post("/api/test/habit-categories/update").send({
+      habitCategory: {
+        name: "Rest",
+        totalMinutes: 45,
+        date: "2024-01-01",
+        createdBy: userId,
+      },
+    });
+
+    await request.post("/api/test/habit-categories/update").send({
+      habitCategory: {
+        name: "Work",
+        totalMinutes: 120,
+        date: "2024-07-01",
+        createdBy: userId,
+      },
+    });
+
+    await request.post("/api/test/habit-categories/update").send({
+      habitCategory: {
+        name: "Exercise",
+        totalMinutes: 60,
+        date: "2024-07-05",
+        createdBy: userId,
+      },
+    });
+
+    await request.post("/api/test/habit-categories/update").send({
+      habitCategory: {
+        name: "Study",
+        totalMinutes: 90,
+        date: "2024-07-10",
+        createdBy: userId,
+      },
+    });
+
+    await request.post("/api/test/habit-categories/update").send({
+      habitCategory: {
+        name: "Work",
+        totalMinutes: 45,
+        date: "2024-08-01",
+        createdBy: userId,
+      },
+    });
   });
 
-  // it("should return total percentage of time with all the categories for a specific day", async () => {
-  //   const response = await request
-  //     .get("/api/test/habit-categories/time-percentage")
-  //     .query({
-  //       userId,
-  //       years: "2022",
-  //       periodType: "day",
-  //       startDate: "2022-12-15",
-  //       endDate: "2022-12-15",
-  //     });
+  it("should return total percentage of time with all the categories for a specific day", async () => {
+    const response = await request
+      .get("/api/test/habit-categories/time-percentage")
+      .query({
+        userId,
+        years: "2022",
+        periodType: "day",
+        startDate: "2022-12-15",
+        endDate: "2022-12-15",
+      });
 
-  //   logInfo(`User ID: ${userId}`);
-  //   logInfo(`Response: ${JSON.stringify(response.body)}`);
+    logInfo(`User ID: ${userId}`);
+    logInfo(`Response: ${JSON.stringify(response.body)}`);
 
-  //   expect(response.status).toBe(200);
-  //   expect(response.body).toHaveProperty("totalMinutes");
-  //   expect(response.body).toHaveProperty("categoryDataPercentage");
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty("totalMinutes");
+    expect(response.body).toHaveProperty("categoryDataPercentage");
 
-  //   const { totalMinutes, categoryDataPercentage } = response.body;
+    const { totalMinutes, categoryDataPercentage } = response.body;
 
-  //   const expectedTotalMinutes = 300 + 25;
-  //   expect(totalMinutes).toBe(expectedTotalMinutes);
+    const expectedTotalMinutes = 300 + 25;
+    expect(totalMinutes).toBe(expectedTotalMinutes);
 
-  //   const familyTimeCategory = categoryDataPercentage.find(
-  //     (cat) => cat.name === "Family-Time"
-  //   );
-  //   const restCategory = categoryDataPercentage.find(
-  //     (cat) => cat.name === "Rest"
-  //   );
+    const familyTimeCategory = categoryDataPercentage.find(
+      (cat) => cat.name === "Family-Time"
+    );
+    const restCategory = categoryDataPercentage.find(
+      (cat) => cat.name === "Rest"
+    );
 
-  //   const expectedFamilyTimePercentage = (
-  //     (300 / expectedTotalMinutes) *
-  //     100
-  //   ).toFixed(2);
-  //   const expectedRestPercentage = ((25 / expectedTotalMinutes) * 100).toFixed(
-  //     2
-  //   );
+    const expectedFamilyTimePercentage = (
+      (300 / expectedTotalMinutes) *
+      100
+    ).toFixed(2);
+    const expectedRestPercentage = ((25 / expectedTotalMinutes) * 100).toFixed(
+      2
+    );
 
-  //   expect(familyTimeCategory.percentage).toBe(expectedFamilyTimePercentage);
-  //   expect(restCategory.percentage).toBe(expectedRestPercentage);
-  // });
+    expect(familyTimeCategory.percentage).toBe(expectedFamilyTimePercentage);
+    expect(restCategory.percentage).toBe(expectedRestPercentage);
+  });
 
   it("should return categories only for the specified week and exclude dates outside the week", async () => {
     const response = await request
@@ -180,8 +219,7 @@ describe("Habit Category Percentage Time Tests", () => {
 
     const { totalMinutes, categoryDataPercentage } = response.body;
 
-    // Total esperado: 14 (Exercise) + 300 (Family-Time) + 300 (Study)
-    const expectedTotalMinutes = 14 + 300 + 300; // 614 minutos
+    const expectedTotalMinutes = 14 + 300 + 300; // 614 minutes
     expect(totalMinutes).toBe(expectedTotalMinutes);
 
     const exerciseCategory = categoryDataPercentage.find(
@@ -212,54 +250,52 @@ describe("Habit Category Percentage Time Tests", () => {
     expect(studyCategory.percentage).toBe(expectedStudyPercentage);
   });
 
-  // it("should return total percentage of time with all the categories for a specific month and year", async () => {
-  //   const response = await request
-  //     .get("/api/test/habit-categories/time-percentage")
-  //     .query({
-  //       userId,
-  //       years: "2024",
-  //       periodType: "month",
-  //       startDate: "2024-07-01",
-  //       endDate: "2024-07-31",
-  //     });
+  it("should return total percentage of time with all the categories for a specific month and year", async () => {
+    const response = await request
+      .get("/api/test/habit-categories/time-percentage")
+      .query({
+        userId,
+        years: "2024",
+        periodType: "month",
+        startDate: "2024-07-01",
+        endDate: "2024-07-31",
+      });
 
-  //   logInfo(`User ID: ${userId}`);
-  //   logInfo(`Response: ${JSON.stringify(response.body)}`);
+    logInfo(`User ID: ${userId}`);
+    logInfo(`Response: ${JSON.stringify(response.body)}`);
 
-  //   expect(response.status).toBe(200);
-  //   expect(response.body).toHaveProperty("totalMinutes");
-  //   expect(response.body).toHaveProperty("categoryDataPercentage");
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty("totalMinutes");
+    expect(response.body).toHaveProperty("categoryDataPercentage");
 
-  //   const { totalMinutes, categoryDataPercentage } = response.body;
+    const { totalMinutes, categoryDataPercentage } = response.body;
 
-  //   // Total esperado para Julio: 120 (Work) + 60 (Exercise) + 90 (Study)
-  //   const expectedTotalMinutes = 120 + 60 + 90; // Total para Julio
-  //   expect(totalMinutes).toBe(expectedTotalMinutes);
+    const expectedTotalMinutes = 120 + 60 + 90; // Total for July
+    expect(totalMinutes).toBe(expectedTotalMinutes);
 
-  //   // Verifica los porcentajes por categoría
-  //   const workCategory = categoryDataPercentage.find(
-  //     (cat) => cat.name === "Work"
-  //   );
-  //   const exerciseCategory = categoryDataPercentage.find(
-  //     (cat) => cat.name === "Exercise"
-  //   );
-  //   const studyCategory = categoryDataPercentage.find(
-  //     (cat) => cat.name === "Study"
-  //   );
+    const workCategory = categoryDataPercentage.find(
+      (cat) => cat.name === "Work"
+    );
+    const exerciseCategory = categoryDataPercentage.find(
+      (cat) => cat.name === "Exercise"
+    );
+    const studyCategory = categoryDataPercentage.find(
+      (cat) => cat.name === "Study"
+    );
 
-  //   const expectedWorkPercentage = ((120 / expectedTotalMinutes) * 100).toFixed(
-  //     2
-  //   );
-  //   const expectedExercisePercentage = (
-  //     (60 / expectedTotalMinutes) *
-  //     100
-  //   ).toFixed(2);
-  //   const expectedStudyPercentage = ((90 / expectedTotalMinutes) * 100).toFixed(
-  //     2
-  //   );
+    const expectedWorkPercentage = ((120 / expectedTotalMinutes) * 100).toFixed(
+      2
+    );
+    const expectedExercisePercentage = (
+      (60 / expectedTotalMinutes) *
+      100
+    ).toFixed(2);
+    const expectedStudyPercentage = ((90 / expectedTotalMinutes) * 100).toFixed(
+      2
+    );
 
-  //   expect(workCategory.percentage).toBe(expectedWorkPercentage);
-  //   expect(exerciseCategory.percentage).toBe(expectedExercisePercentage);
-  //   expect(studyCategory.percentage).toBe(expectedStudyPercentage);
-  // });
+    expect(workCategory.percentage).toBe(expectedWorkPercentage);
+    expect(exerciseCategory.percentage).toBe(expectedExercisePercentage);
+    expect(studyCategory.percentage).toBe(expectedStudyPercentage);
+  });
 });

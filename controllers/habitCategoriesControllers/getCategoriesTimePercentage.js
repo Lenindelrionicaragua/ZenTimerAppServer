@@ -27,7 +27,7 @@ export const getCategoriesTimePercentage = async (req, res) => {
 
   // Validate required parameters
   if (!years || !periodType || (!startDate && !endDate)) {
-    errorList.push("Years, periodType, startDate and endDate are required.");
+    errorList.push("Years, periodType, startDate, and endDate are required.");
   }
 
   // Validate year format
@@ -60,35 +60,28 @@ export const getCategoriesTimePercentage = async (req, res) => {
     const filter = { createdBy: userId };
 
     // Set date filters based on the periodType
+    const year = yearArray[0]; // Assuming only one year is passed
+    const startOfYear = new Date(year, 0, 1); // Start of the year
+    const endOfYear = new Date(year, 11, 31, 23, 59, 59, 999); // End of the year
+
     if (periodType === "month") {
-      const year = yearArray[0]; // Assuming only one year is passed
       const month = new Date(startDate).getMonth(); // Get month from startDate
       const startOfMonth = new Date(year, month, 1);
       const endOfMonth = new Date(year, month + 1, 0, 23, 59, 59, 999); // Last day of the month
-
       filter.createdAt = { $gte: startOfMonth, $lte: endOfMonth }; // Filtering for the month
     } else if (periodType === "day") {
-      if (startDate) {
-        const year = new Date(startDate).getFullYear(); // Get the year from startDate
-        const startOfDay = new Date(
-          `${year}-${startDate.split("-")[1]}-${startDate.split("-")[2]}`
-        );
-        const endOfDay = new Date(startOfDay);
-        endOfDay.setHours(23, 59, 59, 999); // End of the day
-
-        filter.createdAt = { $gte: startOfDay, $lte: endOfDay };
-      }
+      const startOfDay = new Date(startDate);
+      const endOfDay = new Date(startOfDay);
+      endOfDay.setHours(23, 59, 59, 999); // End of the day
+      filter.createdAt = { $gte: startOfDay, $lte: endOfDay };
     } else if (periodType === "week") {
-      // Filter by week, ensuring the year is respected
-      if (startDate && endDate) {
-        const startOfWeek = new Date(startDate);
-        const endOfWeek = new Date(endDate);
-        endOfWeek.setHours(23, 59, 59, 999); // End of the week (Sunday)
-
-        filter.createdAt = { $gte: startOfWeek, $lte: endOfWeek };
-      }
+      const startOfWeek = new Date(startDate);
+      const endOfWeek = new Date(endDate);
+      endOfWeek.setHours(23, 59, 59, 999); // End of the week
+      filter.createdAt = { $gte: startOfWeek, $lte: endOfWeek };
+    } else if (periodType === "year") {
+      filter.createdAt = { $gte: startOfYear, $lte: endOfYear };
     } else if (startDate && endDate) {
-      // General date range filter
       filter.createdAt = { $gte: new Date(startDate), $lte: new Date(endDate) };
     }
 
@@ -97,29 +90,37 @@ export const getCategoriesTimePercentage = async (req, res) => {
 
     // If no categories are found, return a 404 error
     if (!categories || categories.length === 0) {
-      return res
-        .status(404)
-        .json({
-          message:
-            "No categories found for this user in the given time period.",
-        });
+      return res.status(404).json({
+        message: "No categories found for this user in the given time period.",
+      });
     }
 
-    // Calculate total minutes for all categories
-    const totalMinutes = categories.reduce(
-      (sum, category) => sum + category.totalMinutes,
-      0
-    );
+    // Calculate total minutes from daily records
+    const totalMinutes = categories.reduce((sum, category) => {
+      const dailyRecords = category.dailyRecords || [];
+      const totalCategoryMinutes = dailyRecords.reduce(
+        (recordSum, record) => recordSum + (record.totalMinutes || 0),
+        0
+      );
+      return sum + totalCategoryMinutes;
+    }, 0);
 
     // Generate category data with percentages
-    const categoryStats = categories.map((category) => ({
-      name: category.name,
-      totalMinutes: category.totalMinutes,
-      percentage:
-        totalMinutes > 0
-          ? ((category.totalMinutes / totalMinutes) * 100).toFixed(2)
-          : 0,
-    }));
+    const categoryStats = categories.map((category) => {
+      const dailyRecords = category.dailyRecords || [];
+      const totalCategoryMinutes = dailyRecords.reduce(
+        (recordSum, record) => recordSum + (record.totalMinutes || 0),
+        0
+      );
+      return {
+        name: category.name,
+        totalMinutes: totalCategoryMinutes,
+        percentage:
+          totalMinutes > 0
+            ? ((totalCategoryMinutes / totalMinutes) * 100).toFixed(2)
+            : 0,
+      };
+    });
 
     // Send the calculated stats in the response
     res.status(200).json({
