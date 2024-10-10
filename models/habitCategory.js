@@ -14,13 +14,6 @@ const habitCategorySchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
-  totalMinutes: {
-    type: Number,
-    default: 0,
-    required: true,
-    min: 0,
-    max: 1440, // Optional: total minutes cannot exceed 24 hours in a day
-  },
   dailyRecords: [
     {
       date: {
@@ -47,17 +40,10 @@ export const validateCategory = (
   categoryObject,
   requireName = true,
   requireCreatedBy = true,
-  requireTotalMinutes = true,
   requireCreatedAt = true
 ) => {
   const errorList = [];
-  const allowedKeys = [
-    "name",
-    "createdBy",
-    "totalMinutes",
-    "dailyRecords",
-    "createdAt",
-  ];
+  const allowedKeys = ["name", "createdBy", "dailyRecords", "createdAt"];
 
   logInfo("Starting validation for category object:", categoryObject);
 
@@ -85,20 +71,6 @@ export const validateCategory = (
   // Validate createdBy
   if (requireCreatedBy && !categoryObject.createdBy) {
     errorList.push("Creator is required.");
-  }
-
-  // Validate total minutes (for the entire category)
-  if (requireTotalMinutes) {
-    if (
-      categoryObject.totalMinutes == null ||
-      typeof categoryObject.totalMinutes !== "number"
-    ) {
-      errorList.push("Total minutes is required.");
-    } else if (categoryObject.totalMinutes < 0) {
-      errorList.push("Total minutes cannot be negative.");
-    } else if (categoryObject.totalMinutes > 1440) {
-      errorList.push("Total minutes cannot exceed 1440 minutes (24 hours).");
-    }
   }
 
   // Validate daily records (individual day entries)
@@ -130,6 +102,22 @@ export const validateCategory = (
   }
 
   return errorList;
+};
+
+// Calculating the total minutes for a given range (day, week, month, year)
+habitCategorySchema.methods.calculateTotalMinutes = function (
+  startDate,
+  endDate
+) {
+  let totalMinutes = 0;
+
+  this.dailyRecords.forEach((record) => {
+    if (record.date >= startDate && record.date <= endDate) {
+      totalMinutes += record.minutes;
+    }
+  });
+
+  return totalMinutes;
 };
 
 const HabitCategory = mongoose.model("HabitCategory", habitCategorySchema);
