@@ -161,6 +161,32 @@ describe("getCategoriesTime Controller", () => {
     });
   });
 
+  it("should create a new category without specifying time (totalMinutes or dailyRecords)", async () => {
+    // Step 3: Create a new habit category without specifying totalMinutes or dailyRecords
+    const newCategory = {
+      habitCategory: {
+        name: "Health",
+        createdBy: userId, // Use the user id from login response
+        createdAt: new Date(),
+      },
+    };
+
+    // Send the request without time-related fields
+    const response = await request
+      .post("/api/test/habit-categories/create")
+      .send(newCategory);
+
+    // Step 4: Validate the creation response
+    expect(response.status).toBe(201);
+    expect(response.body.success).toBe(true);
+    expect(response.body.message).toBe("Category created successfully.");
+    expect(response.body.category.name).toBe(newCategory.habitCategory.name);
+    expect(response.body.category.createdBy).toEqual(userId);
+
+    // Ensure the default value for time is set correctly (if totalMinutes defaults to 0)
+    expect(response.body.category.totalMinutes).toBe(0); // Assuming the default is 0 for totalMinutes
+  });
+
   it("should return categories for a specific year", async () => {
     req.query.periodType = "year";
     req.query.startDate = "2024-01-01";

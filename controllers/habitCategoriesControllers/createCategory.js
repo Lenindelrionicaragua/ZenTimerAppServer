@@ -61,8 +61,8 @@ export const createCategory = async (req, res) => {
     const newCategory = new HabitCategory({
       name: req.body.habitCategory.name,
       createdBy: req.body.habitCategory.createdBy,
+      dailyRecords: req.body.habitCategory.dailyRecords || [], // Default to empty array if not provided
       createdAt: req.body.habitCategory.createdAt || Date.now(), // Default to now if not provided
-      dailyRecords: req.body.habitCategory.dailyRecords || [], // Initialize with empty records if not provided
     });
 
     // Save the new category to the database
