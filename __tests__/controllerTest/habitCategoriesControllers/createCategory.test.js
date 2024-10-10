@@ -64,7 +64,9 @@ describe("Create a new habit-category (test route)", () => {
     // Validate response
     expect(duplicateResponse.status).toBe(400);
     expect(duplicateResponse.body.success).toBe(false);
-    expect(duplicateResponse.body.msg).toBe("Category already exists.");
+    expect(duplicateResponse.body.msg).toBe(
+      "Category already exists for this user."
+    );
   });
 
   it("should fail if the category name contains invalid characters", async () => {
@@ -212,30 +214,6 @@ describe("Create a new habit-category (test route)", () => {
     expect(response.body.msg).toContain("Creation date is required.");
   });
 
-  it("should fail if a category with the same name already exists", async () => {
-    const category = {
-      habitCategory: {
-        name: "Work",
-        createdBy: userId,
-        createdAt: new Date(),
-        dailyRecords: [],
-      },
-    };
-
-    // Create the first category
-    await request.post("/api/test/habit-categories/create").send(category);
-
-    // Attempt to create the same category again
-    const duplicateResponse = await request
-      .post("/api/test/habit-categories/create")
-      .send(category);
-
-    // Validate response
-    expect(duplicateResponse.status).toBe(400);
-    expect(duplicateResponse.body.success).toBe(false);
-    expect(duplicateResponse.body.msg).toBe("Category already exists.");
-  });
-
   it("should fail if habitCategory object is invalid or not provided", async () => {
     const invalidCategory = {
       habitCategory: null, // Invalid habitCategory object
@@ -301,45 +279,73 @@ describe("Category Limit Tests", () => {
 
     // Step 3: Create 7 categories
     const categories = [
-      { name: "Category 1", createdBy: userId },
-      { name: "Category 2", createdBy: userId },
-      { name: "Category 3", createdBy: userId },
-      { name: "Category 4", createdBy: userId },
-      { name: "Category 5", createdBy: userId },
-      { name: "Category 6", createdBy: userId },
-      { name: "Category 7", createdBy: userId },
-    ];
-
-    for (const category of categories) {
-      await request.post("/api/test/habit-categories/create").send({
-        habitCategory: {
-          ...category,
-          createdAt: new Date(),
-          dailyRecords: [],
-        },
-      });
-    }
-  });
-
-  it("should fail if a user tries to create more than 7 categories", async () => {
-    // Attempt to create an 8th category
-    const eighthCategory = {
-      habitCategory: {
-        name: "Category 8",
+      {
+        name: "Category 1",
         createdBy: userId,
         createdAt: new Date(),
         dailyRecords: [],
       },
-    };
+      {
+        name: "Category 2",
+        createdBy: userId,
+        createdAt: new Date(),
+        dailyRecords: [],
+      },
+      {
+        name: "Category 3",
+        createdBy: userId,
+        createdAt: new Date(),
+        dailyRecords: [],
+      },
+      {
+        name: "Category 4",
+        createdBy: userId,
+        createdAt: new Date(),
+        dailyRecords: [],
+      },
+      {
+        name: "Category 5",
+        createdBy: userId,
+        createdAt: new Date(),
+        dailyRecords: [],
+      },
+      {
+        name: "Category 6",
+        createdBy: userId,
+        createdAt: new Date(),
+        dailyRecords: [],
+      },
+      {
+        name: "Category 7",
+        createdBy: userId,
+        createdAt: new Date(),
+        dailyRecords: [],
+      },
+    ];
 
-    const duplicateResponse = await request
+    for (const category of categories) {
+      await request.post("/api/test/habit-categories/create").send({
+        habitCategory: category, // This should now include all required fields
+      });
+    }
+  });
+
+  it("should not allow creating more than 7 categories", async () => {
+    // Attempt to create the 8th category
+    const response = await request
       .post("/api/test/habit-categories/create")
-      .send(eighthCategory);
+      .send({
+        habitCategory: {
+          name: "Category 8",
+          createdBy: userId,
+          createdAt: new Date(),
+          dailyRecords: [],
+        },
+      });
 
-    // Validate response for the 8th category attempt
-    expect(duplicateResponse.status).toBe(400);
-    expect(duplicateResponse.body.success).toBe(false);
-    expect(duplicateResponse.body.msg).toBe(
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.msg).toBe(
       "You have reached the maximum limit of 7 categories allowed."
     );
   });

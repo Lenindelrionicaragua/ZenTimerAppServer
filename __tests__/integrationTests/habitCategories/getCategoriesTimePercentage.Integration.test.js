@@ -41,11 +41,61 @@ describe("Habit Category Percentage Time Tests", () => {
     userId = loginResponse.body.user.id;
 
     const categories = [
-      { name: "Family-Time", createdBy: userId },
-      { name: "Rest", createdBy: userId },
-      { name: "Exercise", createdBy: userId },
-      { name: "Study", createdBy: userId },
-      { name: "Work", createdBy: userId },
+      {
+        name: "Family-Time",
+        dailyRecords: [{ date: "2022-12-15", totalMinutes: 300 }],
+        createdBy: userId,
+      },
+      {
+        name: "Rest",
+        dailyRecords: [{ date: "2022-12-15", totalMinutes: 25 }],
+        createdBy: userId,
+      },
+      {
+        name: "Exercise",
+        dailyRecords: [{ date: "2023-12-11", totalMinutes: 14 }],
+        createdBy: userId,
+      },
+      {
+        name: "Family-Time",
+        dailyRecords: [{ date: "2023-12-13", totalMinutes: 300 }],
+        createdBy: userId,
+      },
+      {
+        name: "Study",
+        dailyRecords: [{ date: "2023-12-15", totalMinutes: 300 }],
+        createdBy: userId,
+      },
+      {
+        name: "Rest",
+        dailyRecords: [{ date: "2023-12-18", totalMinutes: 300 }],
+        createdBy: userId,
+      },
+      {
+        name: "Rest",
+        dailyRecords: [{ date: "2024-01-01", totalMinutes: 45 }],
+        createdBy: userId,
+      },
+      {
+        name: "Work",
+        dailyRecords: [{ date: "2024-07-01", totalMinutes: 120 }],
+        createdBy: userId,
+      },
+      {
+        name: "Exercise",
+        dailyRecords: [{ date: "2024-07-05", totalMinutes: 60 }],
+        createdBy: userId,
+      },
+      {
+        name: "Study",
+        dailyRecords: [{ date: "2024-07-10", totalMinutes: 90 }],
+        createdBy: userId,
+      },
+      {
+        name: "Work",
+        dailyRecords: [{ date: "2024-08-01", totalMinutes: 45 }],
+        createdBy: userId,
+      },
     ];
 
     logInfo(`Populate MockDB: ${JSON.stringify(categories, null, 2)}`);
@@ -55,106 +105,6 @@ describe("Habit Category Percentage Time Tests", () => {
         habitCategory: category,
       });
     }
-
-    // Updating categories with their total minutes for specific dates
-    await request.post("/api/test/habit-categories/update").send({
-      habitCategory: {
-        name: "Family-Time",
-        totalMinutes: 300,
-        date: "2022-12-15",
-        createdBy: userId,
-      },
-    });
-
-    await request.post("/api/test/habit-categories/update").send({
-      habitCategory: {
-        name: "Rest",
-        totalMinutes: 25,
-        date: "2022-12-15",
-        createdBy: userId,
-      },
-    });
-
-    await request.post("/api/test/habit-categories/update").send({
-      habitCategory: {
-        name: "Exercise",
-        totalMinutes: 14,
-        date: "2023-12-11",
-        createdBy: userId,
-      },
-    });
-
-    await request.post("/api/test/habit-categories/update").send({
-      habitCategory: {
-        name: "Family-Time",
-        totalMinutes: 300,
-        date: "2023-12-13",
-        createdBy: userId,
-      },
-    });
-
-    await request.post("/api/test/habit-categories/update").send({
-      habitCategory: {
-        name: "Study",
-        totalMinutes: 300,
-        date: "2023-12-15",
-        createdBy: userId,
-      },
-    });
-
-    await request.post("/api/test/habit-categories/update").send({
-      habitCategory: {
-        name: "Rest",
-        totalMinutes: 300,
-        date: "2023-12-18",
-        createdBy: userId,
-      },
-    });
-
-    await request.post("/api/test/habit-categories/update").send({
-      habitCategory: {
-        name: "Rest",
-        totalMinutes: 45,
-        date: "2024-01-01",
-        createdBy: userId,
-      },
-    });
-
-    await request.post("/api/test/habit-categories/update").send({
-      habitCategory: {
-        name: "Work",
-        totalMinutes: 120,
-        date: "2024-07-01",
-        createdBy: userId,
-      },
-    });
-
-    await request.post("/api/test/habit-categories/update").send({
-      habitCategory: {
-        name: "Exercise",
-        totalMinutes: 60,
-        date: "2024-07-05",
-        createdBy: userId,
-      },
-    });
-
-    await request.post("/api/test/habit-categories/update").send({
-      habitCategory: {
-        name: "Study",
-        totalMinutes: 90,
-        date: "2024-07-10",
-        createdBy: userId,
-      },
-    });
-
-    await request.post("/api/test/habit-categories/update").send({
-      habitCategory: {
-        name: "Work",
-        totalMinutes: 45,
-        date: "2024-08-01",
-        createdBy: userId,
-      },
-    });
   });
 
   it("should return total percentage of time with all the categories for a specific day", async () => {
@@ -219,7 +169,8 @@ describe("Habit Category Percentage Time Tests", () => {
 
     const { totalMinutes, categoryDataPercentage } = response.body;
 
-    const expectedTotalMinutes = 14 + 300 + 300; // 614 minutes
+    // Total esperado: 14 (Exercise) + 300 (Family-Time) + 300 (Study)
+    const expectedTotalMinutes = 14 + 300 + 300; // 614 minutos
     expect(totalMinutes).toBe(expectedTotalMinutes);
 
     const exerciseCategory = categoryDataPercentage.find(
@@ -270,9 +221,11 @@ describe("Habit Category Percentage Time Tests", () => {
 
     const { totalMinutes, categoryDataPercentage } = response.body;
 
-    const expectedTotalMinutes = 120 + 60 + 90; // Total for July
+    // Total esperado para Julio: 120 (Work) + 60 (Exercise) + 90 (Study)
+    const expectedTotalMinutes = 120 + 60 + 90; // Total para Julio
     expect(totalMinutes).toBe(expectedTotalMinutes);
 
+    // Verifica los porcentajes por categoría
     const workCategory = categoryDataPercentage.find(
       (cat) => cat.name === "Work"
     );
