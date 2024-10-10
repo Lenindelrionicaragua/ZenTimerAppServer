@@ -49,8 +49,8 @@ describe("Create a new habit-category (test route)", () => {
       habitCategory: {
         name: "Work!",
         createdBy: userId, // Use the user id from login response
-        totalMinutes: 120,
         createdAt: new Date(),
+        dailyRecords: [], // Empty daily records for new category
       },
     };
 
@@ -65,9 +65,7 @@ describe("Create a new habit-category (test route)", () => {
     expect(response.body.message).toBe("Category created successfully.");
     expect(response.body.category.name).toBe(newCategory.habitCategory.name);
     expect(response.body.category.createdBy).toEqual(userId);
-    expect(response.body.category.totalMinutes).toBe(
-      newCategory.habitCategory.totalMinutes
-    );
+    expect(response.body.category.dailyRecords).toEqual([]);
   });
 
   it("should fail if the category name contains invalid characters", async () => {
@@ -75,8 +73,8 @@ describe("Create a new habit-category (test route)", () => {
       habitCategory: {
         name: "Invalid@Name#",
         createdBy: userId,
-        totalMinutes: 120,
         createdAt: new Date(),
+        dailyRecords: [],
       },
     };
 
@@ -96,8 +94,8 @@ describe("Create a new habit-category (test route)", () => {
       habitCategory: {
         name: "ValidName",
         createdBy: null,
-        totalMinutes: 120,
         createdAt: new Date(),
+        dailyRecords: [],
       },
     };
 
@@ -115,8 +113,8 @@ describe("Create a new habit-category (test route)", () => {
       habitCategory: {
         name: "ValidName",
         createdBy: "invalid-object-id", // Invalid ObjectId format
-        totalMinutes: 120,
         createdAt: new Date(),
+        dailyRecords: [],
       },
     };
 
@@ -135,7 +133,7 @@ describe("Create a new habit-category (test route)", () => {
       habitCategory: {
         name: "ValidName",
         createdBy: userId,
-        totalMinutes: 120,
+        dailyRecords: [],
       },
     };
 
@@ -148,32 +146,13 @@ describe("Create a new habit-category (test route)", () => {
     expect(response.body.msg).toContain("Creation date is required.");
   });
 
-  it("should fail if totalMinutes is negative", async () => {
-    const invalidCategory = {
-      habitCategory: {
-        name: "ValidName",
-        createdBy: userId,
-        totalMinutes: -10,
-        createdAt: new Date(),
-      },
-    };
-
-    const response = await request
-      .post("/api/test/habit-categories/create")
-      .send(invalidCategory);
-
-    expect(response.status).toBe(400);
-    expect(response.body.success).toBe(false);
-    expect(response.body.msg).toContain("Total minutes cannot be negative.");
-  });
-
   it("should fail if a category with the same name already exists", async () => {
     const category = {
       habitCategory: {
         name: "Work",
         createdBy: userId,
-        totalMinutes: 120,
         createdAt: new Date(),
+        dailyRecords: [],
       },
     };
 
@@ -213,8 +192,8 @@ describe("Create a new habit-category (test route)", () => {
       habitCategory: {
         name: "Exercise",
         createdBy: userId,
-        totalMinutes: 120,
         createdAt: new Date(),
+        dailyRecords: [],
         invalidField: "ThisShouldNotBeHere", // Invalid field
       },
     };

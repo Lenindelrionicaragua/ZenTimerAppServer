@@ -5,7 +5,7 @@ import validateAllowedFields from "../../util/validateAllowedFields.js";
 import { logError, logInfo } from "../../util/logging.js";
 
 export const createCategory = async (req, res) => {
-  const allowedFields = ["name", "createdBy", "totalMinutes", "createdAt"];
+  const allowedFields = ["name", "createdBy", "createdAt", "dailyRecords"];
 
   // Check if the habitCategory object is valid
   if (!(req.body.habitCategory instanceof Object)) {
@@ -61,8 +61,8 @@ export const createCategory = async (req, res) => {
     const newCategory = new HabitCategory({
       name: req.body.habitCategory.name,
       createdBy: req.body.habitCategory.createdBy,
-      totalMinutes: req.body.habitCategory.totalMinutes || 0, // Default to 0 if not provided
       createdAt: req.body.habitCategory.createdAt || Date.now(), // Default to now if not provided
+      dailyRecords: req.body.habitCategory.dailyRecords || [], // Initialize with empty records if not provided
     });
 
     // Save the new category to the database
