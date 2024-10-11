@@ -33,7 +33,7 @@ export const validateCategory = (
 
   logInfo("Starting validation for category object:", categoryObject);
 
-  // Validate allowed fields
+  // 1. Validate allowed fields
   const validatedKeysMessage = validateAllowedFields(
     categoryObject,
     allowedKeys
@@ -43,16 +43,16 @@ export const validateCategory = (
     logInfo("Validation failed for allowed fields: ", validatedKeysMessage);
   }
 
-  // Validate createdBy is a valid ObjectId
-  if (
-    requireCreatedBy &&
-    (!categoryObject.createdBy ||
-      !mongoose.Types.ObjectId.isValid(categoryObject.createdBy))
-  ) {
-    errorList.push("Creator must be a valid ObjectId.");
+  // 2. Validate 'createdBy'
+  if (requireCreatedBy) {
+    if (!categoryObject.createdBy) {
+      errorList.push("Creator is required.");
+    } else if (!mongoose.Types.ObjectId.isValid(categoryObject.createdBy)) {
+      errorList.push("Creator must be a valid ObjectId.");
+    }
   }
 
-  // Validate name
+  // 3. Validate 'name'
   if (!categoryObject.name || typeof categoryObject.name !== "string") {
     errorList.push("Category name is required.");
   } else if (!/^[a-zA-Z0-9\s\-\!]{1,15}$/.test(categoryObject.name)) {
@@ -61,17 +61,12 @@ export const validateCategory = (
     );
   }
 
-  // Validate createdBy
-  if (requireCreatedBy && !categoryObject.createdBy) {
-    errorList.push("Creator is required.");
-  }
-
-  // Validate createdAt
+  // 4. Validate 'createdAt'
   if (requireCreatedAt && !categoryObject.createdAt) {
     errorList.push("Creation date is required.");
   }
 
-  // Log and return errors if any
+  // Log validation results
   if (errorList.length > 0) {
     logInfo("Category validation failed: " + errorList.join(", "));
   } else {
@@ -81,6 +76,6 @@ export const validateCategory = (
   return errorList;
 };
 
+// Create and export the HabitCategory model
 const HabitCategory = mongoose.model("HabitCategory", habitCategorySchema);
-
 export default HabitCategory;
