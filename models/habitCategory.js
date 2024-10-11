@@ -53,12 +53,14 @@ export const validateCategory = (
   }
 
   // 3. Validate 'name'
-  if (!categoryObject.name || typeof categoryObject.name !== "string") {
-    errorList.push("Category name is required.");
-  } else if (!/^[a-zA-Z0-9\s\-\!]{1,15}$/.test(categoryObject.name)) {
-    errorList.push(
-      "Category name must contain only letters, numbers, spaces, hyphens, or exclamation marks, and have a maximum length of 15 characters."
-    );
+  if (requireName) {
+    if (!categoryObject.name || typeof categoryObject.name !== "string") {
+      errorList.push("Category name is required.");
+    } else if (!/^[a-zA-Z0-9\s\-\!]{1,15}$/.test(categoryObject.name)) {
+      errorList.push(
+        "Category name must contain only letters, numbers, spaces, hyphens, or exclamation marks, and have a maximum length of 15 characters."
+      );
+    }
   }
 
   // 4. Validate 'createdAt'

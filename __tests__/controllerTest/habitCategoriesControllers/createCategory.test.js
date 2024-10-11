@@ -5,6 +5,7 @@ import {
   clearMockDatabase,
 } from "../../../__testUtils__/dbMock.js";
 import app from "../../../app.js";
+import { logInfo } from "../../../util/logging.js";
 
 const request = supertest(app);
 
@@ -23,6 +24,7 @@ afterAll(async () => {
 describe("Create a new habit-category (test route)", () => {
   let testUser;
   let userId;
+  let cookie;
 
   beforeEach(async () => {
     // Step 1: Create a new user
@@ -35,12 +37,15 @@ describe("Create a new habit-category (test route)", () => {
 
     await request.post("/api/auth/sign-up").send({ user: testUser });
 
-    // Step 2: Log in with the created user to get the userId (skip token here for simplicity)
+    // Step 2: Log in with the created user to get the userId and session cookie
     const loginResponse = await request
       .post("/api/auth/log-in")
       .send({ user: { email: testUser.email, password: testUser.password } });
 
     userId = loginResponse.body.user.id; // Capture the user's id from the login response
+    cookie = loginResponse.headers["set-cookie"]; // Capture session cookie
+
+    logInfo(`Session cookie: ${cookie}`);
   });
 
   it("should create a new category if it does not exist (test route)", async () => {
@@ -55,7 +60,8 @@ describe("Create a new habit-category (test route)", () => {
 
     // Using the test route here
     const response = await request
-      .post("/api/test/habit-categories/create")
+      .post("/api/habit-categories/create")
+      .set("Cookie", cookie) // Set the session cookie
       .send(newCategory);
 
     // Step 4: Validate the creation response
@@ -77,6 +83,7 @@ describe("Create a new habit-category (test route)", () => {
 
     const response = await request
       .post("/api/test/habit-categories/create")
+      .set("Cookie", cookie) // Set the session cookie
       .send(invalidCategory);
 
     expect(response.status).toBe(400);
@@ -97,6 +104,7 @@ describe("Create a new habit-category (test route)", () => {
 
     const response = await request
       .post("/api/test/habit-categories/create")
+      .set("Cookie", cookie) // Set the session cookie
       .send(invalidCategory);
 
     expect(response.status).toBe(400);
@@ -115,6 +123,7 @@ describe("Create a new habit-category (test route)", () => {
 
     const response = await request
       .post("/api/test/habit-categories/create")
+      .set("Cookie", cookie) // Set the session cookie
       .send(invalidCategory);
 
     // Check for 400 status instead of 500
@@ -135,6 +144,7 @@ describe("Create a new habit-category (test route)", () => {
 
     const response = await request
       .post("/api/test/habit-categories/create")
+      .set("Cookie", cookie) // Set the session cookie
       .send(invalidCategory);
 
     expect(response.status).toBe(400);
@@ -152,11 +162,15 @@ describe("Create a new habit-category (test route)", () => {
     };
 
     // Create the first category
-    await request.post("/api/test/habit-categories/create").send(category);
+    await request
+      .post("/api/habit-categories/create")
+      .set("Cookie", cookie) // Set the session cookie
+      .send(category);
 
     // Attempt to create the same category again
     const duplicateResponse = await request
-      .post("/api/test/habit-categories/create")
+      .post("/api/habit-categories/create")
+      .set("Cookie", cookie) // Set the session cookie
       .send(category);
 
     // Validate response
@@ -172,6 +186,7 @@ describe("Create a new habit-category (test route)", () => {
 
     const response = await request
       .post("/api/test/habit-categories/create")
+      .set("Cookie", cookie) // Set the session cookie
       .send(invalidCategory);
 
     // Validate response
@@ -194,6 +209,7 @@ describe("Create a new habit-category (test route)", () => {
 
     const response = await request
       .post("/api/test/habit-categories/create")
+      .set("Cookie", cookie) // Set the session cookie
       .send(invalidCategory);
 
     // Validate response
@@ -215,6 +231,7 @@ describe("Create a new habit-category (test route)", () => {
 
     const response = await request
       .post("/api/test/habit-categories/create")
+      .set("Cookie", cookie) // Set the session cookie
       .send(invalidCategory);
 
     expect(response.status).toBe(400);
@@ -235,6 +252,7 @@ describe("Create a new habit-category (test route)", () => {
 
     const response = await request
       .post("/api/test/habit-categories/create")
+      .set("Cookie", cookie) // Set the session cookie
       .send(invalidCategory);
 
     expect(response.status).toBe(400);

@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import HabitCategory, { validateCategory } from "../../models/habitCategory.js";
 import validationErrorMessage from "../../util/validationErrorMessage.js";
 import validateAllowedFields from "../../util/validateAllowedFields.js";
@@ -65,6 +64,7 @@ export const createCategory = async (req, res) => {
       message: "Category created successfully.",
       category: newCategory,
     });
+    logInfo(`"New Category created:", ${newCategory}`);
   } catch (error) {
     // Log and respond with an error if category creation fails
     logError("Error creating category:", error);
