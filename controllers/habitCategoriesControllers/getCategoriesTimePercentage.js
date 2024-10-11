@@ -59,30 +59,24 @@ export const getCategoriesTimePercentage = async (req, res) => {
     // Initialize filter for querying habit categories
     const filter = { createdBy: userId };
 
-    // Set date filters based on the periodType
-    const year = yearArray[0]; // Assuming only one year is passed
-    const startOfYear = new Date(year, 0, 1); // Start of the year
-    const endOfYear = new Date(year, 11, 31, 23, 59, 59, 999); // End of the year
+    // Build date filters based on periodType
+    let dateFilter = {};
 
-    if (periodType === "month") {
+    if (periodType === "year") {
+      const year = yearArray[0]; // Assuming only one year is passed
+      const startOfYear = new Date(year, 0, 1); // Start of the year
+      const endOfYear = new Date(year, 11, 31, 23, 59, 59, 999); // End of the year
+      dateFilter = { $gte: startOfYear, $lte: endOfYear };
+    } else if (periodType === "month") {
       const month = new Date(startDate).getMonth(); // Get month from startDate
-      const startOfMonth = new Date(year, month, 1);
-      const endOfMonth = new Date(year, month + 1, 0, 23, 59, 59, 999); // Last day of the month
-      filter.createdAt = { $gte: startOfMonth, $lte: endOfMonth }; // Filtering for the month
-    } else if (periodType === "day") {
-      const startOfDay = new Date(startDate);
-      const endOfDay = new Date(startOfDay);
-      endOfDay.setHours(23, 59, 59, 999); // End of the day
-      filter.createdAt = { $gte: startOfDay, $lte: endOfDay };
-    } else if (periodType === "week") {
-      const startOfWeek = new Date(startDate);
-      const endOfWeek = new Date(endDate);
-      endOfWeek.setHours(23, 59, 59, 999); // End of the week
-      filter.createdAt = { $gte: startOfWeek, $lte: endOfWeek };
-    } else if (periodType === "year") {
-      filter.createdAt = { $gte: startOfYear, $lte: endOfYear };
-    } else if (startDate && endDate) {
-      filter.createdAt = { $gte: new Date(startDate), $lte: new Date(endDate) };
+      const startOfMonth = new Date(yearArray[0], month, 1);
+      const endOfMonth = new Date(yearArray[0], month + 1, 0, 23, 59, 59, 999);
+      dateFilter = { $gte: startOfMonth, $lte: endOfMonth };
+    } else if (periodType === "week" || periodType === "day") {
+      const startOfPeriod = new Date(startDate);
+      const endOfPeriod = new Date(endDate || startDate);
+      endOfPeriod.setHours(23, 59, 59, 999); // End of the day or week
+      dateFilter = { $gte: startOfPeriod, $lte: endOfPeriod };
     }
 
     // Query the database for categories matching the filter
@@ -95,23 +89,47 @@ export const getCategoriesTimePercentage = async (req, res) => {
       });
     }
 
-    // Calculate total minutes from daily records
-    const totalMinutes = categories.reduce((sum, category) => {
-      const dailyRecords = category.dailyRecords || [];
-      const totalCategoryMinutes = dailyRecords.reduce(
-        (recordSum, record) => recordSum + (record.totalMinutes || 0),
-        0
-      );
-      return sum + totalCategoryMinutes;
-    }, 0);
-
-    // Generate category data with percentages
+    // Calculate total minutes by filtering daily records within the date range
+    let totalMinutes = 0;
     const categoryStats = categories.map((category) => {
-      const dailyRecords = category.dailyRecords || [];
-      const totalCategoryMinutes = dailyRecords.reduce(
-        (recordSum, record) => recordSum + (record.totalMinutes || 0),
+      const filteredDailyRecords = category.dailyRecords.filter((record) => {
+        if (!record.date) return false;
+
+        const recordDate = new Date(record.date);
+        const startDate = new Date(dateFilter.$gte);
+        const endDate = new Date(dateFilter.$lte);
+
+        const isInDateRange = recordDate >= startDate && recordDate <= endDate;
+        logInfo(
+          `Checking record date: ${recordDate}, Is in range: ${isInDateRange}`
+        );
+
+        return isInDateRange;
+      });
+
+      logInfo(
+        `Filtered records for category ${category.name}: ${JSON.stringify(
+          filteredDailyRecords,
+          null,
+          2
+        )}`
+      );
+
+      // Debug log for filtered minutes
+      logInfo(
+        `Minutes in filtered records for category ${
+          category.name
+        }: ${filteredDailyRecords.map((record) => record.minutes)}`
+      );
+
+      // Sum the total minutes for the filtered records
+      const totalCategoryMinutes = filteredDailyRecords.reduce(
+        (recordSum, record) => recordSum + (record.minutes || 0), // Use 'minutes' instead of 'totalMinutes'
         0
       );
+
+      totalMinutes += totalCategoryMinutes;
+
       return {
         name: category.name,
         totalMinutes: totalCategoryMinutes,
@@ -123,6 +141,11 @@ export const getCategoriesTimePercentage = async (req, res) => {
     });
 
     // Send the calculated stats in the response
+    logInfo(`Total minutes across all categories: ${totalMinutes}`);
+    logInfo(
+      `Category percentage data: ${JSON.stringify(categoryStats, null, 2)}`
+    );
+
     res.status(200).json({
       totalMinutes,
       categoryDataPercentage: categoryStats,

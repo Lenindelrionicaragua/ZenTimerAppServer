@@ -52,6 +52,26 @@ describe("Update category time", () => {
     expect(updatedCategory.dailyRecords[0].minutes).toBe(30); // The minutes should be 30
   });
 
+  it("should create a new daily record if none exists for today", async () => {
+    await HabitCategory.updateOne(
+      { _id: categoryId },
+      { $set: { dailyRecords: [] } }
+    );
+
+    const updateData = { minutes: 40 };
+
+    const response = await request
+      .put(`/api/test/habit-categories/${categoryId}`)
+      .send(updateData);
+
+    expect(response.status).toBe(200);
+    expect(response.body.message).toBe("Category time updated successfully.");
+
+    const updatedCategory = await HabitCategory.findById(categoryId);
+    expect(updatedCategory.dailyRecords.length).toBe(1);
+    expect(updatedCategory.dailyRecords[0].minutes).toBe(40);
+  });
+
   it("should add minutes to an existing record for today", async () => {
     // Create an initial daily record for today
     const initialRecord = { date: new Date(), minutes: 20 };

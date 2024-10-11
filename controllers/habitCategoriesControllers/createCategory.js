@@ -30,6 +30,12 @@ export const createCategory = async (req, res) => {
   }
 
   try {
+    // Log the habitCategory object structure for debugging purposes
+    logInfo(
+      "Received habitCategory object:",
+      JSON.stringify(req.body.habitCategory, null, 2)
+    );
+
     // Validate the habitCategory details
     const errorList = validateCategory(req.body.habitCategory);
     if (errorList.length > 0) {
@@ -73,6 +79,16 @@ export const createCategory = async (req, res) => {
       });
     }
 
+    // Log the dailyRecords for debugging purposes
+    if (req.body.habitCategory.dailyRecords) {
+      logInfo(
+        "Daily Records received:",
+        JSON.stringify(req.body.habitCategory.dailyRecords, null, 2)
+      );
+    } else {
+      logInfo("No dailyRecords received, defaulting to an empty array.");
+    }
+
     // Create a new HabitCategory instance
     const newCategory = new HabitCategory({
       name: req.body.habitCategory.name,
@@ -81,8 +97,17 @@ export const createCategory = async (req, res) => {
       createdAt: req.body.habitCategory.createdAt || Date.now(),
     });
 
+    // Log the newly created category object before saving
+    logInfo(
+      "New HabitCategory to be saved:",
+      JSON.stringify(newCategory, null, 2)
+    );
+
     // Save the new category to the database
     await newCategory.save();
+
+    // Log the saved category object for debugging
+    logInfo("Saved HabitCategory:", JSON.stringify(newCategory, null, 2));
 
     // Respond with success message and the created category details
     res.status(201).json({

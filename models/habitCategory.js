@@ -14,20 +14,6 @@ const habitCategorySchema = new mongoose.Schema({
     ref: "User",
     required: true,
   },
-  dailyRecords: [
-    {
-      date: {
-        type: Date,
-        required: true,
-      },
-      minutes: {
-        type: Number,
-        default: 0,
-        min: 0,
-        max: 1440, // Minutes for a specific day cannot exceed 24 hours
-      },
-    },
-  ],
   createdAt: {
     type: Date,
     default: Date.now,
@@ -43,7 +29,7 @@ export const validateCategory = (
   requireCreatedAt = true
 ) => {
   const errorList = [];
-  const allowedKeys = ["name", "createdBy", "dailyRecords", "createdAt"];
+  const allowedKeys = ["name", "createdBy", "createdAt"];
 
   logInfo("Starting validation for category object:", categoryObject);
 
@@ -61,7 +47,7 @@ export const validateCategory = (
   if (requireName) {
     if (!categoryObject.name || typeof categoryObject.name !== "string") {
       errorList.push("Category name is required.");
-    } else if (!/^[a-zA-Z0-9\s\-\!]{1,15}$/.test(categoryObject.name)) {
+    } else if (!/^[A-Za-z0-9\s\-!]{1,15}$/.test(categoryObject.name)) {
       errorList.push(
         "Category name must contain only letters, spaces, hyphens, or exclamation marks, and have a maximum length of 15 characters."
       );
@@ -71,22 +57,6 @@ export const validateCategory = (
   // Validate createdBy
   if (requireCreatedBy && !categoryObject.createdBy) {
     errorList.push("Creator is required.");
-  }
-
-  // Validate daily records (individual day entries)
-  if (categoryObject.dailyRecords) {
-    categoryObject.dailyRecords.forEach((record) => {
-      if (!record.date) {
-        errorList.push("Each daily record must have a valid date.");
-      }
-      if (record.minutes < 0) {
-        errorList.push("Minutes for a daily record cannot be negative.");
-      } else if (record.minutes > 1440) {
-        errorList.push(
-          "Minutes for a daily record cannot exceed 1440 minutes (24 hours)."
-        );
-      }
-    });
   }
 
   // Validate createdAt
@@ -102,22 +72,6 @@ export const validateCategory = (
   }
 
   return errorList;
-};
-
-// Calculating the total minutes for a given range (day, week, month, year)
-habitCategorySchema.methods.calculateTotalMinutes = function (
-  startDate,
-  endDate
-) {
-  let totalMinutes = 0;
-
-  this.dailyRecords.forEach((record) => {
-    if (record.date >= startDate && record.date <= endDate) {
-      totalMinutes += record.minutes;
-    }
-  });
-
-  return totalMinutes;
 };
 
 const HabitCategory = mongoose.model("HabitCategory", habitCategorySchema);
