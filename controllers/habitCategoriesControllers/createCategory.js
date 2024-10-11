@@ -37,14 +37,6 @@ export const createCategory = async (req, res) => {
         .json({ success: false, msg: validationErrorMessage(errorList) });
     }
 
-    // Validate the ObjectId format for createdBy
-    if (!mongoose.Types.ObjectId.isValid(req.body.habitCategory.createdBy)) {
-      return res.status(400).json({
-        success: false,
-        msg: "Invalid request: 'createdBy' must be a valid ObjectId.",
-      });
-    }
-
     // Check if a category with the same name already exists for the user
     const existingCategory = await HabitCategory.findOne({
       name: req.body.habitCategory.name,
