@@ -43,15 +43,22 @@ export const validateCategory = (
     logInfo("Validation failed for allowed fields: ", validatedKeysMessage);
   }
 
+  // Validate createdBy is a valid ObjectId
+  if (
+    requireCreatedBy &&
+    (!categoryObject.createdBy ||
+      !mongoose.Types.ObjectId.isValid(categoryObject.createdBy))
+  ) {
+    errorList.push("Creator must be a valid ObjectId.");
+  }
+
   // Validate name
-  if (requireName) {
-    if (!categoryObject.name || typeof categoryObject.name !== "string") {
-      errorList.push("Category name is required.");
-    } else if (!/^[A-Za-z0-9\s\-!]{1,15}$/.test(categoryObject.name)) {
-      errorList.push(
-        "Category name must contain only letters, spaces, hyphens, or exclamation marks, and have a maximum length of 15 characters."
-      );
-    }
+  if (!categoryObject.name || typeof categoryObject.name !== "string") {
+    errorList.push("Category name is required.");
+  } else if (!/^[a-zA-Z0-9\s\-\!]{1,15}$/.test(categoryObject.name)) {
+    errorList.push(
+      "Category name must contain only letters, numbers, spaces, hyphens, or exclamation marks, and have a maximum length of 15 characters."
+    );
   }
 
   // Validate createdBy

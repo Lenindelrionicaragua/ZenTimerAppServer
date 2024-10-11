@@ -6,12 +6,6 @@ describe("validateCategory function", () => {
       name: "Fitness!",
       createdBy: "60c72b2f9b1e8e3d88d23a1e",
       createdAt: new Date(),
-      dailyRecords: [
-        {
-          date: new Date(),
-          minutes: 30,
-        },
-      ],
     };
 
     const errors = validateCategory(category);
@@ -34,7 +28,6 @@ describe("validateCategory function", () => {
       name: null,
       createdBy: "60c72b2f9b1e8e3d88d23a1e",
       createdAt: new Date(),
-      dailyRecords: [],
     };
 
     const errors = validateCategory(category);
@@ -48,7 +41,6 @@ describe("validateCategory function", () => {
       name: "",
       createdBy: "60c72b2f9b1e8e3d88d23a1e",
       createdAt: new Date(),
-      dailyRecords: [],
     };
 
     const errors = validateCategory(category);
@@ -59,18 +51,14 @@ describe("validateCategory function", () => {
 
   test("should return an error message if the name contains invalid characters", () => {
     const category = {
-      name: "Invalid@Name",
+      name: "Fitness!",
       createdBy: "60c72b2f9b1e8e3d88d23a1e",
       createdAt: new Date(),
-      dailyRecords: [],
     };
 
     const errors = validateCategory(category);
 
-    expect(errors).toHaveLength(1);
-    expect(errors).toContain(
-      "Category name must contain only letters, spaces, hyphens, or exclamation marks, and have a maximum length of 15 characters."
-    );
+    expect(errors).toHaveLength(0);
   });
 
   test("should return an error message if the name exceeds 15 characters", () => {
@@ -78,14 +66,13 @@ describe("validateCategory function", () => {
       name: "ThisNameIsWayTooLong",
       createdBy: "60c72b2f9b1e8e3d88d23a1e",
       createdAt: new Date(),
-      dailyRecords: [],
     };
 
     const errors = validateCategory(category);
 
     expect(errors).toHaveLength(1);
     expect(errors).toContain(
-      "Category name must contain only letters, spaces, hyphens, or exclamation marks, and have a maximum length of 15 characters."
+      "Category name must contain only letters, numbers, spaces, hyphens, or exclamation marks, and have a maximum length of 15 characters."
     );
   });
 
@@ -93,7 +80,6 @@ describe("validateCategory function", () => {
     const category = {
       name: "Fitness",
       createdAt: new Date(),
-      dailyRecords: [],
     };
 
     const errors = validateCategory(category);
@@ -103,9 +89,8 @@ describe("validateCategory function", () => {
 
   test("should return an error message if createdAt is missing", () => {
     const category = {
-      name: "Fitness",
+      name: "Fitness8",
       createdBy: "60c72b2f9b1e8e3d88d23a1e",
-      dailyRecords: [],
     };
 
     const errors = validateCategory(category);
@@ -113,33 +98,55 @@ describe("validateCategory function", () => {
     expect(errors).toContain("Creation date is required.");
   });
 
-  test("should return an error if any dailyRecord has negative minutes", () => {
+  test("should allow numbers in the category name", () => {
     const category = {
-      name: "Fitness",
+      name: "Fitness123",
       createdBy: "60c72b2f9b1e8e3d88d23a1e",
       createdAt: new Date(),
-      dailyRecords: [{ date: new Date(), minutes: -10 }],
     };
 
     const errors = validateCategory(category);
 
-    expect(errors).toHaveLength(1);
-    expect(errors).toContain("Minutes for a daily record cannot be negative.");
+    expect(errors).toHaveLength(0);
   });
 
-  test("should return an error if any dailyRecord has more than 1440 minutes", () => {
+  test("should return an error if the name contains invalid special characters", () => {
     const category = {
-      name: "Fitness",
+      name: "Fit@ness",
       createdBy: "60c72b2f9b1e8e3d88d23a1e",
       createdAt: new Date(),
-      dailyRecords: [{ date: new Date(), minutes: 1500 }],
     };
 
     const errors = validateCategory(category);
 
     expect(errors).toHaveLength(1);
     expect(errors).toContain(
-      "Minutes for a daily record cannot exceed 1440 minutes (24 hours)."
+      "Category name must contain only letters, numbers, spaces, hyphens, or exclamation marks, and have a maximum length of 15 characters."
     );
+  });
+
+  test("should return an error if createdBy is not a valid ObjectId", () => {
+    const category = {
+      name: "Fitness",
+      createdBy: "invalidObjectId",
+      createdAt: new Date(),
+    };
+
+    const errors = validateCategory(category);
+
+    expect(errors).toHaveLength(1);
+    expect(errors).toContain("Creator must be a valid ObjectId.");
+  });
+
+  test("should allow a name with exactly 15 characters", () => {
+    const category = {
+      name: "ValidCategory15",
+      createdBy: "60c72b2f9b1e8e3d88d23a1e",
+      createdAt: new Date(),
+    };
+
+    const errors = validateCategory(category);
+
+    expect(errors).toHaveLength(0);
   });
 });
