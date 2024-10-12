@@ -39,7 +39,7 @@ export const createCategory = async (req, res) => {
     // Check if a category with the same name already exists for the user
     const existingCategory = await HabitCategory.findOne({
       name: req.body.habitCategory.name,
-      createdBy: req.body.habitCategory.createdBy,
+      createdBy: req.userId,
     });
 
     if (existingCategory) {

@@ -6,9 +6,10 @@ import validationErrorMessage from "../../util/validationErrorMessage.js";
 
 export const updateCategoryName = async (req, res) => {
   const { categoryId } = req.params;
-  const { name: newName, createdBy } = req.body; // Asegúrate de extraer createdBy del cuerpo de la solicitud
+  const { name: newName } = req.body; // No se necesita 'createdBy' en el cuerpo
+  const createdBy = req.userId; // Extraer createdBy desde el req.userId
 
-  const allowedFields = ["name", "createdBy"];
+  const allowedFields = ["name"];
 
   // Validar ID de la categoría
   if (!mongoose.Types.ObjectId.isValid(categoryId)) {
@@ -43,7 +44,7 @@ export const updateCategoryName = async (req, res) => {
     );
 
     // Verificar si el creador de la categoría coincide con el userId proporcionado
-    if (category.createdBy.toString() !== createdBy) {
+    if (category.createdBy.toString() !== createdBy.toString()) {
       logInfo(`User not authorized to update category: ${createdBy}`);
       return res.status(403).json({
         message: "Forbidden: You are not authorized to update this category.",
