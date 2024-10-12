@@ -23,7 +23,6 @@ afterAll(async () => {
 
 describe("Create a new habit-category (test route)", () => {
   let testUser;
-  let userId;
   let cookie;
 
   beforeEach(async () => {
@@ -37,23 +36,21 @@ describe("Create a new habit-category (test route)", () => {
 
     await request.post("/api/auth/sign-up").send({ user: testUser });
 
-    // Step 2: Log in with the created user to get the userId and session cookie
+    // Step 2: Log in with the created user to get the session cookie
     const loginResponse = await request
       .post("/api/auth/log-in")
       .send({ user: { email: testUser.email, password: testUser.password } });
 
-    userId = loginResponse.body.user.id; // Capture the user's id from the login response
     cookie = loginResponse.headers["set-cookie"]; // Capture session cookie
 
     logInfo(`Session cookie: ${cookie}`);
   });
 
   it("should create a new category if it does not exist (test route)", async () => {
-    // Step 3: Create a new habit category using the captured userId
+    // Step 3: Create a new habit category
     const newCategory = {
       habitCategory: {
         name: "Work!",
-        createdBy: userId, // Use the user id from login response
         createdAt: new Date(),
       },
     };
@@ -69,20 +66,18 @@ describe("Create a new habit-category (test route)", () => {
     expect(response.body.success).toBe(true);
     expect(response.body.message).toBe("Category created successfully.");
     expect(response.body.category.name).toBe(newCategory.habitCategory.name);
-    expect(response.body.category.createdBy).toEqual(userId);
   });
 
   it("should fail if the category name contains invalid characters", async () => {
     const invalidCategory = {
       habitCategory: {
         name: "Invalid@Name#",
-        createdBy: userId,
         createdAt: new Date(),
       },
     };
 
     const response = await request
-      .post("/api/test/habit-categories/create")
+      .post("/api/habit-categories/create")
       .set("Cookie", cookie) // Set the session cookie
       .send(invalidCategory);
 
@@ -93,57 +88,15 @@ describe("Create a new habit-category (test route)", () => {
     );
   });
 
-  it("should fail if createdBy is null", async () => {
-    const invalidCategory = {
-      habitCategory: {
-        name: "ValidName",
-        createdBy: null,
-        createdAt: new Date(),
-      },
-    };
-
-    const response = await request
-      .post("/api/test/habit-categories/create")
-      .set("Cookie", cookie) // Set the session cookie
-      .send(invalidCategory);
-
-    expect(response.status).toBe(400);
-    expect(response.body.success).toBe(false);
-    expect(response.body.msg).toContain("Creator is required.");
-  });
-
-  it("should fail if createdBy is not a valid ObjectId", async () => {
-    const invalidCategory = {
-      habitCategory: {
-        name: "ValidName",
-        createdBy: "invalid-object-id", // Invalid ObjectId format
-        createdAt: new Date(),
-      },
-    };
-
-    const response = await request
-      .post("/api/test/habit-categories/create")
-      .set("Cookie", cookie) // Set the session cookie
-      .send(invalidCategory);
-
-    // Check for 400 status instead of 500
-    expect(response.status).toBe(400);
-    expect(response.body.success).toBe(false);
-    expect(response.body.msg).toContain(
-      "BAD REQUEST: Creator must be a valid ObjectId."
-    );
-  });
-
   it("should fail if the createdAt date is missing", async () => {
     const invalidCategory = {
       habitCategory: {
         name: "ValidName",
-        createdBy: userId,
       },
     };
 
     const response = await request
-      .post("/api/test/habit-categories/create")
+      .post("/api/habit-categories/create")
       .set("Cookie", cookie) // Set the session cookie
       .send(invalidCategory);
 
@@ -156,7 +109,6 @@ describe("Create a new habit-category (test route)", () => {
     const category = {
       habitCategory: {
         name: "Work",
-        createdBy: userId,
         createdAt: new Date(),
       },
     };
@@ -185,7 +137,7 @@ describe("Create a new habit-category (test route)", () => {
     };
 
     const response = await request
-      .post("/api/test/habit-categories/create")
+      .post("/api/habit-categories/create")
       .set("Cookie", cookie) // Set the session cookie
       .send(invalidCategory);
 
@@ -201,14 +153,13 @@ describe("Create a new habit-category (test route)", () => {
     const invalidCategory = {
       habitCategory: {
         name: "Exercise",
-        createdBy: userId,
         createdAt: new Date(),
         invalidField: "ThisShouldNotBeHere", // Invalid field
       },
     };
 
     const response = await request
-      .post("/api/test/habit-categories/create")
+      .post("/api/habit-categories/create")
       .set("Cookie", cookie) // Set the session cookie
       .send(invalidCategory);
 
@@ -224,13 +175,12 @@ describe("Create a new habit-category (test route)", () => {
     const invalidCategory = {
       habitCategory: {
         name: "ThisNameIsWayTooLong!",
-        createdBy: userId,
         createdAt: new Date(),
       },
     };
 
     const response = await request
-      .post("/api/test/habit-categories/create")
+      .post("/api/habit-categories/create")
       .set("Cookie", cookie) // Set the session cookie
       .send(invalidCategory);
 
@@ -245,13 +195,12 @@ describe("Create a new habit-category (test route)", () => {
     const invalidCategory = {
       habitCategory: {
         name: "",
-        createdBy: userId,
         createdAt: new Date(),
       },
     };
 
     const response = await request
-      .post("/api/test/habit-categories/create")
+      .post("/api/habit-categories/create")
       .set("Cookie", cookie) // Set the session cookie
       .send(invalidCategory);
 

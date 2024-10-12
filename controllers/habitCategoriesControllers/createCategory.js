@@ -4,7 +4,7 @@ import validateAllowedFields from "../../util/validateAllowedFields.js";
 import { logError, logInfo } from "../../util/logging.js";
 
 export const createCategory = async (req, res) => {
-  const allowedFields = ["name", "createdBy", "createdAt"];
+  const allowedFields = ["name", "createdAt"];
 
   // Check if the habitCategory object is valid
   if (!(req.body.habitCategory instanceof Object)) {
@@ -29,7 +29,7 @@ export const createCategory = async (req, res) => {
 
   try {
     // Validate the habitCategory details
-    const errorList = validateCategory(req.body.habitCategory);
+    const errorList = validateCategory(req.body.habitCategory, true, false); // Don't require 'createdBy' since it comes from req.userId
     if (errorList.length > 0) {
       return res
         .status(400)
@@ -39,7 +39,7 @@ export const createCategory = async (req, res) => {
     // Check if a category with the same name already exists for the user
     const existingCategory = await HabitCategory.findOne({
       name: req.body.habitCategory.name,
-      createdBy: req.userId,
+      createdBy: req.userId, // Use userId from the authenticated user
     });
 
     if (existingCategory) {
@@ -51,7 +51,7 @@ export const createCategory = async (req, res) => {
     // Create a new HabitCategory instance
     const newCategory = new HabitCategory({
       name: req.body.habitCategory.name,
-      createdBy: req.body.habitCategory.createdBy,
+      createdBy: req.userId, // Automatically set from the authenticated user
       createdAt: req.body.habitCategory.createdAt || Date.now(), // Default to now if not provided
     });
 
@@ -64,7 +64,7 @@ export const createCategory = async (req, res) => {
       message: "Category created successfully.",
       category: newCategory,
     });
-    logInfo(`"New Category created:", ${newCategory}`);
+    logInfo(`New Category created: ${JSON.stringify(newCategory)}`);
   } catch (error) {
     // Log and respond with an error if category creation fails
     logError("Error creating category:", error);
