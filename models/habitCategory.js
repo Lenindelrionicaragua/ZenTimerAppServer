@@ -25,7 +25,7 @@ const habitCategorySchema = new mongoose.Schema({
 export const validateCategory = (
   categoryObject,
   requireName = true,
-  requireCreatedAt = true
+  requireCreatedAt = false
 ) => {
   const errorList = [];
   const allowedKeys = ["name", "createdBy", "createdAt"];

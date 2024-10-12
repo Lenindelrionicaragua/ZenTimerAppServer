@@ -61,10 +61,10 @@ describe("Update an existing habit-category name (test route)", () => {
       .set("Cookie", cookie) // Set the session cookie
       .send(newCategory);
 
-    const userId = response.body.category.createdBy;
-    const categoryId = response.body.category._id;
+    // const userId = response.body.category.createdBy;
+    categoryId = response.body.category._id;
     logInfo(`CategoryTestId: ${JSON.stringify(categoryId)}`);
-    logInfo(`UserId: ${JSON.stringify(userId)}`);
+    // logInfo(`UserId: ${JSON.stringify(userId)}`);
   });
 
   it("should update the category name successfully if it follows the rules", async () => {
@@ -72,7 +72,7 @@ describe("Update an existing habit-category name (test route)", () => {
       name: "UpdatedName",
     };
 
-    await request
+    const response = await request
       .patch(`/api/habit-categories/${categoryId}/name`)
       .set("Cookie", cookie)
       .send(updateData);
