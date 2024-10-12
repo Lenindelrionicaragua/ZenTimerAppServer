@@ -6,7 +6,6 @@ import {
 } from "../../../__testUtils__/dbMock.js";
 import app from "../../../app.js";
 import HabitCategory from "../../../models/habitCategory.js";
-import User from "../../../models/userModels.js";
 import { logInfo } from "../../../util/logging.js";
 
 const request = supertest(app);
@@ -25,7 +24,6 @@ afterAll(async () => {
 
 describe("Update an existing habit-category name (test route)", () => {
   let testUser;
-  let userId;
   let categoryId;
   let cookie;
 
@@ -45,32 +43,39 @@ describe("Update an existing habit-category name (test route)", () => {
       .post("/api/auth/log-in")
       .send({ user: { email: testUser.email, password: testUser.password } });
 
-    userId = loginResponse.body.user._id; // Capture the user's id from the login response
     cookie = loginResponse.headers["set-cookie"]; // Capture session cookie
 
     logInfo(`Session cookie: ${cookie}`);
 
     // Step 3: Create a category to update later
-    const newCategory = new HabitCategory({
-      name: "Work",
-      createdBy: userId,
-      createdAt: new Date(),
-    });
+    const newCategory = {
+      habitCategory: {
+        name: "Work!",
+        createdAt: new Date(),
+      },
+    };
 
-    const testCategory = await newCategory.save(); // Save category to the database
-    categoryId = testCategory._id; // Capture the category ID
-    logInfo(`CategoryId: ${categoryId}`);
+    // Using the test route here
+    const response = await request
+      .post("/api/habit-categories/create")
+      .set("Cookie", cookie) // Set the session cookie
+      .send(newCategory);
+
+    const userId = response.body.category.createdBy;
+    const categoryId = response.body.category._id;
+    logInfo(`CategoryTestId: ${JSON.stringify(categoryId)}`);
+    logInfo(`UserId: ${JSON.stringify(userId)}`);
   });
 
   it("should update the category name successfully if it follows the rules", async () => {
     const updateData = {
-      name: "UpdatedName", // Nuevo nombre
+      name: "UpdatedName",
     };
 
-    const response = await request
-      .patch(`/api/habit-categories/update/${categoryId}`)
-      .set("Cookie", cookie) // Usar cookie de sesión
-      .send(updateData); // Solo enviar el nuevo nombre
+    await request
+      .patch(`/api/habit-categories/${categoryId}/name`)
+      .set("Cookie", cookie)
+      .send(updateData);
 
     expect(response.status).toBe(200);
     expect(response.body.message).toBe("Category name updated successfully.");

@@ -29,7 +29,7 @@ export const createCategory = async (req, res) => {
 
   try {
     // Validate the habitCategory details
-    const errorList = validateCategory(req.body.habitCategory, true, false); // Don't require 'createdBy' since it comes from req.userId
+    const errorList = validateCategory(req.body.habitCategory, true, false);
     if (errorList.length > 0) {
       return res
         .status(400)

@@ -25,7 +25,6 @@ const habitCategorySchema = new mongoose.Schema({
 export const validateCategory = (
   categoryObject,
   requireName = true,
-  requireCreatedBy = true,
   requireCreatedAt = true
 ) => {
   const errorList = [];
@@ -43,16 +42,7 @@ export const validateCategory = (
     logInfo("Validation failed for allowed fields: ", validatedKeysMessage);
   }
 
-  // 2. Validate 'createdBy'
-  if (requireCreatedBy) {
-    if (!categoryObject.createdBy) {
-      errorList.push("Creator is required.");
-    } else if (!mongoose.Types.ObjectId.isValid(categoryObject.createdBy)) {
-      errorList.push("Creator must be a valid ObjectId.");
-    }
-  }
-
-  // 3. Validate 'name'
+  // 2. Validate 'name'
   if (requireName) {
     if (!categoryObject.name || typeof categoryObject.name !== "string") {
       errorList.push("Category name is required.");
@@ -63,7 +53,7 @@ export const validateCategory = (
     }
   }
 
-  // 4. Validate 'createdAt'
+  // 3. Validate 'createdAt'
   if (requireCreatedAt && !categoryObject.createdAt) {
     errorList.push("Creation date is required.");
   }
