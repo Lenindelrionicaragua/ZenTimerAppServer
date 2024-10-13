@@ -142,7 +142,7 @@ describe("Create a new habit-category (test route)", () => {
   it("should fail if 'createdAt' is provided as an invalid date", async () => {
     const invalidCategory = {
       habitCategory: {
-        name: "InvalidDateCategory",
+        name: "InvalidDate",
         createdAt: "InvalidDate", // Invalid date string
       },
     };
@@ -155,7 +155,7 @@ describe("Create a new habit-category (test route)", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toContain(
-      "Invalid request: the following properties are not allowed to be set: createdAt"
+      "BAD REQUEST: Invalid 'createdAt' date provided."
     );
   });
 
@@ -174,5 +174,33 @@ describe("Create a new habit-category (test route)", () => {
     expect(response.status).toBe(401);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe("BAD REQUEST: Authentication required.");
+  });
+
+  it("should fail if a category with the same name (case-sensitive) already exists", async () => {
+    const category1 = {
+      habitCategory: {
+        name: "Work",
+      },
+    };
+
+    const category2 = {
+      habitCategory: {
+        name: "work", // Same name, different case
+      },
+    };
+
+    await request
+      .post("/api/habit-categories/create")
+      .set("Cookie", cookie)
+      .send(category1);
+
+    const duplicateResponse = await request
+      .post("/api/habit-categories/create")
+      .set("Cookie", cookie)
+      .send(category2);
+
+    expect(duplicateResponse.status).toBe(400);
+    expect(duplicateResponse.body.success).toBe(false);
+    expect(duplicateResponse.body.msg).toBe("Category already exists.");
   });
 });

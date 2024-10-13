@@ -5,10 +5,10 @@ import { logError, logInfo } from "../../util/logging.js";
 
 export const createCategory = async (req, res) => {
   // Define the allowed fields for the habitCategory object in the request body
-  const allowedFields = ["name"];
+  const allowedFields = ["name", "createdAt"];
   const { habitCategory } = req.body;
   const userId = req.userId;
-  const createdAt = habitCategory.createdAt;
+  let { createdAt } = habitCategory;
 
   // Validate that habitCategory is an object
   if (!(habitCategory instanceof Object)) {
@@ -46,12 +46,21 @@ export const createCategory = async (req, res) => {
     const existingCategory = await HabitCategory.findOne({
       name: habitCategory.name,
       createdBy: userId, // User ID from authentication
-    });
+    }).collation({ locale: "en", strength: 1 }); // Ensure case-sensitive search
 
     if (existingCategory) {
       return res.status(400).json({
         success: false,
         msg: "Category already exists.",
+      });
+    }
+
+    // Validate createdAt if it exists, should be a valid date
+    if (createdAt && isNaN(Date.parse(createdAt))) {
+      const errorList = ["Invalid 'createdAt' date provided."];
+      return res.status(400).json({
+        success: false,
+        msg: validationErrorMessage(errorList),
       });
     }
 

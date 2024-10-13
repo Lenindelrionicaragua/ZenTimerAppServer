@@ -22,15 +22,9 @@ const habitCategorySchema = new mongoose.Schema({
 });
 
 // Validation function for the category
-export const validateCategory = (
-  categoryObject,
-  requireName = true,
-  requireCreatedAt = false
-) => {
+export const validateCategory = (categoryObject, requireName = true) => {
   const errorList = [];
   const allowedKeys = ["name", "createdBy", "createdAt"];
-
-  logInfo("Starting validation for category object:", categoryObject);
 
   // 1. Validate allowed fields
   const validatedKeysMessage = validateAllowedFields(
