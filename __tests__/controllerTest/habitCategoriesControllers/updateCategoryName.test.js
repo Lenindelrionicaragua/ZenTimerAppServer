@@ -5,7 +5,6 @@ import {
   clearMockDatabase,
 } from "../../../__testUtils__/dbMock.js";
 import app from "../../../app.js";
-import HabitCategory from "../../../models/habitCategory.js";
 import { logInfo } from "../../../util/logging.js";
 
 const request = supertest(app);
@@ -24,11 +23,14 @@ afterAll(async () => {
 
 describe("Update an existing habit-category name (test route)", () => {
   let testUser;
+  let testUserNotAuthorized;
   let categoryId;
+  let invalidCategoryId;
   let cookie;
+  let cookie2;
 
   beforeEach(async () => {
-    // Step 1: Create a new user
+    // Step 1: Create and log in the first user
     testUser = {
       name: "Test User",
       email: "testuser@example.com",
@@ -38,7 +40,6 @@ describe("Update an existing habit-category name (test route)", () => {
 
     await request.post("/api/auth/sign-up").send({ user: testUser });
 
-    // Step 2: Log in with the created user to get the userId and session cookie
     const loginResponse = await request
       .post("/api/auth/log-in")
       .send({ user: { email: testUser.email, password: testUser.password } });
@@ -47,7 +48,7 @@ describe("Update an existing habit-category name (test route)", () => {
 
     logInfo(`Session cookie: ${cookie}`);
 
-    // Step 3: Create a category to update later
+    // Step 2: Create a category to update later
     const newCategory = {
       habitCategory: {
         name: "Work!",
@@ -55,16 +56,36 @@ describe("Update an existing habit-category name (test route)", () => {
       },
     };
 
-    // Using the test route here
     const response = await request
       .post("/api/habit-categories/create")
       .set("Cookie", cookie) // Set the session cookie
       .send(newCategory);
 
-    // const userId = response.body.category.createdBy;
     categoryId = response.body.category._id;
+    invalidCategoryId = "invalidCategoryId";
     logInfo(`CategoryTestId: ${JSON.stringify(categoryId)}`);
-    // logInfo(`UserId: ${JSON.stringify(userId)}`);
+
+    // Step 3: Create and log in the second user (unauthorized user)
+    testUserNotAuthorized = {
+      name: "Test User2",
+      email: "testuser2@example.com",
+      password: "Test1234!2",
+      dateOfBirth: "Tue Feb 01 1992",
+    };
+
+    await request
+      .post("/api/auth/sign-up")
+      .send({ user: testUserNotAuthorized });
+
+    const loginResponse2 = await request.post("/api/auth/log-in").send({
+      user: {
+        email: testUserNotAuthorized.email,
+        password: testUserNotAuthorized.password,
+      },
+    });
+
+    cookie2 = loginResponse2.headers["set-cookie"]; // Capture session cookie for unauthorized user
+    logInfo(`Session cookie2: ${cookie2}`);
   });
 
   it("should update the category name successfully if it follows the rules", async () => {
@@ -80,5 +101,99 @@ describe("Update an existing habit-category name (test route)", () => {
     expect(response.status).toBe(200);
     expect(response.body.message).toBe("Category name updated successfully.");
     expect(response.body.category.name).toBe(updateData.name);
+  });
+
+  it("should fail if the new name is null", async () => {
+    const updateData = {
+      name: null,
+    };
+
+    const response = await request
+      .patch(`/api/habit-categories/${categoryId}/name`)
+      .set("Cookie", cookie)
+      .send(updateData);
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe(
+      "BAD REQUEST: Category name is required."
+    );
+  });
+
+  it("should fail if the new name is an empty object", async () => {
+    const updateData = {};
+
+    const response = await request
+      .patch(`/api/habit-categories/${categoryId}/name`)
+      .set("Cookie", cookie)
+      .send(updateData);
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe(
+      "BAD REQUEST: Category name is required."
+    );
+  });
+
+  it("should fail if there are invalid fields in the request", async () => {
+    const updateData = {
+      name: "UpdatedName",
+      invalidField: "invalidField",
+      invalidField2: "",
+    };
+
+    const response = await request
+      .patch(`/api/habit-categories/${categoryId}/name`)
+      .set("Cookie", cookie)
+      .send(updateData);
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe(
+      "BAD REQUEST: the following properties are not allowed to be set: invalidField, invalidField2"
+    );
+  });
+
+  it("should fail if the categoryId is invalid", async () => {
+    const updateData = {
+      name: "UpdatedName",
+    };
+
+    const response = await request
+      .patch(`/api/habit-categories/${invalidCategoryId}/name`)
+      .set("Cookie", cookie)
+      .send(updateData);
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe("BAD REQUEST: Invalid category ID.");
+  });
+
+  it("should fail if the category is not found", async () => {
+    const nonExistentCategoryId = "670bb3ec4da2044da7b7d8f7";
+
+    const updateData = {
+      name: "UpdatedName",
+    };
+
+    const response = await request
+      .patch(`/api/habit-categories/${nonExistentCategoryId}/name`)
+      .set("Cookie", cookie)
+      .send(updateData);
+
+    expect(response.status).toBe(404);
+    expect(response.body.message).toBe("Category not found.");
+  });
+
+  it("should fail if the user is not authorized to update the category", async () => {
+    const updateData = {
+      name: "UpdatedName",
+    };
+
+    const response = await request
+      .patch(`/api/habit-categories/${categoryId}/name`)
+      .set("Cookie", cookie2) // Use unauthorized user's cookie
+      .send(updateData);
+
+    expect(response.status).toBe(403); // Unauthorized action
+    expect(response.body.message).toBe(
+      "Forbidden: You are not authorized to update this category."
+    );
   });
 });
