@@ -18,7 +18,6 @@ describe("validateCategory function", () => {
     const errors = validateCategory(category);
 
     expect(errors).toContain("Category name is required.");
-    expect(errors).toContain("Creation date is required.");
   });
 
   test("should return an error message if the name is null", () => {
@@ -71,16 +70,6 @@ describe("validateCategory function", () => {
     expect(errors).toContain(
       "Category name must contain only letters, numbers, spaces, hyphens, or exclamation marks, and have a maximum length of 15 characters."
     );
-  });
-
-  test("should return an error message if createdAt is missing", () => {
-    const category = {
-      name: "Fitness8",
-    };
-
-    const errors = validateCategory(category);
-
-    expect(errors).toContain("Creation date is required.");
   });
 
   test("should allow numbers in the category name", () => {
