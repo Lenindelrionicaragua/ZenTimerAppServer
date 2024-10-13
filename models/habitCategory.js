@@ -53,11 +53,6 @@ export const validateCategory = (
     }
   }
 
-  // 3. Validate 'createdAt'
-  if (requireCreatedAt && !categoryObject.createdAt) {
-    errorList.push("Creation date is required.");
-  }
-
   // Log validation results
   if (errorList.length > 0) {
     logInfo("Category validation failed: " + errorList.join(", "));
