@@ -6,11 +6,7 @@ import { logError, logInfo } from "../../util/logging.js";
 export const createCategory = async (req, res) => {
   // Define the allowed fields for the habitCategory object in the request body
   const allowedFields = ["name"];
-
-  // Extract habitCategory data from the request body
   const { habitCategory } = req.body;
-
-  // Extract userId from authenticated user and createdAt if present in request
   const userId = req.userId;
   const createdAt = habitCategory.createdAt;
 
