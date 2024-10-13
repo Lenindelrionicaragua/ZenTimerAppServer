@@ -196,4 +196,100 @@ describe("Update an existing habit-category name (test route)", () => {
       "Forbidden: You are not authorized to update this category."
     );
   });
+
+  it("should fail if the new category name is the same as the current name", async () => {
+    const updateData = {
+      name: "Work!",
+    };
+
+    const response = await request
+      .patch(`/api/habit-categories/${categoryId}/name`)
+      .set("Cookie", cookie) // Use authorized user's cookie
+      .send(updateData);
+
+    expect(response.status).toBe(400); // Name validation error
+    expect(response.body.message).toBe(
+      "The new name must be different from the current name (case-insensitive)."
+    );
+  });
+
+  it("should fail if the new name exceeds the character limit", async () => {
+    const updateData = {
+      name: "ThisNameIsWayTooLong",
+    };
+
+    const response = await request
+      .patch(`/api/habit-categories/${categoryId}/name`)
+      .set("Cookie", cookie)
+      .send(updateData);
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe(
+      "BAD REQUEST: Category name must contain only letters, numbers, spaces, hyphens, or exclamation marks, and have a maximum length of 15 characters."
+    );
+  });
+
+  it("should fail if the new name contains disallowed special characters", async () => {
+    const updateData = {
+      name: "Invalid@Name",
+    };
+
+    const response = await request
+      .patch(`/api/habit-categories/${categoryId}/name`)
+      .set("Cookie", cookie)
+      .send(updateData);
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe(
+      "BAD REQUEST: Category name must contain only letters, numbers, spaces, hyphens, or exclamation marks, and have a maximum length of 15 characters."
+    );
+  });
+
+  it("should fail if the new category name is the same as the current name but with different casing", async () => {
+    const updateData = {
+      name: "work!", // Same as "Work!" but different casing
+    };
+
+    const response = await request
+      .patch(`/api/habit-categories/${categoryId}/name`)
+      .set("Cookie", cookie)
+      .send(updateData);
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe(
+      "The new name must be different from the current name (case-insensitive)."
+    );
+  });
+
+  it("should fail if attempting to update non-allowed fields like createdBy", async () => {
+    const updateData = {
+      name: "UpdatedName",
+      createdBy: "someOtherUserId",
+    };
+
+    const response = await request
+      .patch(`/api/habit-categories/${categoryId}/name`)
+      .set("Cookie", cookie)
+      .send(updateData);
+
+    expect(response.status).toBe(400);
+    expect(response.body.message).toBe(
+      "BAD REQUEST: the following properties are not allowed to be set: createdBy"
+    );
+  });
+
+  it("should succeed if the new category name has valid case changes that are not exactly the same", async () => {
+    const updateData = {
+      name: "WorkHard!", // Different name
+    };
+
+    const response = await request
+      .patch(`/api/habit-categories/${categoryId}/name`)
+      .set("Cookie", cookie)
+      .send(updateData);
+
+    expect(response.status).toBe(200);
+    expect(response.body.message).toBe("Category name updated successfully.");
+    expect(response.body.category.name).toBe(updateData.name);
+  });
 });

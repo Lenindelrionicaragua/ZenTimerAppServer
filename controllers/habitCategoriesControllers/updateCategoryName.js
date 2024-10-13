@@ -61,11 +61,14 @@ export const updateCategoryName = async (req, res) => {
         .json({ message: validationErrorMessage(errorList) });
     }
 
-    // Check if the new name is the same as the current name
-    if (category.name === newName) {
-      logInfo(`The new name is the same as the current name.`); // Log if names are the same
+    // Check if the new name is the same as the current name (case-insensitive comparison)
+    if (category.name.toLowerCase() === newName.toLowerCase()) {
+      logInfo(
+        `The new name is the same as the current name (case-insensitive).`
+      ); // Log if names are the same
       return res.status(400).json({
-        message: "The new name must be different from the current name.",
+        message:
+          "The new name must be different from the current name (case-insensitive).",
       });
     }
 
