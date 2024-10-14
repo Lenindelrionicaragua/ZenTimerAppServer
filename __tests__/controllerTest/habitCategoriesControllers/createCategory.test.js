@@ -33,8 +33,10 @@ describe("Create a new habit-category (test route)", () => {
       dateOfBirth: "Tue Feb 01 1990",
     };
 
+    // User sign-up
     await request.post("/api/auth/sign-up").send({ user: testUser });
 
+    // User login
     const loginResponse = await request
       .post("/api/auth/log-in")
       .send({ user: { email: testUser.email, password: testUser.password } });

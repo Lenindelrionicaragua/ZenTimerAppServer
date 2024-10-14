@@ -1,8 +1,8 @@
 import express from "express";
-import { createOrUpdateDailyRecord } from "../controllers/DailyRecordsControllers/createOrUpdateDailyRecords";
+import { createAndUpdateDailyRecord } from "../controllers/dailyRecordsControllers/createAndUpdateDailyRecords";
 
 const dailyRecordsRouter = express.Router();
 
-dailyRecordsRouter.post("/dailyRecords", createOrUpdateDailyRecord);
+dailyRecordsRouter.post("/:userId/:categoryId", createAndUpdateDailyRecord);
 
 export default dailyRecordsRouter;
