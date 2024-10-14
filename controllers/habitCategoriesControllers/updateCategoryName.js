@@ -10,6 +10,7 @@ export const updateCategoryName = async (req, res) => {
   const createdBy = req.userId;
   const allowedFields = ["name"];
 
+  // Validating the category ID
   if (!mongoose.Types.ObjectId.isValid(categoryId)) {
     return res.status(400).json({
       success: false,
@@ -17,6 +18,7 @@ export const updateCategoryName = async (req, res) => {
     });
   }
 
+  // Validating allowed fields
   const invalidFieldsError = validateAllowedFields(req.body, allowedFields);
   if (invalidFieldsError) {
     return res.status(400).json({
@@ -34,6 +36,7 @@ export const updateCategoryName = async (req, res) => {
       });
     }
 
+    // Verifying if the user is authorized to update the category
     if (category.createdBy.toString() !== createdBy.toString()) {
       return res.status(403).json({
         success: false,
@@ -41,6 +44,7 @@ export const updateCategoryName = async (req, res) => {
       });
     }
 
+    // Validating the new name
     const errorList = validateCategory({ name: newName });
     if (errorList.length > 0) {
       return res.status(400).json({
@@ -49,6 +53,7 @@ export const updateCategoryName = async (req, res) => {
       });
     }
 
+    // Updating the category name
     category.name = newName;
     await category.save();
 
