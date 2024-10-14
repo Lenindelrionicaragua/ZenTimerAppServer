@@ -24,9 +24,9 @@ const habitCategorySchema = new mongoose.Schema({
 // Validation function for the category
 export const validateCategory = (categoryObject, requireName = true) => {
   const errorList = [];
-  const allowedKeys = ["name", "createdBy", "createdAt"];
+  const allowedKeys = ["name", "createdBy", "createdAt", "categoryId"];
 
-  // 1. Validate allowed fields
+  // Validate allowed fields
   const validatedKeysMessage = validateAllowedFields(
     categoryObject,
     allowedKeys
@@ -36,7 +36,7 @@ export const validateCategory = (categoryObject, requireName = true) => {
     logInfo("Validation failed for allowed fields: ", validatedKeysMessage);
   }
 
-  // 2. Validate 'name'
+  // Validate 'name' field
   if (requireName) {
     if (!categoryObject.name || typeof categoryObject.name !== "string") {
       errorList.push("Category name is required.");
@@ -45,6 +45,27 @@ export const validateCategory = (categoryObject, requireName = true) => {
         "Category name must contain only letters, numbers, spaces, hyphens, or exclamation marks, and have a maximum length of 15 characters."
       );
     }
+  }
+
+  // Validate 'createdBy' as an ObjectId
+  if (
+    categoryObject.createdBy &&
+    !mongoose.Types.ObjectId.isValid(categoryObject.createdBy)
+  ) {
+    errorList.push("Invalid 'createdBy' ObjectId.");
+  }
+
+  // Validate 'createdAt' as a valid date (if exists)
+  if (categoryObject.createdAt && isNaN(Date.parse(categoryObject.createdAt))) {
+    errorList.push("Invalid 'createdAt' date provided.");
+  }
+
+  // Validate 'categoryId' as an ObjectId
+  if (
+    categoryObject.categoryId &&
+    !mongoose.Types.ObjectId.isValid(categoryObject.categoryId)
+  ) {
+    errorList.push("Invalid 'categoryId' provided.");
   }
 
   // Log validation results

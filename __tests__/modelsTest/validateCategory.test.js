@@ -1,10 +1,12 @@
 import { validateCategory } from "../../models/habitCategory";
+import mongoose from "mongoose";
 
 describe("validateCategory function", () => {
   test("should return an empty array if all required fields are provided correctly", () => {
     const category = {
       name: "Fitness!",
       createdAt: new Date(),
+      createdBy: new mongoose.Types.ObjectId(),
     };
 
     const errors = validateCategory(category);
@@ -87,6 +89,86 @@ describe("validateCategory function", () => {
     const category = {
       name: "ValidCategory15",
       createdAt: new Date(),
+    };
+
+    const errors = validateCategory(category);
+
+    expect(errors).toHaveLength(0);
+  });
+
+  // Tests for createdBy validation
+  test("should return an error if 'createdBy' is not a valid ObjectId", () => {
+    const category = {
+      name: "Fitness",
+      createdBy: "invalidObjectId",
+      createdAt: new Date(),
+    };
+
+    const errors = validateCategory(category);
+
+    expect(errors).toHaveLength(1);
+    expect(errors).toContain("Invalid 'createdBy' ObjectId.");
+  });
+
+  test("should pass if 'createdBy' is a valid ObjectId", () => {
+    const category = {
+      name: "Fitness",
+      createdBy: new mongoose.Types.ObjectId(),
+      createdAt: new Date(),
+    };
+
+    const errors = validateCategory(category);
+
+    expect(errors).toHaveLength(0);
+  });
+
+  // Tests for createdAt validation
+  test("should return an error if 'createdAt' is not a valid date", () => {
+    const category = {
+      name: "Fitness",
+      createdBy: new mongoose.Types.ObjectId(),
+      createdAt: "invalidDate",
+    };
+
+    const errors = validateCategory(category);
+
+    expect(errors).toHaveLength(1);
+    expect(errors).toContain("Invalid 'createdAt' date provided.");
+  });
+
+  test("should pass if 'createdAt' is a valid date", () => {
+    const category = {
+      name: "Fitness",
+      createdBy: new mongoose.Types.ObjectId(),
+      createdAt: new Date(),
+    };
+
+    const errors = validateCategory(category);
+
+    expect(errors).toHaveLength(0);
+  });
+
+  // Tests for categoryId validation
+  test("should return an error if 'categoryId' is not a valid ObjectId", () => {
+    const category = {
+      name: "Fitness",
+      createdBy: new mongoose.Types.ObjectId(),
+      createdAt: new Date(),
+      categoryId: "invalidObjectId",
+    };
+
+    const errors = validateCategory(category);
+
+    expect(errors).toHaveLength(1);
+    expect(errors).toContain("Invalid 'categoryId' provided.");
+  });
+
+  test("should pass if 'categoryId' is a valid ObjectId", () => {
+    const category = {
+      name: "Fitness",
+      createdBy: new mongoose.Types.ObjectId(),
+      createdAt: new Date(),
+      categoryId: new mongoose.Types.ObjectId(),
     };
 
     const errors = validateCategory(category);
