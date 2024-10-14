@@ -2,33 +2,38 @@ import mongoose from "mongoose";
 import validateAllowedFields from "../util/validateAllowedFields.js";
 import { logInfo } from "../util/logging.js";
 
+// Define the schema for the DailyRecord model
 const dailyRecordSchema = new mongoose.Schema({
   categoryId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "HabitCategory",
-    required: true,
+    ref: "HabitCategory", // Reference to the HabitCategory model
+    required: true, // 'categoryId' is required
   },
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
+    ref: "User", // Reference to the User model
+    required: true, // 'userId' is required
   },
   date: {
     type: Date,
     default: Date.now, // If no date is provided, use the current date
-    required: true,
+    required: true, // 'date' is required
   },
-  timeSpentInMinutes: {
+  totalDailyMinutes: {
     type: Number,
     required: true,
     default: 0, // Default to 0 if no time is provided
   },
 });
 
+// Validation function for Daily Records
 export const validateDailyRecords = (dailyRecordObject) => {
   const errorList = [];
+
+  // Define the allowed fields for daily record validation
   const allowedFields = ["minutesUpdate", "categoryId", "userId", "date"];
 
+  // Validate that only the allowed fields are included
   const validatedKeysMessage = validateAllowedFields(
     dailyRecordObject,
     allowedFields
@@ -91,5 +96,6 @@ export const validateDailyRecords = (dailyRecordObject) => {
   return errorList;
 };
 
+// Create and export the DailyRecord model based on the schema
 const DailyRecord = mongoose.model("DailyRecord", dailyRecordSchema);
 export default DailyRecord;
