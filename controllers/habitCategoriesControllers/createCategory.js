@@ -15,7 +15,7 @@ export const createCategory = async (req, res) => {
     });
   }
 
-  // Validate fields in the habitCategory object
+  // Validating all fields in the habitCategory object using validateCategory
   const errorList = validateCategory(habitCategory, true);
   if (errorList.length > 0) {
     return res.status(400).json({
@@ -25,7 +25,7 @@ export const createCategory = async (req, res) => {
   }
 
   try {
-    // Check if category with same name exists for the user
+    // Check if category with the same name exists for the user
     const existingCategory = await HabitCategory.findOne({
       name: habitCategory.name,
       createdBy: userId,
