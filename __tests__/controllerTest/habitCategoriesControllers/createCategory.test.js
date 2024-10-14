@@ -77,7 +77,7 @@ describe("Create a new habit-category (test route)", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toContain(
-      "Invalid request: the following properties are not allowed to be set: extraField"
+      "BAD REQUEST: the following properties are not allowed to be set: extraField"
     );
   });
 

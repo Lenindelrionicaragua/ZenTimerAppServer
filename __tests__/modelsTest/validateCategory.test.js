@@ -7,6 +7,7 @@ describe("validateCategory function", () => {
       name: "Fitness!",
       createdAt: new Date(),
       createdBy: new mongoose.Types.ObjectId(),
+      categoryId: new mongoose.Types.ObjectId(),
     };
 
     const errors = validateCategory(category);

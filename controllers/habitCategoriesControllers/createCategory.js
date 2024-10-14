@@ -1,16 +1,11 @@
 import HabitCategory, { validateCategory } from "../../models/habitCategory.js";
 import validationErrorMessage from "../../util/validationErrorMessage.js";
-import validateAllowedFields from "../../util/validateAllowedFields.js";
 import { logError, logInfo } from "../../util/logging.js";
 
 export const createCategory = async (req, res) => {
-  // Define the allowed fields for the habitCategory object in the request body
-  const allowedFields = ["name", "createdAt"];
   const { habitCategory } = req.body;
   const userId = req.userId;
-  let { createdAt } = habitCategory;
 
-  // Validate that habitCategory is an object
   if (!(habitCategory instanceof Object)) {
     return res.status(400).json({
       success: false,
@@ -20,33 +15,21 @@ export const createCategory = async (req, res) => {
     });
   }
 
-  // Validate allowed fields in the habitCategory object
-  const invalidFieldsError = validateAllowedFields(
-    habitCategory,
-    allowedFields
-  );
-  if (invalidFieldsError) {
+  // Validate fields in the habitCategory object
+  const errorList = validateCategory(habitCategory, true);
+  if (errorList.length > 0) {
     return res.status(400).json({
       success: false,
-      msg: `Invalid request: ${invalidFieldsError}`,
+      msg: validationErrorMessage(errorList),
     });
   }
 
   try {
-    // Validate the structure of the habitCategory
-    const errorList = validateCategory(habitCategory, true, false);
-    if (errorList.length > 0) {
-      return res.status(400).json({
-        success: false,
-        msg: validationErrorMessage(errorList),
-      });
-    }
-
-    // Check if a category with the same name already exists for the user
+    // Check if category with same name exists for the user
     const existingCategory = await HabitCategory.findOne({
       name: habitCategory.name,
-      createdBy: userId, // User ID from authentication
-    }).collation({ locale: "en", strength: 1 }); // Ensure case-sensitive search
+      createdBy: userId,
+    }).collation({ locale: "en", strength: 1 });
 
     if (existingCategory) {
       return res.status(400).json({
@@ -55,29 +38,19 @@ export const createCategory = async (req, res) => {
       });
     }
 
-    // Validate createdAt if it exists, should be a valid date
-    if (createdAt && isNaN(Date.parse(createdAt))) {
-      const errorList = ["Invalid 'createdAt' date provided."];
-      return res.status(400).json({
-        success: false,
-        msg: validationErrorMessage(errorList),
-      });
-    }
+    // Set createdAt if not provided
+    const finalCreatedAt = habitCategory.createdAt || Date.now();
 
-    // If createdAt is not provided, use the current timestamp
-    const finalCreatedAt = createdAt || Date.now();
-
-    // Create a new habit category instance
+    // Create new habit category
     const newCategory = new HabitCategory({
       name: habitCategory.name,
-      createdBy: userId, // Associate the new category with the authenticated user
-      createdAt: finalCreatedAt, // Use the provided or current timestamp
+      createdBy: userId,
+      createdAt: finalCreatedAt,
     });
 
-    // Save the new category to the database
+    // Save the new category
     await newCategory.save();
 
-    // Respond with success and the created category
     res.status(201).json({
       success: true,
       message: "Category created successfully.",
@@ -85,7 +58,6 @@ export const createCategory = async (req, res) => {
     });
     logInfo(`New Category created: ${JSON.stringify(newCategory)}`);
   } catch (error) {
-    // Handle any errors during the creation process
     logError("Error creating category:", error);
     res.status(500).json({
       success: false,
