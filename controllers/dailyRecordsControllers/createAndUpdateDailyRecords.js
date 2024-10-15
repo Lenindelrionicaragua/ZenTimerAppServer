@@ -7,9 +7,6 @@ export const createAndUpdateDailyRecord = async (req, res) => {
   const { minutesUpdate, date } = req.body;
   const { userId, categoryId } = req.params; // Extract userId and categoryId from params
 
-  //   const responseDebugging = req.params;
-  //   logInfo(`Received request params: ${JSON.stringify(responseDebugging)}`);
-
   // Log incoming request data for debugging
   logInfo(
     `Received request to create/update daily record: userId=${userId}, categoryId=${categoryId}, minutesUpdate=${minutesUpdate}, date=${date}`
@@ -33,15 +30,17 @@ export const createAndUpdateDailyRecord = async (req, res) => {
   }
 
   try {
-    // Log that the validation passed and we are proceeding with the record check
+    // Log validation pass and check for existing record
     logInfo(
       `Validation passed for user ${userId} and category ${categoryId}. Checking for existing record.`
     );
 
+    // Normalize the date to ensure proper format (YYYY-MM-DD)
     const normalizedDate = date
       ? new Date(date).toISOString().split("T")[0]
       : new Date().toISOString().split("T")[0];
 
+    // Check if a record already exists for this user, category, and date
     const existingRecord = await DailyRecord.findOne({
       userId,
       categoryId,
@@ -49,12 +48,11 @@ export const createAndUpdateDailyRecord = async (req, res) => {
     });
 
     if (existingRecord) {
-      // Log that the existing record was found and we are updating it
+      // Log found record and update total daily minutes
       logInfo(
         `Existing record found for user ${userId} and category ${categoryId}. Updating the record.`
       );
 
-      // Update the total daily minutes if the record exists
       existingRecord.totalDailyMinutes += minutesUpdate;
       await existingRecord.save();
 
@@ -74,18 +72,18 @@ export const createAndUpdateDailyRecord = async (req, res) => {
       userId,
       categoryId,
       totalDailyMinutes: minutesUpdate, // Set initial minutes
-      date: date || new Date(), // Use provided date or the current date
+      date: date || new Date(), // Use provided date or current date
     });
 
     await newRecord.save();
 
-    // Log successful creation of the new record
+    // Log successful creation of new record
     logInfo(
       `Created new daily record for user ${userId} and category ${categoryId}. Total minutes: ${newRecord.totalDailyMinutes}`
     );
     return res.status(201).json({ success: true, record: newRecord });
   } catch (error) {
-    // Log any error that occurs during the creation or update process
+    // Handle validation errors
     const validationErrors = validationErrorMessage(error);
     if (validationErrors) {
       logInfo(
@@ -96,7 +94,7 @@ export const createAndUpdateDailyRecord = async (req, res) => {
       return res.status(400).json({ success: false, errors: validationErrors });
     }
 
-    // Log unexpected errors
+    // Log any unexpected errors
     logError("Error creating or updating daily record: ", error);
     return res
       .status(500)
