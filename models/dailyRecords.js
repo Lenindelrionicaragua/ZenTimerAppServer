@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import validateAllowedFields from "../util/validateAllowedFields.js";
 import { logInfo } from "../util/logging.js";
+import moment from "moment";
 
 // Define the schema for the DailyRecord model
 const dailyRecordSchema = new mongoose.Schema({
@@ -80,9 +81,14 @@ export const validateDailyRecords = (dailyRecordObject) => {
     errorList.push("userId must be a valid ObjectId.");
   }
 
-  // Validate 'date': optional, but if provided, it must be a valid date format
-  if (dailyRecordObject.date && isNaN(Date.parse(dailyRecordObject.date))) {
-    errorList.push("Invalid date format.");
+  // Validate 'date': must not be null or an empty string, and if provided, it must be a valid ISO format ('YYYY-MM-DD')
+  if (dailyRecordObject.date === null || dailyRecordObject.date === "") {
+    errorList.push("Date cannot be null or an empty string.");
+  } else if (
+    dailyRecordObject.date &&
+    !moment(dailyRecordObject.date, "YYYY-MM-DD", true).isValid()
+  ) {
+    errorList.push("Date must be in a valid ISO format (YYYY-MM-DD).");
   }
 
   // Log validation results for debugging and monitoring purposes

@@ -7,8 +7,8 @@ export const createAndUpdateDailyRecord = async (req, res) => {
   const { minutesUpdate, date } = req.body;
   const { userId, categoryId } = req.params; // Extract userId and categoryId from params
 
-  const responseDebugging = req.params;
-  logInfo(`Received request params: ${JSON.stringify(responseDebugging)}`);
+  //   const responseDebugging = req.params;
+  //   logInfo(`Received request params: ${JSON.stringify(responseDebugging)}`);
 
   // Log incoming request data for debugging
   logInfo(
