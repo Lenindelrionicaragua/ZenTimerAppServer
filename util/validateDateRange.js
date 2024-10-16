@@ -1,34 +1,31 @@
 import moment from "moment";
 import validationErrorMessage from "./validationErrorMessage";
 
-/**
- * This function validates a range of dates (startDate and endDate).
- * It returns an array of error messages if there are validation issues.
- *
- * @param {string} startDate - The start date in 'YYYY-MM-DD' format
- * @param {string} endDate - The end date in 'YYYY-MM-DD' format
- * @returns {Array} - An array containing validation error messages, if any.
- */
+// Validate the date range (startDate and endDate)
 const validateDateRange = (startDate, endDate) => {
-  const errors = [];
+  const errorList = [];
 
-  if (!moment(startDate, "YYYY-MM-DD", true).isValid()) {
-    errors.push("startDate must be in a valid ISO format (YYYY-MM-DD).");
+  // Check if startDate is valid
+  if (!startDate || !moment(startDate, "YYYY-MM-DD", true).isValid()) {
+    errorList.push("startDate must be in a valid ISO format (YYYY-MM-DD).");
   }
 
-  if (!moment(endDate, "YYYY-MM-DD", true).isValid()) {
-    errors.push("endDate must be in a valid ISO format (YYYY-MM-DD).");
+  // Check if endDate is valid
+  if (!endDate || !moment(endDate, "YYYY-MM-DD", true).isValid()) {
+    errorList.push("endDate must be in a valid ISO format (YYYY-MM-DD).");
   }
 
-  if (moment(startDate).isAfter(moment(endDate))) {
-    errors.push("startDate cannot be greater than endDate.");
+  // Check if startDate is greater than endDate
+  if (startDate && endDate && moment(startDate).isAfter(moment(endDate))) {
+    errorList.push("startDate cannot be greater than endDate.");
   }
 
-  if (errors.length > 0) {
-    return validationErrorMessage(errors);
+  // If there are validation errors, return them as a formatted error message
+  if (errorList.length > 0) {
+    return validationErrorMessage(errorList);
   }
 
-  return null;
+  return null; // No errors
 };
 
 export default validateDateRange;

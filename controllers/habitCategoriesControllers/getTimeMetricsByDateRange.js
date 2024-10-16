@@ -5,31 +5,15 @@ import DailyRecord, {
 } from "../../models/dailyRecords.js";
 import validationErrorMessage from "../../util/validationErrorMessage.js";
 
-// const isValidDate = (dateString) => {
-//   const date = new Date(dateString);
-//   return !isNaN(date.getTime());
-// };
-
 // Controller to get categories time based on user and specified time period
 export const getTimeMetricsByDateRange = async (req, res) => {
   const userId = req.userId; // Get user ID from query parameters
   const { startDate, endDate } = req.body; // or query?
 
-  // Validate the request body using validateDailyRecords
-  const errorList = validateDailyRecords({
-    userId,
-    categoryId,
-    minutesUpdate,
-    date,
-  });
-
-  if (errorList.length > 0) {
-    logInfo(
-      `Validation failed for user ${userId} and category ${categoryId}. Errors: ${JSON.stringify(
-        errorList
-      )}`
-    );
-    return res.status(400).json({ success: false, errors: errorList });
+  // Validar el rango de fechas
+  const dateValidationError = validateDateRange(startDate, endDate);
+  if (dateValidationError) {
+    return res.status(400).json({ success: false, error: dateValidationError });
   }
 
   // Logging request
@@ -97,9 +81,17 @@ export const getTimeMetricsByDateRange = async (req, res) => {
         };
       }
     );
+    logInfo(
+      `Response data: ${JSON.stringify(
+        {
+          totalMinutes,
+          categoryDataPercentage: categoryDataWithPercentages,
+        },
+        null,
+        2
+      )}`
+    );
 
-    // Enviar la respuesta
-    logInfo(`Total minutes across all categories: ${totalMinutes}`);
     res.status(200).json({
       totalMinutes,
       categoryDataPercentage: categoryDataWithPercentages,
