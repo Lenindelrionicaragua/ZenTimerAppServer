@@ -20,12 +20,11 @@ const validateDateRange = (startDate, endDate) => {
     errorList.push("startDate cannot be greater than endDate.");
   }
 
-  // If there are validation errors, return them as a formatted error message
   if (errorList.length > 0) {
     return validationErrorMessage(errorList);
   }
 
-  return null; // No errors
+  return null; /
 };
 
 export default validateDateRange;
