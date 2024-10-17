@@ -8,7 +8,6 @@ import { getTimeMetricsByDateRange } from "../controllers/habitCategoriesControl
 
 const habitCategoriesRouter = express.Router();
 
-habitCategoriesRouter.get("/api/categories", getTimeMetricsByDateRange);
 habitCategoriesRouter.post("/create", createCategory);
 habitCategoriesRouter.patch("/:categoryId/name", updateCategoryName);
 habitCategoriesRouter.delete("/:categoryId", deleteCategory);

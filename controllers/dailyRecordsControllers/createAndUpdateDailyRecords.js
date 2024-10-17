@@ -5,7 +5,8 @@ import DailyRecord from "../../models/dailyRecords.js"; // Ensure this is the co
 
 export const createAndUpdateDailyRecord = async (req, res) => {
   const { minutesUpdate, date } = req.body;
-  const { userId, categoryId } = req.params; // Extract userId and categoryId from params
+  const { categoryId } = req.params; // Extract userId and categoryId from params
+  const userId = req.userId;
 
   // Log incoming request data for debugging
   logInfo(

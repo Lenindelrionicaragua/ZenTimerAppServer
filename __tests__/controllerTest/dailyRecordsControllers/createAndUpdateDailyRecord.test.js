@@ -70,7 +70,7 @@ describe("Daily Record Creation Tests", () => {
     };
 
     const response = await request
-      .post(`/api/daily-records/${testUserId}/${categoryId}`)
+      .post(`/api/daily-records/${categoryId}`)
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
@@ -91,7 +91,7 @@ describe("Daily Record Creation Tests", () => {
     };
 
     const response = await request
-      .post(`/api/daily-records/${testUserId}/${categoryId}`)
+      .post(`/api/daily-records/${categoryId}`)
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
@@ -108,7 +108,7 @@ describe("Daily Record Creation Tests", () => {
     };
 
     const response = await request
-      .post(`/api/daily-records/${testUserId}/${categoryId}`)
+      .post(`/api/daily-records/${categoryId}`)
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
@@ -125,7 +125,7 @@ describe("Daily Record Creation Tests", () => {
     };
 
     const response = await request
-      .post(`/api/daily-records/${testUserId}/${categoryId}`)
+      .post(`/api/daily-records/${categoryId}`)
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
@@ -144,7 +144,7 @@ describe("Daily Record Creation Tests", () => {
     const InvalidCategoryId = "invalidIdObject";
 
     const response = await request
-      .post(`/api/daily-records/${testUserId}/${InvalidCategoryId}`)
+      .post(`/api/daily-records/${InvalidCategoryId}`)
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
@@ -163,7 +163,7 @@ describe("Daily Record Creation Tests", () => {
     const nullCategoryId = null;
 
     const response = await request
-      .post(`/api/daily-records/${testUserId}/${nullCategoryId}`)
+      .post(`/api/daily-records/${nullCategoryId}`)
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
@@ -182,7 +182,7 @@ describe("Daily Record Creation Tests", () => {
     const emptyCategoryId = "";
 
     const response = await request
-      .post(`/api/daily-records/${testUserId}/${emptyCategoryId}`)
+      .post(`/api/daily-records/${emptyCategoryId}`)
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
@@ -196,7 +196,7 @@ describe("Daily Record Creation Tests", () => {
     };
 
     const response = await request
-      .post(`/api/daily-records/${testUserId}/${categoryId}`)
+      .post(`/api/daily-records/${categoryId}`)
       .set("Cookie", "") // No cookie (not authenticated)
       .send(dailyRecordData);
 
@@ -205,59 +205,59 @@ describe("Daily Record Creation Tests", () => {
     expect(response.body.msg).toBe("BAD REQUEST: Authentication required.");
   });
 
-  it("should fail if the user ID is null", async () => {
-    const dailyRecordData = {
-      minutesUpdate: 45,
-      date: "2024-10-12",
-    };
+  //   it("should fail if the user ID is null", async () => {
+  //     const dailyRecordData = {
+  //       minutesUpdate: 45,
+  //       date: "2024-10-12",
+  //     };
 
-    const InvalidUserId = null;
+  //     const InvalidUserId = null;
 
-    const response = await request
-      .post(`/api/daily-records/${InvalidUserId}/${categoryId}`)
-      .set("Cookie", "") // No cookie (not authenticated)
-      .send(dailyRecordData);
+  //     const response = await request
+  //       .post(`/api/daily-records/${categoryId}`)
+  //       .set("Cookie", "") // No cookie (not authenticated)
+  //       .send(dailyRecordData);
 
-    expect(response.status).toBe(401); // Unauthorized due to invalid user ID
-    expect(response.body.success).toBe(false);
-    expect(response.body.msg).toBe("BAD REQUEST: Authentication required.");
-  });
+  //     expect(response.status).toBe(401); // Unauthorized due to invalid user ID
+  //     expect(response.body.success).toBe(false);
+  //     expect(response.body.msg).toBe("BAD REQUEST: Authentication required.");
+  //   });
 
-  it("should fail if the user ID is an empty string", async () => {
-    const dailyRecordData = {
-      minutesUpdate: 45,
-      date: "2024-10-12",
-    };
+  //   it("should fail if the user ID is an empty string", async () => {
+  //     const dailyRecordData = {
+  //       minutesUpdate: 45,
+  //       date: "2024-10-12",
+  //     };
 
-    const InvalidUserId = "";
+  //     const InvalidUserId = "";
 
-    const response = await request
-      .post(`/api/daily-records/${InvalidUserId}/${categoryId}`)
-      .set("Cookie", "") // No cookie (not authenticated)
-      .send(dailyRecordData);
+  //     const response = await request
+  //       .post(`/api/daily-records/${InvalidUserId}/${categoryId}`)
+  //       .set("Cookie", "") // No cookie (not authenticated)
+  //       .send(dailyRecordData);
 
-    expect(response.status).toBe(401); // Unauthorized due to empty user ID
-    expect(response.body.success).toBe(false);
-    expect(response.body.msg).toBe("BAD REQUEST: Authentication required.");
-  });
+  //     expect(response.status).toBe(401); // Unauthorized due to empty user ID
+  //     expect(response.body.success).toBe(false);
+  //     expect(response.body.msg).toBe("BAD REQUEST: Authentication required.");
+  //   });
 
-  it("should fail if the user ID is an invalid object ID", async () => {
-    const dailyRecordData = {
-      minutesUpdate: 45,
-      date: "2024-10-12",
-    };
+  //   it("should fail if the user ID is an invalid object ID", async () => {
+  //     const dailyRecordData = {
+  //       minutesUpdate: 45,
+  //       date: "2024-10-12",
+  //     };
 
-    const InvalidUserId = "invalidIdObject";
+  //     const InvalidUserId = "invalidIdObject";
 
-    const response = await request
-      .post(`/api/daily-records/${InvalidUserId}/${categoryId}`)
-      .set("Cookie", "") // No cookie (not authenticated)
-      .send(dailyRecordData);
+  //     const response = await request
+  //       .post(`/api/daily-records/${InvalidUserId}/${categoryId}`)
+  //       .set("Cookie", "") // No cookie (not authenticated)
+  //       .send(dailyRecordData);
 
-    expect(response.status).toBe(401); // Unauthorized due to invalid user ID
-    expect(response.body.success).toBe(false);
-    expect(response.body.msg).toBe("BAD REQUEST: Authentication required.");
-  });
+  //     expect(response.status).toBe(401); // Unauthorized due to invalid user ID
+  //     expect(response.body.success).toBe(false);
+  //     expect(response.body.msg).toBe("BAD REQUEST: Authentication required.");
+  //   });
 
   it("should fail if minutesUpdate is missing", async () => {
     const dailyRecordData = {
@@ -265,7 +265,7 @@ describe("Daily Record Creation Tests", () => {
     };
 
     const response = await request
-      .post(`/api/daily-records/${testUserId}/${categoryId}`)
+      .post(`/api/daily-records/${categoryId}`)
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
@@ -282,7 +282,7 @@ describe("Daily Record Creation Tests", () => {
     };
 
     const response = await request
-      .post(`/api/daily-records/${testUserId}/${categoryId}`)
+      .post(`/api/daily-records/${categoryId}`)
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
@@ -302,7 +302,7 @@ describe("Daily Record Creation Tests", () => {
     };
 
     const response = await request
-      .post(`/api/daily-records/${testUserId}/${categoryId}`)
+      .post(`/api/daily-records/${categoryId}`)
       .set("Cookie", cookie)
       .send(invalidDailyRecordData);
 
@@ -319,7 +319,7 @@ describe("Daily Record Creation Tests", () => {
     };
 
     const response = await request
-      .post(`/api/daily-records/${testUserId}/${categoryId}`)
+      .post(`/api/daily-records/${categoryId}`)
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
@@ -383,7 +383,7 @@ describe("Daily Record Creation Tests", () => {
     };
 
     const dailyRecordResponse = await request
-      .post(`/api/daily-records/${testUserId}/${categoryId}`)
+      .post(`/api/daily-records/${categoryId}`)
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
@@ -394,7 +394,7 @@ describe("Daily Record Creation Tests", () => {
   it("should update the existing daily record", async () => {
     const newMinutesUpdate = 20;
     const response = await request
-      .post(`/api/daily-records/${testUserId}/${categoryId}`)
+      .post(`/api/daily-records/${categoryId}`)
       .set("Cookie", cookie)
       .send({
         minutesUpdate: newMinutesUpdate,
@@ -410,7 +410,7 @@ describe("Daily Record Creation Tests", () => {
 
   it("should return 400 if minutesUpdate is missing", async () => {
     const response = await request
-      .post(`/api/daily-records/${testUserId}/${categoryId}`)
+      .post(`/api/daily-records/${categoryId}`)
       .set("Cookie", cookie)
       .send({
         date: "2024-10-12",
@@ -422,7 +422,7 @@ describe("Daily Record Creation Tests", () => {
 
   it("should return 400 if date format is invalid", async () => {
     const response = await request
-      .post(`/api/daily-records/${testUserId}/${categoryId}`)
+      .post(`/api/daily-records/${categoryId}`)
       .set("Cookie", cookie)
       .send({
         minutesUpdate: 25,

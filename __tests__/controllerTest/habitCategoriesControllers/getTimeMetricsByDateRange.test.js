@@ -154,7 +154,7 @@ describe("getTimeMetricsByDateRange", () => {
     // Your test case for fetching the categories and their records within a date range
     const response = await request
       .get(
-        `/api/categories/${testUserId}/time-metrics?startDate=2023-02-15&endDate=2023-12-31`
+        `/api/habit-categories/time-metrics?startDate=2023-02-15&endDate=2023-12-31`
       )
       .set("Cookie", cookie);
 
@@ -163,9 +163,15 @@ describe("getTimeMetricsByDateRange", () => {
       "Response for time metrics by date range:",
       JSON.stringify(response.body, null, 2)
     );
+    // Asegurarse de que la respuesta sea exitosa (status 200)
+    expect(response.status).toBe(200);
 
-    // expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty("categories");
-    expect(response.body.categories.length).toBeGreaterThan(0);
+    // Verificar que la respuesta contenga las propiedades esperadas
+    expect(response.body).toHaveProperty("totalMinutes");
+    expect(response.body).toHaveProperty("categoryDataPercentage");
+    expect(response.body.categoryDataPercentage.length).toBeGreaterThan(0);
+
+    // Verificar que el total de minutos es mayor o igual a 0
+    expect(response.body.totalMinutes).toBeGreaterThanOrEqual(0);
   });
 });

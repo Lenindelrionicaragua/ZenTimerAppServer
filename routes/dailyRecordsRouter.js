@@ -3,6 +3,6 @@ import { createAndUpdateDailyRecord } from "../controllers/dailyRecordsControlle
 
 const dailyRecordsRouter = express.Router();
 
-dailyRecordsRouter.post("/:userId/:categoryId", createAndUpdateDailyRecord);
+dailyRecordsRouter.post("/:categoryId", createAndUpdateDailyRecord);
 
 export default dailyRecordsRouter;
