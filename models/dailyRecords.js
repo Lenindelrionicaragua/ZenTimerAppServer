@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import validateAllowedFields from "../util/validateAllowedFields.js";
 import { logInfo } from "../util/logging.js";
-import moment from "moment";
 
 const dailyRecordSchema = new mongoose.Schema({
   categoryId: {
@@ -15,7 +14,8 @@ const dailyRecordSchema = new mongoose.Schema({
     required: true,
   },
   date: {
-    type: String,
+    type: Date,
+    default: Date.now,
     required: true,
   },
   totalDailyMinutes: {
@@ -76,10 +76,8 @@ export const validateDailyRecords = (dailyRecordObject) => {
   }
 
   // If 'date' is provided, check if it's valid
-  if (dailyRecordObject.date) {
-    if (!moment(dailyRecordObject.date, "YYYY-MM-DD", true).isValid()) {
-      errorList.push("Date must be in a valid ISO format (YYYY-MM-DD).");
-    }
+  if (dailyRecordObject.date && isNaN(Date.parse(dailyRecordObject.date))) {
+    errorList.push("Date must be in a valid ISO format.");
   }
 
   if (errorList.length > 0) {

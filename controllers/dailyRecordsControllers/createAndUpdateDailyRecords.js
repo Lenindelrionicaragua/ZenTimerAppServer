@@ -1,7 +1,6 @@
 import { validateDailyRecords } from "../../models/dailyRecords.js";
 import { logError, logInfo } from "../../util/logging.js";
-import DailyRecord from "../../models/dailyRecords.js"; // Ensure this is the correct model
-import moment from "moment";
+import DailyRecord from "../../models/dailyRecords.js";
 
 export const createAndUpdateDailyRecord = async (req, res) => {
   const { minutesUpdate, date } = req.body;
@@ -12,11 +11,7 @@ export const createAndUpdateDailyRecord = async (req, res) => {
     `Received request to create/update daily record: userId=${userId}, categoryId=${categoryId}, minutesUpdate=${minutesUpdate}, date=${date}`
   );
 
-  // If no date provided, use today's date
-  const normalizedDate = date
-    ? moment(date).format("YYYY-MM-DD") // Normalize the provided date
-    : moment().format("YYYY-MM-DD"); // Use today's date if no date is provided
-
+  // Validate input
   const errorList = validateDailyRecords({
     userId,
     categoryId,
@@ -37,13 +32,12 @@ export const createAndUpdateDailyRecord = async (req, res) => {
     logInfo(
       `Validation passed for user ${userId} and category ${categoryId}. Checking for existing record.`
     );
-    logInfo(`Normalized date for record: ${normalizedDate}`);
 
-    // Check for an existing record
+    // Check for an existing record with the normalized date
     const existingRecord = await DailyRecord.findOne({
       userId,
       categoryId,
-      date: normalizedDate,
+      date,
     });
 
     if (existingRecord) {
@@ -62,11 +56,13 @@ export const createAndUpdateDailyRecord = async (req, res) => {
     logInfo(
       `No existing record found for user ${userId} and category ${categoryId}. Creating a new record.`
     );
+
+    // If no existing record, create a new one
     const newRecord = new DailyRecord({
       userId,
       categoryId,
-      totalDailyMinutes: minutesUpdate, // Initial minutes
-      date: normalizedDate, // Use normalized date
+      totalDailyMinutes: minutesUpdate,
+      date: date || Date.now(),
     });
 
     await newRecord.save();

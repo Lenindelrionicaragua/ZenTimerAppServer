@@ -79,7 +79,7 @@ describe("Daily Record Creation Tests", () => {
     expect(response.body.record.totalDailyMinutes).toBe(
       dailyRecordData.minutesUpdate
     );
-    expect(response.body.record.date).toBe("2024-10-12");
+    expect(response.body.record.date).toBe("2024-10-12T00:00:00.000Z");
     expect(response.body.record.userId).toBe(testUserId);
     expect(response.body.record.categoryId).toBe(categoryId);
   });
@@ -97,7 +97,7 @@ describe("Daily Record Creation Tests", () => {
 
     expect(response.status).toBe(400); // Bad request due to invalid format
     expect(response.body.errors).toContain(
-      "Date must be in a valid ISO format (YYYY-MM-DD)."
+      "Date must be in a valid ISO format."
     );
   });
 
@@ -268,7 +268,7 @@ describe("Daily Record Creation Tests", () => {
     expect(response.body.success).toBe(true);
 
     // Verify that the date is stored in ISO format
-    expect(response.body.record.date).toBe("2024-10-12");
+    expect(response.body.record.date).toBe("2024-10-12T00:00:00.000Z");
   });
 });
 
@@ -366,12 +366,12 @@ describe("Daily Record Creation Tests", () => {
       .set("Cookie", cookie)
       .send({
         minutesUpdate: 25,
-        date: "12-10-2024", // Invalid date format
+        date: "invalid",
       });
 
     expect(response.status).toBe(400); // Bad Request
     expect(response.body.errors).toContain(
-      "Date must be in a valid ISO format (YYYY-MM-DD)."
+      "Date must be in a valid ISO format."
     );
   });
 });

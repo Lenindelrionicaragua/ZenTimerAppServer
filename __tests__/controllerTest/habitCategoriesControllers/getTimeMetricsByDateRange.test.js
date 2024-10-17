@@ -69,8 +69,8 @@ describe("getTimeMetricsByDateRange", () => {
       // Capturing categoryId and logging info
       testUserId = categoryResponse.body.category.createdBy;
       const categoryId = categoryResponse.body.category._id;
-      logInfo(`Category created by user: ${JSON.stringify(testUserId)}`);
-      logInfo(`Category created with ID: ${JSON.stringify(categoryId)}`);
+      //   logInfo(`Category created by user: ${JSON.stringify(testUserId)}`);
+      //   logInfo(`Category created with ID: ${JSON.stringify(categoryId)}`);
 
       // Storing category IDs for later use
       switch (i) {
