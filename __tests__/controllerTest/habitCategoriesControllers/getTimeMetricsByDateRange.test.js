@@ -115,12 +115,30 @@ describe("getTimeMetricsByDateRange", () => {
       )
     );
 
-    // Adding multiple daily records for each category
+    // Adding multiple daily records for each category across the year
     const dailyRecordData = {
       minutesUpdate: 45,
-      date: "2024-10-12", // Valid date format
     };
 
+    // Generating random dates in 2024 and 2023
+    const randomDatesInYear = (year) => {
+      const dates = [];
+      for (let month = 1; month <= 12; month++) {
+        const daysInMonth = new Date(year, month, 0).getDate();
+        for (let day = 1; day <= daysInMonth; day++) {
+          const dateStr = `${year}-${String(month).padStart(2, "0")}-${String(
+            day
+          ).padStart(2, "0")}`;
+          dates.push(dateStr);
+        }
+      }
+      return dates;
+    };
+
+    // Create a list of all dates for 2023 and 2024
+    const dates2023 = randomDatesInYear(2023);
+    const dates2024 = randomDatesInYear(2024);
+    const allDates = [...dates2023, ...dates2024];
     // Adding daily records for each category
     const categoriesToUpdate = [
       categoryId1,
@@ -130,12 +148,13 @@ describe("getTimeMetricsByDateRange", () => {
       categoryId5,
       categoryId6,
     ];
+
     for (let i = 0; i < categoriesToUpdate.length; i++) {
       const categoryId = categoriesToUpdate[i];
 
       // Adding daily record to each category
       const response = await request
-        .post(`/api/daily-records/${testUserId}/${categoryId}`)
+        .post(`/api/daily-records/${categoryId}`)
         .set("Cookie", cookie)
         .send(dailyRecordData);
 

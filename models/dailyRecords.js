@@ -3,38 +3,32 @@ import validateAllowedFields from "../util/validateAllowedFields.js";
 import { logInfo } from "../util/logging.js";
 import moment from "moment";
 
-// Define the schema for the DailyRecord model
 const dailyRecordSchema = new mongoose.Schema({
   categoryId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "HabitCategory", // Reference to the HabitCategory model
-    required: true, // 'categoryId' is required
+    ref: "HabitCategory",
+    required: true,
   },
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User", // Reference to the User model
-    required: true, // 'userId' is required
+    ref: "User",
+    required: true,
   },
   date: {
-    type: Date,
-    default: Date.now, // If no date is provided, use the current date
-    required: true, // 'date' is required
+    type: String,
+    required: true,
   },
   totalDailyMinutes: {
     type: Number,
     required: true,
-    default: 0, // Default to 0 if no time is provided
+    default: 0,
   },
 });
 
-// Validation function for Daily Records
 export const validateDailyRecords = (dailyRecordObject) => {
   const errorList = [];
-
-  // Define the allowed fields for daily record validation
   const allowedFields = ["minutesUpdate", "categoryId", "userId", "date"];
 
-  // Validate that only the allowed fields are included
   const validatedKeysMessage = validateAllowedFields(
     dailyRecordObject,
     allowedFields
@@ -84,24 +78,18 @@ export const validateDailyRecords = (dailyRecordObject) => {
   // Validate 'date': must not be null or an empty string, and if provided, it must be a valid ISO format ('YYYY-MM-DD')
   if (dailyRecordObject.date === null || dailyRecordObject.date === "") {
     errorList.push("Date cannot be null or an empty string.");
-  } else if (
-    dailyRecordObject.date &&
-    !moment(dailyRecordObject.date, "YYYY-MM-DD", true).isValid()
-  ) {
+  } else if (!moment(dailyRecordObject.date, "YYYY-MM-DD", true).isValid()) {
     errorList.push("Date must be in a valid ISO format (YYYY-MM-DD).");
   }
 
-  // Log validation results for debugging and monitoring purposes
   if (errorList.length > 0) {
     logInfo("Daily record validation failed: " + errorList.join(", "));
   } else {
     logInfo("Daily record validation passed without errors.");
   }
 
-  // Return the list of validation errors (if any)
   return errorList;
 };
 
-// Create and export the DailyRecord model based on the schema
 const DailyRecord = mongoose.model("DailyRecord", dailyRecordSchema);
 export default DailyRecord;

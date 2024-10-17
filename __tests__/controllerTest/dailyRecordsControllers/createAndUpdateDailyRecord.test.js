@@ -79,7 +79,7 @@ describe("Daily Record Creation Tests", () => {
     expect(response.body.record.totalDailyMinutes).toBe(
       dailyRecordData.minutesUpdate
     );
-    expect(response.body.record.date).toBe("2024-10-12T00:00:00.000Z");
+    expect(response.body.record.date).toBe("2024-10-12");
     expect(response.body.record.userId).toBe(testUserId);
     expect(response.body.record.categoryId).toBe(categoryId);
   });
@@ -274,7 +274,7 @@ describe("Daily Record Creation Tests", () => {
     expect(response.body.success).toBe(true);
 
     // Verify that the date is stored in ISO format
-    expect(response.body.record.date).toBe("2024-10-12T00:00:00.000Z");
+    expect(response.body.record.date).toBe("2024-10-12");
   });
 });
 
