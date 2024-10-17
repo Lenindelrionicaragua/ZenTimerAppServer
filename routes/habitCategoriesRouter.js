@@ -14,6 +14,6 @@ habitCategoriesRouter.delete("/:categoryId", deleteCategory);
 // habitCategoriesRouter.get("/time", getCategoriesTime);
 // habitCategoriesRouter.get("/time-percentage", getCategoriesTimePercentage);
 
-habitCategoriesRouter.get("/:userId/time-metrics", getTimeMetricsByDateRange); // Obtener métricas de tiempo para un usuario
+habitCategoriesRouter.get("/time-metrics", getTimeMetricsByDateRange); // Obtener métricas de tiempo para un usuario
 
 export default habitCategoriesRouter;

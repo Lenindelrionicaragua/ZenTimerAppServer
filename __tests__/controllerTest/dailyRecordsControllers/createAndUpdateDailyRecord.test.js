@@ -205,60 +205,6 @@ describe("Daily Record Creation Tests", () => {
     expect(response.body.msg).toBe("BAD REQUEST: Authentication required.");
   });
 
-  //   it("should fail if the user ID is null", async () => {
-  //     const dailyRecordData = {
-  //       minutesUpdate: 45,
-  //       date: "2024-10-12",
-  //     };
-
-  //     const InvalidUserId = null;
-
-  //     const response = await request
-  //       .post(`/api/daily-records/${categoryId}`)
-  //       .set("Cookie", "") // No cookie (not authenticated)
-  //       .send(dailyRecordData);
-
-  //     expect(response.status).toBe(401); // Unauthorized due to invalid user ID
-  //     expect(response.body.success).toBe(false);
-  //     expect(response.body.msg).toBe("BAD REQUEST: Authentication required.");
-  //   });
-
-  //   it("should fail if the user ID is an empty string", async () => {
-  //     const dailyRecordData = {
-  //       minutesUpdate: 45,
-  //       date: "2024-10-12",
-  //     };
-
-  //     const InvalidUserId = "";
-
-  //     const response = await request
-  //       .post(`/api/daily-records/${InvalidUserId}/${categoryId}`)
-  //       .set("Cookie", "") // No cookie (not authenticated)
-  //       .send(dailyRecordData);
-
-  //     expect(response.status).toBe(401); // Unauthorized due to empty user ID
-  //     expect(response.body.success).toBe(false);
-  //     expect(response.body.msg).toBe("BAD REQUEST: Authentication required.");
-  //   });
-
-  //   it("should fail if the user ID is an invalid object ID", async () => {
-  //     const dailyRecordData = {
-  //       minutesUpdate: 45,
-  //       date: "2024-10-12",
-  //     };
-
-  //     const InvalidUserId = "invalidIdObject";
-
-  //     const response = await request
-  //       .post(`/api/daily-records/${InvalidUserId}/${categoryId}`)
-  //       .set("Cookie", "") // No cookie (not authenticated)
-  //       .send(dailyRecordData);
-
-  //     expect(response.status).toBe(401); // Unauthorized due to invalid user ID
-  //     expect(response.body.success).toBe(false);
-  //     expect(response.body.msg).toBe("BAD REQUEST: Authentication required.");
-  //   });
-
   it("should fail if minutesUpdate is missing", async () => {
     const dailyRecordData = {
       date: "2024-10-12", // Missing minutesUpdate
