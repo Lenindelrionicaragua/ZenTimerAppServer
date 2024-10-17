@@ -25,7 +25,6 @@ describe("getTimeMetricsByDateRange", () => {
   let testUser;
   let testUserId;
   let cookie;
-  let categoryId;
   let categoryId1;
   let categoryId2;
   let categoryId3;
@@ -115,17 +114,17 @@ describe("getTimeMetricsByDateRange", () => {
       )
     );
 
-    // Adding multiple daily records for each category across the year
     const dailyRecordData = {
       minutesUpdate: 45,
     };
 
-    // Generating random dates in 2024 and 2023
+    // Function to generate random dates in a specific year
     const randomDatesInYear = (year) => {
       const dates = [];
       for (let month = 1; month <= 12; month++) {
-        const daysInMonth = new Date(year, month, 0).getDate();
+        const daysInMonth = new Date(year, month, 0).getDate(); // Get the number of days in the month
         for (let day = 1; day <= daysInMonth; day++) {
+          // Format the date as YYYY-MM-DD
           const dateStr = `${year}-${String(month).padStart(2, "0")}-${String(
             day
           ).padStart(2, "0")}`;
@@ -135,11 +134,10 @@ describe("getTimeMetricsByDateRange", () => {
       return dates;
     };
 
-    // Create a list of all dates for 2023 and 2024
+    // Generate random dates for 2023 and 2024
     const dates2023 = randomDatesInYear(2023);
     const dates2024 = randomDatesInYear(2024);
-    const allDates = [...dates2023, ...dates2024];
-    // Adding daily records for each category
+
     const categoriesToUpdate = [
       categoryId1,
       categoryId2,
@@ -149,19 +147,50 @@ describe("getTimeMetricsByDateRange", () => {
       categoryId6,
     ];
 
+    // Adding daily records for each category in 2023
     for (let i = 0; i < categoriesToUpdate.length; i++) {
       const categoryId = categoriesToUpdate[i];
+      const randomDate2023 =
+        dates2023[Math.floor(Math.random() * dates2023.length)];
 
-      // Adding daily record to each category
-      const response = await request
+      const dailyRecordData2023 = {
+        ...dailyRecordData,
+        date: randomDate2023,
+      };
+
+      const response2023 = await request
         .post(`/api/daily-records/${categoryId}`)
         .set("Cookie", cookie)
-        .send(dailyRecordData);
+        .send(dailyRecordData2023);
 
-      // Log the response after adding the daily record
       logInfo(
-        `Daily record added for category ${categoryId}: ${JSON.stringify(
-          response.body,
+        `Daily record for 2023 added for category ${categoryId}: ${JSON.stringify(
+          response2023.body,
+          null,
+          2
+        )}`
+      );
+    }
+
+    // Adding daily records for each category in 2024
+    for (let i = 0; i < categoriesToUpdate.length; i++) {
+      const categoryId = categoriesToUpdate[i];
+      const randomDate2024 =
+        dates2024[Math.floor(Math.random() * dates2024.length)];
+
+      const dailyRecordData2024 = {
+        ...dailyRecordData,
+        date: randomDate2024,
+      };
+
+      const response2024 = await request
+        .post(`/api/daily-records/${categoryId}`)
+        .set("Cookie", cookie)
+        .send(dailyRecordData2024);
+
+      logInfo(
+        `Daily record for 2024 added for category ${categoryId}: ${JSON.stringify(
+          response2024.body,
           null,
           2
         )}`
@@ -170,7 +199,6 @@ describe("getTimeMetricsByDateRange", () => {
   });
 
   it("should return all categories and their entries between 15th February and 31st December 2023", async () => {
-    // Your test case for fetching the categories and their records within a date range
     const response = await request
       .get(
         `/api/habit-categories/time-metrics?startDate=2023-02-15&endDate=2023-12-31`
@@ -182,15 +210,30 @@ describe("getTimeMetricsByDateRange", () => {
       "Response for time metrics by date range:",
       JSON.stringify(response.body, null, 2)
     );
-    // Asegurarse de que la respuesta sea exitosa (status 200)
-    expect(response.status).toBe(200);
 
-    // Verificar que la respuesta contenga las propiedades esperadas
+    expect(response.status).toBe(200);
     expect(response.body).toHaveProperty("totalMinutes");
     expect(response.body).toHaveProperty("categoryDataPercentage");
     expect(response.body.categoryDataPercentage.length).toBeGreaterThan(0);
+    expect(response.body.totalMinutes).toBeGreaterThanOrEqual(0);
+  });
 
-    // Verificar que el total de minutos es mayor o igual a 0
+  it("should return all categories and their entries between 1st January and 31st December 2024", async () => {
+    const response = await request
+      .get(
+        `/api/habit-categories/time-metrics?startDate=2024-01-01&endDate=2024-12-31`
+      )
+      .set("Cookie", cookie);
+
+    logInfo(
+      "Response for time metrics by date range in 2024:",
+      JSON.stringify(response.body, null, 2)
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty("totalMinutes");
+    expect(response.body).toHaveProperty("categoryDataPercentage");
+    expect(response.body.categoryDataPercentage.length).toBeGreaterThan(0);
     expect(response.body.totalMinutes).toBeGreaterThanOrEqual(0);
   });
 });

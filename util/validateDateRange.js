@@ -15,7 +15,7 @@ const validateDateRange = (startDate, endDate) => {
     errorList.push("endDate must be in a valid ISO format (YYYY-MM-DD).");
   }
 
-  // Check if startDate is greater than endDate
+  // Check if startDate is greater than endDate (only by day, no time considered)
   if (startDate && endDate && moment(startDate).isAfter(moment(endDate))) {
     errorList.push("startDate cannot be greater than endDate.");
   }

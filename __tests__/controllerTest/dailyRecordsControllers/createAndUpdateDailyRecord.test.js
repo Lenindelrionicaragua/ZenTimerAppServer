@@ -101,10 +101,10 @@ describe("Daily Record Creation Tests", () => {
     );
   });
 
-  it("should fail if the date is null", async () => {
+  it("should pass even if the date is null", async () => {
     const dailyRecordData = {
       minutesUpdate: 45,
-      date: null, // Invalid date
+      date: null,
     };
 
     const response = await request
@@ -112,13 +112,10 @@ describe("Daily Record Creation Tests", () => {
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
-    expect(response.status).toBe(400); // Bad request due to null date
-    expect(response.body.errors).toContain(
-      "Date cannot be null or an empty string."
-    );
+    expect(response.status).toBe(201); // Bad request due to null date
   });
 
-  it("should fail if the date is an empty string", async () => {
+  it("should pass even if the date is an empty string", async () => {
     const dailyRecordData = {
       minutesUpdate: 45,
       date: "", // Empty date string
@@ -129,10 +126,7 @@ describe("Daily Record Creation Tests", () => {
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
-    expect(response.status).toBe(400); // Bad request due to empty date
-    expect(response.body.errors).toContain(
-      "Date cannot be null or an empty string."
-    );
+    expect(response.status).toBe(201); // Bad request due to empty date
   });
 
   it("should fail if the categoryId is invalid (non-objectId)", async () => {

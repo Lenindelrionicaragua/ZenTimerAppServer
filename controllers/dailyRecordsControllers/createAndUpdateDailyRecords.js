@@ -1,6 +1,7 @@
 import { validateDailyRecords } from "../../models/dailyRecords.js";
 import { logError, logInfo } from "../../util/logging.js";
 import DailyRecord from "../../models/dailyRecords.js"; // Ensure this is the correct model
+import moment from "moment";
 
 export const createAndUpdateDailyRecord = async (req, res) => {
   const { minutesUpdate, date } = req.body;
@@ -10,6 +11,11 @@ export const createAndUpdateDailyRecord = async (req, res) => {
   logInfo(
     `Received request to create/update daily record: userId=${userId}, categoryId=${categoryId}, minutesUpdate=${minutesUpdate}, date=${date}`
   );
+
+  // If no date provided, use today's date
+  const normalizedDate = date
+    ? moment(date).format("YYYY-MM-DD") // Normalize the provided date
+    : moment().format("YYYY-MM-DD"); // Use today's date if no date is provided
 
   const errorList = validateDailyRecords({
     userId,
@@ -31,11 +37,7 @@ export const createAndUpdateDailyRecord = async (req, res) => {
     logInfo(
       `Validation passed for user ${userId} and category ${categoryId}. Checking for existing record.`
     );
-
-    // Normalize the date (YYYY-MM-DD format)
-    const normalizedDate = date
-      ? new Date(date).toISOString().split("T")[0]
-      : new Date().toISOString().split("T")[0];
+    logInfo(`Normalized date for record: ${normalizedDate}`);
 
     // Check for an existing record
     const existingRecord = await DailyRecord.findOne({

@@ -75,11 +75,11 @@ export const validateDailyRecords = (dailyRecordObject) => {
     errorList.push("userId must be a valid ObjectId.");
   }
 
-  // Validate 'date': must not be null or an empty string, and if provided, it must be a valid ISO format ('YYYY-MM-DD')
-  if (dailyRecordObject.date === null || dailyRecordObject.date === "") {
-    errorList.push("Date cannot be null or an empty string.");
-  } else if (!moment(dailyRecordObject.date, "YYYY-MM-DD", true).isValid()) {
-    errorList.push("Date must be in a valid ISO format (YYYY-MM-DD).");
+  // If 'date' is provided, check if it's valid
+  if (dailyRecordObject.date) {
+    if (!moment(dailyRecordObject.date, "YYYY-MM-DD", true).isValid()) {
+      errorList.push("Date must be in a valid ISO format (YYYY-MM-DD).");
+    }
   }
 
   if (errorList.length > 0) {
