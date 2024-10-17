@@ -6,7 +6,7 @@ import validateDateRange from "../../util/validateDateRange.js";
 
 // Controller to get categories time based on user and specified time period
 export const getTimeMetricsByDateRange = async (req, res) => {
-  const userId = req.userId; // Get user ID from query parameters
+  const { userId } = req.params; // Get user ID from query parameters
   const { startDate, endDate } = req.body; // or query?
 
   // Validate date range using validateDateRange

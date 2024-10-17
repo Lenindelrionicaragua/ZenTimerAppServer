@@ -24,7 +24,7 @@ const validateDateRange = (startDate, endDate) => {
     return validationErrorMessage(errorList);
   }
 
-  return null; /
+  return null;
 };
 
 export default validateDateRange;
