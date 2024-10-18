@@ -10,10 +10,10 @@ import {
 // Controller to get categories time based on user and specified time period
 export const getTimeMetricsByDateRange = async (req, res) => {
   const userId = req.userId;
-  let { startDate, endDate } = req.query;
+  let { startDate, endDate, categoryId } = req.query;
 
-  const start = new Date(startDate);
-  const end = new Date(endDate);
+  let start = new Date(startDate);
+  let end = new Date(endDate);
   start.setUTCHours(0, 0, 0, 0);
   end.setUTCHours(23, 59, 59, 999);
 
@@ -24,19 +24,37 @@ export const getTimeMetricsByDateRange = async (req, res) => {
     });
   }
 
+  if (start > end) {
+    [start, end] = [end, start];
+    logInfo("Date range was reversed by the server");
+  }
+
   logInfo(`Adjusted start date: ${start.toISOString()}`);
   logInfo(`Adjusted end date: ${end.toISOString()}`);
 
   try {
-    const categories = await HabitCategory.find({ createdBy: userId });
-
-    if (!categories || categories.length === 0) {
-      return res.status(200).json({
-        success: true,
-        msg: "No categories found for this user, but the request was successful.",
-        totalMinutes: 0,
-        categoryData: [],
+    let categories;
+    if (categoryId) {
+      categories = await HabitCategory.find({
+        _id: categoryId,
+        createdBy: userId,
       });
+      if (!categories.length) {
+        return res.status(404).json({
+          success: false,
+          message: "Category not found",
+        });
+      }
+    } else {
+      categories = await HabitCategory.find({ createdBy: userId });
+      if (!categories || categories.length === 0) {
+        return res.status(200).json({
+          success: true,
+          msg: "No categories found for this user, but the request was successful.",
+          totalMinutes: 0,
+          categoryData: [],
+        });
+      }
     }
 
     const filteredCategoryStats = await Promise.all(
