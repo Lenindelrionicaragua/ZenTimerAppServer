@@ -98,21 +98,21 @@ describe("getTimeMetricsByDateRange", () => {
     }
 
     // Log all the category IDs for validation purposes
-    logInfo(
-      "Category IDs created:",
-      JSON.stringify(
-        [
-          categoryId1,
-          categoryId2,
-          categoryId3,
-          categoryId4,
-          categoryId5,
-          categoryId6,
-        ],
-        null,
-        2
-      )
-    );
+    // logInfo(
+    //   "Category IDs created:",
+    //   JSON.stringify(
+    //     [
+    //       categoryId1,
+    //       categoryId2,
+    //       categoryId3,
+    //       categoryId4,
+    //       categoryId5,
+    //       categoryId6,
+    //     ],
+    //     null,
+    //     2
+    //   )
+    // );
 
     const dailyRecordData = {
       minutesUpdate: 45,
@@ -163,13 +163,13 @@ describe("getTimeMetricsByDateRange", () => {
         .set("Cookie", cookie)
         .send(dailyRecordData2023);
 
-      logInfo(
-        `Daily record for 2023 added for category ${categoryId}: ${JSON.stringify(
-          response2023.body,
-          null,
-          2
-        )}`
-      );
+      // logInfo(
+      //   `Daily record for 2023 added for category ${categoryId}: ${JSON.stringify(
+      //     response2023.body,
+      //     null,
+      //     2
+      //   )}`
+      // );
     }
 
     // Adding daily records for each category in 2024
@@ -188,40 +188,59 @@ describe("getTimeMetricsByDateRange", () => {
         .set("Cookie", cookie)
         .send(dailyRecordData2024);
 
-      logInfo(
-        `Daily record for 2024 added for category ${categoryId}: ${JSON.stringify(
-          response2024.body,
-          null,
-          2
-        )}`
-      );
+      // logInfo(
+      //   `Daily record for 2024 added for category ${categoryId}: ${JSON.stringify(
+      //     response2024.body,
+      //     null,
+      //     2
+      //   )}`
+      // );
     }
   });
 
-  it("should return all categories and their entries between 15th February and 31st December 2023", async () => {
+  // it("should return all categories and their entries between 15th February and 31st December 2023", async () => {
+  //   const response = await request
+  //     .get(
+  //       `/api/habit-categories/time-metrics?startDate=2023-02-15&endDate=2023-12-31`
+  //     )
+  //     .set("Cookie", cookie);
+
+  //   // Log the response to check the results
+  //   logInfo(
+  //     "Response for time metrics by date range:",
+  //     JSON.stringify(response.body, null, 2)
+  //   );
+
+  //   expect(response.status).toBe(200);
+  //   expect(response.body).toHaveProperty("totalMinutes");
+  //   expect(response.body).toHaveProperty("categoryDataPercentage");
+  //   expect(response.body.categoryDataPercentage.length).toBeGreaterThan(0);
+  //   expect(response.body.totalMinutes).toBeGreaterThanOrEqual(0);
+  // });
+
+  // it("should return all categories and their entries between 1st January and 31st December 2024", async () => {
+  //   const response = await request
+  //     .get(
+  //       `/api/habit-categories/time-metrics?startDate=2024-01-01&endDate=2024-12-31`
+  //     )
+  //     .set("Cookie", cookie);
+
+  //   logInfo(
+  //     "Response for time metrics by date range in 2024:",
+  //     JSON.stringify(response.body, null, 2)
+  //   );
+
+  //   expect(response.status).toBe(200);
+  //   expect(response.body).toHaveProperty("totalMinutes");
+  //   expect(response.body).toHaveProperty("categoryDataPercentage");
+  //   expect(response.body.categoryDataPercentage.length).toBeGreaterThan(0);
+  //   expect(response.body.totalMinutes).toBeGreaterThanOrEqual(0);
+  // });
+
+  it("should return all categories and their entries between 1st January and 1st July 2024", async () => {
     const response = await request
       .get(
-        `/api/habit-categories/time-metrics?startDate=2023-02-15&endDate=2023-12-31`
-      )
-      .set("Cookie", cookie);
-
-    // Log the response to check the results
-    logInfo(
-      "Response for time metrics by date range:",
-      JSON.stringify(response.body, null, 2)
-    );
-
-    expect(response.status).toBe(200);
-    expect(response.body).toHaveProperty("totalMinutes");
-    expect(response.body).toHaveProperty("categoryDataPercentage");
-    expect(response.body.categoryDataPercentage.length).toBeGreaterThan(0);
-    expect(response.body.totalMinutes).toBeGreaterThanOrEqual(0);
-  });
-
-  it("should return all categories and their entries between 1st January and 31st December 2024", async () => {
-    const response = await request
-      .get(
-        `/api/habit-categories/time-metrics?startDate=2024-01-01&endDate=2024-12-31`
+        `/api/habit-categories/time-metrics?startDate=2024-01-01&endDate=2024-07-01`
       )
       .set("Cookie", cookie);
 

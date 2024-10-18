@@ -2,21 +2,21 @@ import HabitCategory from "../../models/habitCategory.js";
 import { logInfo, logError } from "../../util/logging.js";
 import DailyRecord from "../../models/dailyRecords.js";
 import validationErrorMessage from "../../util/validationErrorMessage.js";
+import {
+  calculateTotalMinutes,
+  calculatePercentages,
+} from "../../util/calculations.js";
 
 // Controller to get categories time based on user and specified time period
 export const getTimeMetricsByDateRange = async (req, res) => {
   const userId = req.userId;
-  let { startDate, endDate } = req.query; // Use params for date range
+  let { startDate, endDate } = req.query;
 
-  // Convert startDate and endDate to Date objects
   const start = new Date(startDate);
   const end = new Date(endDate);
+  start.setUTCHours(0, 0, 0, 0);
+  end.setUTCHours(23, 59, 59, 999);
 
-  // Ensure startDate is at the beginning of the day and endDate at the end
-  start.setUTCHours(0, 0, 0, 0); // Set to 00:00:00 for startDate
-  end.setUTCHours(23, 59, 59, 999); // Set to 23:59:59 for endDate
-
-  // Validate that startDate and endDate are valid dates
   if (isNaN(start.getTime()) || isNaN(end.getTime())) {
     return res.status(400).json({
       success: false,
@@ -28,9 +28,7 @@ export const getTimeMetricsByDateRange = async (req, res) => {
   logInfo(`Adjusted end date: ${end.toISOString()}`);
 
   try {
-    const categories = await HabitCategory.find({
-      createdBy: userId,
-    });
+    const categories = await HabitCategory.find({ createdBy: userId });
 
     if (!categories || categories.length === 0) {
       return res.status(200).json({
@@ -46,7 +44,7 @@ export const getTimeMetricsByDateRange = async (req, res) => {
         const filteredRecords = await DailyRecord.find({
           userId,
           categoryId: category._id,
-          date: { $gte: start, $lte: end }, // Filter by date range
+          date: { $gte: start, $lte: end },
         });
 
         const totalCategoryMinutes = filteredRecords.reduce(
@@ -62,25 +60,12 @@ export const getTimeMetricsByDateRange = async (req, res) => {
       })
     );
 
-    const totalMinutes = filteredCategoryStats.reduce(
-      (sum, category) => sum + category.totalMinutes,
-      0
+    const totalMinutes = calculateTotalMinutes(filteredCategoryStats);
+    const categoryDataWithPercentages = calculatePercentages(
+      filteredCategoryStats,
+      totalMinutes
     );
 
-    const categoryDataWithPercentages = filteredCategoryStats.map(
-      (category) => {
-        const percentage =
-          totalMinutes > 0
-            ? ((category.totalMinutes / totalMinutes) * 100).toFixed(2)
-            : 0;
-        return {
-          ...category,
-          percentage,
-        };
-      }
-    );
-
-    // Response with data
     logInfo(
       `Response data: ${JSON.stringify(
         {
@@ -98,10 +83,7 @@ export const getTimeMetricsByDateRange = async (req, res) => {
       categoryDataPercentage: categoryDataWithPercentages,
     });
   } catch (error) {
-    // Log the actual error if something goes wrong
     logError(`Error fetching category data: ${error.message}`);
-
-    // Return a generic error response with validationErrorMessage (if needed)
     const generalError = validationErrorMessage([error.message]);
 
     return res.status(500).json({
