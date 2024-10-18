@@ -1,6 +1,6 @@
 import {
   calculateTotalMinutes,
-  calculatePercentages,
+  calculateCategoryPercentages,
 } from "../../util/calculations";
 
 // Test data
@@ -32,7 +32,10 @@ describe("calculateTotalMinutes", () => {
 describe("calculatePercentages", () => {
   it("should correctly calculate percentages for multiple categories", () => {
     const totalMinutes = 360; // Mocked total minutes for this test
-    const percentages = calculatePercentages(categoryStatsMock, totalMinutes);
+    const percentages = calculateCategoryPercentages(
+      categoryStatsMock,
+      totalMinutes
+    );
 
     // The expected percentages:
     // Work: (120 / 360) * 100 = 33.33
@@ -45,7 +48,10 @@ describe("calculatePercentages", () => {
 
   it("should handle single category percentages correctly", () => {
     const totalMinutes = 120; // Total minutes for one category
-    const percentages = calculatePercentages(singleCategoryMock, totalMinutes);
+    const percentages = calculateCategoryPercentages(
+      singleCategoryMock,
+      totalMinutes
+    );
 
     // Since there's only one category, its percentage should be 100%
     expect(percentages[0].percentage).toBe("100.00");
@@ -53,7 +59,10 @@ describe("calculatePercentages", () => {
 
   it("should return 0% if totalMinutes is 0", () => {
     const totalMinutes = 0; // No minutes tracked
-    const percentages = calculatePercentages(categoryStatsMock, totalMinutes);
+    const percentages = calculateCategoryPercentages(
+      categoryStatsMock,
+      totalMinutes
+    );
 
     // All percentages should be 0
     percentages.forEach((category) => {

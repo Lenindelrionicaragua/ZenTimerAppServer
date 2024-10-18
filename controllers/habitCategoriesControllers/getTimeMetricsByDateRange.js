@@ -4,7 +4,7 @@ import DailyRecord from "../../models/dailyRecords.js";
 import validationErrorMessage from "../../util/validationErrorMessage.js";
 import {
   calculateTotalMinutes,
-  calculatePercentages,
+  calculateCategoryPercentages,
 } from "../../util/calculations.js";
 
 // Controller to get categories time based on user and specified time period
@@ -35,7 +35,7 @@ export const getTimeMetricsByDateRange = async (req, res) => {
         success: true,
         msg: "No categories found for this user, but the request was successful.",
         totalMinutes: 0,
-        categoryDataPercentage: [],
+        categoryData: [],
       });
     }
 
@@ -61,7 +61,7 @@ export const getTimeMetricsByDateRange = async (req, res) => {
     );
 
     const totalMinutes = calculateTotalMinutes(filteredCategoryStats);
-    const categoryDataWithPercentages = calculatePercentages(
+    const categoryPercentages = calculateCategoryPercentages(
       filteredCategoryStats,
       totalMinutes
     );
@@ -70,7 +70,7 @@ export const getTimeMetricsByDateRange = async (req, res) => {
       `Response data: ${JSON.stringify(
         {
           totalMinutes: totalMinutes,
-          categoryDataPercentage: categoryDataWithPercentages,
+          categoryData: categoryPercentages,
         },
         null,
         2
@@ -80,7 +80,7 @@ export const getTimeMetricsByDateRange = async (req, res) => {
     return res.status(200).json({
       success: true,
       totalMinutes: totalMinutes,
-      categoryDataPercentage: categoryDataWithPercentages,
+      categoryData: categoryPercentages,
     });
   } catch (error) {
     logError(`Error fetching category data: ${error.message}`);

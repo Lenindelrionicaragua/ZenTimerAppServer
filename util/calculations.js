@@ -5,7 +5,7 @@ export const calculateTotalMinutes = (categoryStats) => {
   );
 };
 
-export const calculatePercentages = (categoryStats, totalMinutes) => {
+export const calculateCategoryPercentages = (categoryStats, totalMinutes) => {
   return categoryStats.map((category) => {
     const percentage =
       totalMinutes > 0
