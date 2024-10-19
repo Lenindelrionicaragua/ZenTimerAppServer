@@ -4,12 +4,12 @@ import DailyRecord from "../../models/dailyRecords.js";
 import validationErrorMessage from "../../util/validationErrorMessage.js";
 import {
   calculateTotalMinutes,
-  calculateCategoryPercentages, // Renombrado a calculateCategoryPercentages
+  calculateCategoryPercentages,
 } from "../../util/calculations.js";
 import {
   mapRecordsToDateAndMinutes,
   countUniqueDays,
-  countCategoriesWithData, // Renombrado a countCategoriesWithData
+  countCategoriesWithData,
 } from "../../util/dataTransformations.js";
 
 // Controller to get categories time based on user and specified time period
@@ -101,9 +101,15 @@ export const getTimeMetricsByDateRange = async (req, res) => {
     const categoryCount = countCategoriesWithData(categoryData);
     // Count the unique days that have records
     const daysWithRecords = countUniqueDays(categoryData);
+
+    const cleanedCategoryStats = categoryData.map((category) => {
+      const { records, ...cleanCategory } = category; // Remove records
+      return cleanCategory;
+    });
+
     // Add percentage data to each category
     const categoryStats = calculateCategoryPercentages(
-      categoryData,
+      cleanedCategoryStats,
       totalMinutes
     );
 
