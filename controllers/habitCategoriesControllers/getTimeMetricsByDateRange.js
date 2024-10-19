@@ -4,20 +4,24 @@ import DailyRecord from "../../models/dailyRecords.js";
 import validationErrorMessage from "../../util/validationErrorMessage.js";
 import {
   calculateTotalMinutes,
-  addPercentageToCategories,
+  calculateCategoryPercentages, // Renombrado a calculateCategoryPercentages
 } from "../../util/calculations.js";
-import { mapRecordsToDateAndMinutes } from "../../util/dataTransformations.js";
+import {
+  mapRecordsToDateAndMinutes,
+  countUniqueDays,
+  countCategoriesWithData, // Renombrado a countCategoriesWithData
+} from "../../util/dataTransformations.js";
 
 // Controller to get categories time based on user and specified time period
 export const getTimeMetricsByDateRange = async (req, res) => {
   const userId = req.userId;
   let { startDate, endDate, categoryId } = req.query;
 
+  // Convert start and end date strings to Date objects and ensure valid dates
   let start = new Date(startDate);
   let end = new Date(endDate);
-  start.setUTCHours(0, 0, 0, 0);
-  end.setUTCHours(23, 59, 59, 999);
 
+  // Check for invalid date formats
   if (isNaN(start.getTime()) || isNaN(end.getTime())) {
     return res.status(400).json({
       success: false,
@@ -25,30 +29,36 @@ export const getTimeMetricsByDateRange = async (req, res) => {
     });
   }
 
+  // Ensure start date is not after end date
   if (start > end) {
     [start, end] = [end, start];
     logInfo("Date range was reversed by the server");
   }
 
-  // logInfo(`Adjusted start date: ${start.toISOString()}`);
-  // logInfo(`Adjusted end date: ${end.toISOString()}`);
+  // Set start and end time to cover the full day
+  start.setUTCHours(0, 0, 0, 0);
+  end.setUTCHours(23, 59, 59, 999);
 
   try {
-    let categories;
+    let userCategories;
+
+    // Get the categories for the user, optionally filtering by categoryId
     if (categoryId) {
-      categories = await HabitCategory.find({
+      userCategories = await HabitCategory.find({
         _id: categoryId,
         createdBy: userId,
       });
-      if (!categories.length) {
+
+      if (!userCategories.length) {
         return res.status(404).json({
           success: false,
           message: "Category not found",
         });
       }
     } else {
-      categories = await HabitCategory.find({ createdBy: userId });
-      if (!categories || categories.length === 0) {
+      userCategories = await HabitCategory.find({ createdBy: userId });
+
+      if (!userCategories || userCategories.length === 0) {
         return res.status(200).json({
           success: true,
           msg: "No categories found for this user, but the request was successful.",
@@ -58,17 +68,21 @@ export const getTimeMetricsByDateRange = async (req, res) => {
       }
     }
 
-    const filteredCategoryStats = await Promise.all(
-      categories.map(async (category) => {
-        const filteredRecords = await DailyRecord.find({
+    // Process each category and get its associated records and statistics
+    const categoryData = await Promise.all(
+      userCategories.map(async (category) => {
+        // Fetch records for the category within the date range
+        const categoryRecords = await DailyRecord.find({
           userId,
           categoryId: category._id,
           date: { $gte: start, $lte: end },
         });
 
-        const simplifiedRecords = mapRecordsToDateAndMinutes(filteredRecords);
+        // Map the records to just the date and total minutes
+        const simplifiedRecords = mapRecordsToDateAndMinutes(categoryRecords);
 
-        const totalCategoryMinutes = filteredRecords.reduce(
+        // Calculate total minutes for the category
+        const totalCategoryMinutes = categoryRecords.reduce(
           (total, record) => total + (record.totalDailyMinutes || 0),
           0
         );
@@ -81,16 +95,25 @@ export const getTimeMetricsByDateRange = async (req, res) => {
       })
     );
 
-    const totalMinutes = calculateTotalMinutes(filteredCategoryStats);
-    const categoryStats = addPercentageToCategories(
-      filteredCategoryStats,
+    // Calculate total minutes across all categories
+    const totalMinutes = calculateTotalMinutes(categoryData);
+    // Count the number of categories with data
+    const categoryCount = countCategoriesWithData(categoryData);
+    // Count the unique days that have records
+    const daysWithRecords = countUniqueDays(categoryData);
+    // Add percentage data to each category
+    const categoryStats = calculateCategoryPercentages(
+      categoryData,
       totalMinutes
     );
 
+    // Log the response data for debugging
     logInfo(
       `Response data: ${JSON.stringify(
         {
           totalMinutes: totalMinutes,
+          categoryCount: categoryCount,
+          daysWithRecords: daysWithRecords,
           categoryData: categoryStats,
         },
         null,
@@ -98,12 +121,16 @@ export const getTimeMetricsByDateRange = async (req, res) => {
       )}`
     );
 
+    // Return the response
     return res.status(200).json({
       success: true,
       totalMinutes: totalMinutes,
+      categoryCount: categoryCount,
+      daysWithRecords: daysWithRecords,
       categoryData: categoryStats,
     });
   } catch (error) {
+    // Log the error and return a general error response
     logError(`Error fetching category data: ${error.message}`);
     const generalError = validationErrorMessage([error.message]);
 

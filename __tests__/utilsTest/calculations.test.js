@@ -1,6 +1,6 @@
 import {
   calculateTotalMinutes,
-  addPercentageToCategories,
+  calculateCategoryPercentages,
 } from "../../util/calculations";
 
 // Test data
@@ -32,7 +32,7 @@ describe("calculateTotalMinutes", () => {
 describe("calculatePercentages", () => {
   it("should correctly calculate percentages for multiple categories", () => {
     const totalMinutes = 360; // Mocked total minutes for this test
-    const percentages = addPercentageToCategories(
+    const percentages = calculateCategoryPercentages(
       categoryStatsMock,
       totalMinutes
     );
@@ -48,7 +48,7 @@ describe("calculatePercentages", () => {
 
   it("should handle single category percentages correctly", () => {
     const totalMinutes = 120; // Total minutes for one category
-    const percentages = addPercentageToCategories(
+    const percentages = calculateCategoryPercentages(
       singleCategoryMock,
       totalMinutes
     );
@@ -59,7 +59,7 @@ describe("calculatePercentages", () => {
 
   it("should return 0% if totalMinutes is 0", () => {
     const totalMinutes = 0; // No minutes tracked
-    const percentages = addPercentageToCategories(
+    const percentages = calculateCategoryPercentages(
       categoryStatsMock,
       totalMinutes
     );
