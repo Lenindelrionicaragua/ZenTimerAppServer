@@ -4,7 +4,7 @@ import DailyRecord from "../../models/dailyRecords.js";
 import validationErrorMessage from "../../util/validationErrorMessage.js";
 import {
   calculateTotalMinutes,
-  calculateCategoryPercentages,
+  addPercentageToCategories,
 } from "../../util/calculations.js";
 
 // Controller to get categories time based on user and specified time period
@@ -29,8 +29,8 @@ export const getTimeMetricsByDateRange = async (req, res) => {
     logInfo("Date range was reversed by the server");
   }
 
-  logInfo(`Adjusted start date: ${start.toISOString()}`);
-  logInfo(`Adjusted end date: ${end.toISOString()}`);
+  // logInfo(`Adjusted start date: ${start.toISOString()}`);
+  // logInfo(`Adjusted end date: ${end.toISOString()}`);
 
   try {
     let categories;
@@ -79,7 +79,7 @@ export const getTimeMetricsByDateRange = async (req, res) => {
     );
 
     const totalMinutes = calculateTotalMinutes(filteredCategoryStats);
-    const categoryPercentages = calculateCategoryPercentages(
+    const categoryStatsWithPercentage = addPercentageToCategories(
       filteredCategoryStats,
       totalMinutes
     );
@@ -88,7 +88,7 @@ export const getTimeMetricsByDateRange = async (req, res) => {
       `Response data: ${JSON.stringify(
         {
           totalMinutes: totalMinutes,
-          categoryData: categoryPercentages,
+          categoryData: categoryStatsWithPercentage,
         },
         null,
         2
@@ -98,7 +98,7 @@ export const getTimeMetricsByDateRange = async (req, res) => {
     return res.status(200).json({
       success: true,
       totalMinutes: totalMinutes,
-      categoryData: categoryPercentages,
+      categoryData: categoryStats,
     });
   } catch (error) {
     logError(`Error fetching category data: ${error.message}`);
