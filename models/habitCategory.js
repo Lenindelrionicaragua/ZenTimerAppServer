@@ -72,7 +72,7 @@ export const validateCategory = (categoryObject, requireName = true) => {
   if (errorList.length > 0) {
     logInfo("Category validation failed: " + errorList.join(", "));
   } else {
-    logInfo("Category validation passed without errors.");
+    // logInfo("Category validation passed without errors.");
   }
 
   return errorList;

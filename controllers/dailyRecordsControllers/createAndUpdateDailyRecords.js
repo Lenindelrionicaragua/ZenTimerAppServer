@@ -7,9 +7,9 @@ export const createAndUpdateDailyRecord = async (req, res) => {
   const { categoryId } = req.params;
   const userId = req.userId;
 
-  logInfo(
-    `Received request to create/update daily record: userId=${userId}, categoryId=${categoryId}, minutesUpdate=${minutesUpdate}, date=${date}`
-  );
+  // logInfo(
+  //   `Received request to create/update daily record: userId=${userId}, categoryId=${categoryId}, minutesUpdate=${minutesUpdate}, date=${date}`
+  // );
 
   // Validate input
   const errorList = validateDailyRecords({
@@ -29,9 +29,9 @@ export const createAndUpdateDailyRecord = async (req, res) => {
   }
 
   try {
-    logInfo(
-      `Validation passed for user ${userId} and category ${categoryId}. Checking for existing record.`
-    );
+    // logInfo(
+    //   `Validation passed for user ${userId} and category ${categoryId}. Checking for existing record.`
+    // );
 
     // Check for an existing record with the normalized date
     const existingRecord = await DailyRecord.findOne({
@@ -41,21 +41,21 @@ export const createAndUpdateDailyRecord = async (req, res) => {
     });
 
     if (existingRecord) {
-      logInfo(
-        `Existing record found for user ${userId} and category ${categoryId}. Updating the record.`
-      );
+      // logInfo(
+      //   `Existing record found for user ${userId} and category ${categoryId}. Updating the record.`
+      // );
       existingRecord.totalDailyMinutes += minutesUpdate; // Add minutes to existing record
       await existingRecord.save();
 
-      logInfo(
-        `Updated daily record for user ${userId} and category ${categoryId}. Total minutes: ${existingRecord.totalDailyMinutes}`
-      );
+      // logInfo(
+      //   `Updated daily record for user ${userId} and category ${categoryId}. Total minutes: ${existingRecord.totalDailyMinutes}`
+      // );
       return res.status(200).json({ success: true, record: existingRecord });
     }
 
-    logInfo(
-      `No existing record found for user ${userId} and category ${categoryId}. Creating a new record.`
-    );
+    // logInfo(
+    //   `No existing record found for user ${userId} and category ${categoryId}. Creating a new record.`
+    // );
 
     // If no existing record, create a new one
     const newRecord = new DailyRecord({
@@ -67,9 +67,9 @@ export const createAndUpdateDailyRecord = async (req, res) => {
 
     await newRecord.save();
 
-    logInfo(
-      `Created new daily record for user ${userId} and category ${categoryId}. Total minutes: ${newRecord.totalDailyMinutes}`
-    );
+    // logInfo(
+    //   `Created new daily record for user ${userId} and category ${categoryId}. Total minutes: ${newRecord.totalDailyMinutes}`
+    // );
     return res.status(201).json({ success: true, record: newRecord });
   } catch (error) {
     logError("Error creating or updating daily record: ", error);

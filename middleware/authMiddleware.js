@@ -4,7 +4,7 @@ import { logInfo, logError } from "../util/logging.js";
 export const requireAuth = (req, res, next) => {
   const session = req.cookies.session;
 
-  logInfo("Verifying token in session cookie...");
+  // logInfo("Verifying token in session cookie...");
 
   // Check if the session cookie is missing or empty
   if (!session || session.trim() === "") {
@@ -41,7 +41,7 @@ export const requireAuth = (req, res, next) => {
 
     // If authentication is successful, attach userId to request and proceed
     if (data.userId) {
-      logInfo("User authenticated successfully. User ID:", data.userId);
+      // logInfo(`"User authenticated successfully. User ID:", ${data.userId}`);
       req.userId = data.userId;
       next();
     }

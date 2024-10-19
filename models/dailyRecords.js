@@ -83,7 +83,7 @@ export const validateDailyRecords = (dailyRecordObject) => {
   if (errorList.length > 0) {
     logInfo("Daily record validation failed: " + errorList.join(", "));
   } else {
-    logInfo("Daily record validation passed without errors.");
+    // logInfo("Daily record validation passed without errors.");
   }
 
   return errorList;
