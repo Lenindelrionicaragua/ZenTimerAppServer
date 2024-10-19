@@ -6,6 +6,7 @@ import {
   calculateTotalMinutes,
   addPercentageToCategories,
 } from "../../util/calculations.js";
+import { mapRecordsToDateAndMinutes } from "../../util/dataTransformations.js";
 
 // Controller to get categories time based on user and specified time period
 export const getTimeMetricsByDateRange = async (req, res) => {
@@ -65,6 +66,8 @@ export const getTimeMetricsByDateRange = async (req, res) => {
           date: { $gte: start, $lte: end },
         });
 
+        const simplifiedRecords = mapRecordsToDateAndMinutes(filteredRecords);
+
         const totalCategoryMinutes = filteredRecords.reduce(
           (total, record) => total + (record.totalDailyMinutes || 0),
           0
@@ -73,13 +76,13 @@ export const getTimeMetricsByDateRange = async (req, res) => {
         return {
           name: category.name,
           totalMinutes: totalCategoryMinutes,
-          records: filteredRecords,
+          records: simplifiedRecords,
         };
       })
     );
 
     const totalMinutes = calculateTotalMinutes(filteredCategoryStats);
-    const categoryStatsWithPercentage = addPercentageToCategories(
+    const categoryStats = addPercentageToCategories(
       filteredCategoryStats,
       totalMinutes
     );
@@ -88,7 +91,7 @@ export const getTimeMetricsByDateRange = async (req, res) => {
       `Response data: ${JSON.stringify(
         {
           totalMinutes: totalMinutes,
-          categoryData: categoryStatsWithPercentage,
+          categoryData: categoryStats,
         },
         null,
         2
