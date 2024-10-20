@@ -129,7 +129,7 @@ beforeAll(async () => {
   }
 
   await Promise.all(categoryRecordsPromises);
-}, 10000);
+}, 10000); // wait to populate de mockDB
 
 afterAll(async () => {
   await clearMockDatabase();
@@ -140,85 +140,85 @@ describe("getTimeMetricsByDateRange", () => {
   // Make the request with specific dates and verify that the minutes
   // totals and other metrics are as expected for the categories.
 
-  // it("should return all categories and their entries between 15th February and 31st December 2023", async () => {
-  //   const response = await request
-  //     .get(
-  //       `/api/habit-categories/time-metrics?startDate=2023-02-15&endDate=2023-12-31`
-  //     )
-  //     .set("Cookie", cookie);
+  it("should return all categories and their entries between 15th February and 31st December 2023", async () => {
+    const response = await request
+      .get(
+        `/api/habit-categories/time-metrics?startDate=2023-02-15&endDate=2023-12-31`
+      )
+      .set("Cookie", cookie);
 
-  //   expect(response.status).toBe(200);
-  //   expect(response.body.success).toBe(true);
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
 
-  //   expect(response.body).toHaveProperty("totalMinutes");
-  //   expect(response.body.totalMinutes).toBe(2835);
+    expect(response.body).toHaveProperty("totalMinutes");
+    expect(response.body.totalMinutes).toBe(2835);
 
-  //   expect(response.body).toHaveProperty("categoryCount");
-  //   expect(response.body.categoryData.length).toBe(3);
+    expect(response.body).toHaveProperty("categoryCount");
+    expect(response.body.categoryData.length).toBe(3);
 
-  //   expect(response.body).toHaveProperty("daysWithRecords");
-  //   expect(response.body.daysWithRecords).toBe(21);
+    expect(response.body).toHaveProperty("daysWithRecords");
+    expect(response.body.daysWithRecords).toBe(21);
 
-  //   expect(response.body).toHaveProperty("categoryData");
+    expect(response.body).toHaveProperty("categoryData");
 
-  //   response.body.categoryData.forEach((category) => {
-  //     expect(category).toHaveProperty("name");
-  //     expect(category).toHaveProperty("totalMinutes");
-  //     expect(category).toHaveProperty("percentage");
-  //   });
-  // });
+    response.body.categoryData.forEach((category) => {
+      expect(category).toHaveProperty("name");
+      expect(category).toHaveProperty("totalMinutes");
+      expect(category).toHaveProperty("percentage");
+    });
+  });
 
-  // it("should return all categories and their entries between 15th November 2023 and 15th February 2024", async () => {
-  //   const response = await request
-  //     .get(
-  //       `/api/habit-categories/time-metrics?startDate=2023-11-15&endDate=2024-02-15`
-  //     )
-  //     .set("Cookie", cookie);
+  it("should return all categories and their entries between 15th November 2023 and 15th February 2024", async () => {
+    const response = await request
+      .get(
+        `/api/habit-categories/time-metrics?startDate=2023-11-15&endDate=2024-02-15`
+      )
+      .set("Cookie", cookie);
 
-  //   expect(response.status).toBe(200);
-  //   expect(response.body.success).toBe(true);
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
 
-  //   expect(response.body).toHaveProperty("totalMinutes");
-  //   expect(response.body.totalMinutes).toBe(945);
+    expect(response.body).toHaveProperty("totalMinutes");
+    expect(response.body.totalMinutes).toBe(945);
 
-  //   expect(response.body).toHaveProperty("categoryCount");
-  //   expect(response.body.categoryData.length).toBe(3);
+    expect(response.body).toHaveProperty("categoryCount");
+    expect(response.body.categoryData.length).toBe(3);
 
-  //   expect(response.body).toHaveProperty("daysWithRecords");
-  //   expect(response.body.daysWithRecords).toBe(7);
+    expect(response.body).toHaveProperty("daysWithRecords");
+    expect(response.body.daysWithRecords).toBe(7);
 
-  //   response.body.categoryData.forEach((category) => {
-  //     expect(category).toHaveProperty("name");
-  //     expect(category).toHaveProperty("totalMinutes");
-  //     expect(category).toHaveProperty("percentage");
-  //   });
-  // });
+    response.body.categoryData.forEach((category) => {
+      expect(category).toHaveProperty("name");
+      expect(category).toHaveProperty("totalMinutes");
+      expect(category).toHaveProperty("percentage");
+    });
+  });
 
-  // it("should return all categories and their entries between 1st and 7th March 2023", async () => {
-  //   const response = await request
-  //     .get(
-  //       `/api/habit-categories/time-metrics?startDate=2023-03-01&endDate=2023-03-07`
-  //     )
-  //     .set("Cookie", cookie);
+  it("should return all categories and their entries between 1st and 7th March 2023", async () => {
+    const response = await request
+      .get(
+        `/api/habit-categories/time-metrics?startDate=2023-03-01&endDate=2023-03-07`
+      )
+      .set("Cookie", cookie);
 
-  //   expect(response.status).toBe(200);
-  //   expect(response.body.success).toBe(true);
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
 
-  //   expect(response.body).toHaveProperty("totalMinutes");
-  //   expect(response.body.totalMinutes).toBe(135);
+    expect(response.body).toHaveProperty("totalMinutes");
+    expect(response.body.totalMinutes).toBe(135);
 
-  //   expect(response.body).toHaveProperty("categoryCount");
-  //   expect(response.body.categoryData.length).toBe(3);
+    expect(response.body).toHaveProperty("categoryCount");
+    expect(response.body.categoryData.length).toBe(3);
 
-  //   expect(response.body).toHaveProperty("daysWithRecords");
-  //   expect(response.body.daysWithRecords).toBe(1);
+    expect(response.body).toHaveProperty("daysWithRecords");
+    expect(response.body.daysWithRecords).toBe(1);
 
-  //   response.body.categoryData.forEach((category) => {
-  //     expect(category).toHaveProperty("name");
-  //     expect(category).toHaveProperty("totalMinutes");
-  //     expect(category).toHaveProperty("percentage");
-  //   });
-  // });
+    response.body.categoryData.forEach((category) => {
+      expect(category).toHaveProperty("name");
+      expect(category).toHaveProperty("totalMinutes");
+      expect(category).toHaveProperty("percentage");
+    });
+  });
 
   it("should return one specific category and their entries between 15th November 2023 and 15th February 2024", async () => {
     const response = await request
@@ -239,7 +239,6 @@ describe("getTimeMetricsByDateRange", () => {
     expect(response.body).toHaveProperty("daysWithRecords");
     expect(response.body.daysWithRecords).toBe(7);
 
-    // Verificación de que la categoría devuelta es la correcta
     expect(response.body.categoryData[0].name).toBe("Work");
 
     response.body.categoryData.forEach((category) => {
@@ -249,169 +248,156 @@ describe("getTimeMetricsByDateRange", () => {
     });
   });
 
-  // it("should return no data for a range without any records (1st to 10th January 2025)", async () => {
-  //   const response = await request
-  //     .get(
-  //       `/api/habit-categories/time-metrics?startDate=2025-01-01&endDate=2025-01-10`
-  //     )
-  //     .set("Cookie", cookie);
+  it("should return categories even if the date range is reversed (December to January 2024)", async () => {
+    const response = await request
+      .get(
+        `/api/habit-categories/time-metrics?startDate=2024-12-31&endDate=2024-01-01`
+      )
+      .set("Cookie", cookie);
 
-  //   expect(response.status).toBe(200);
-  //   expect(response.body.success).toBe(true);
+    expect(response.status).toBe(200);
 
-  //   // Verificar que no haya minutos registrados en ese rango
-  //   expect(response.body).toHaveProperty("totalMinutes");
-  //   expect(response.body.totalMinutes).toBe(0); // No debería haber registros
+    expect(response.body).toHaveProperty("totalMinutes");
+    expect(response.body.totalMinutes).toBe(3240);
 
-  //   expect(response.body).toHaveProperty("categoryCount");
-  //   expect(response.body.categoryData.length).toBe(0); // Ninguna categoría debería tener datos
+    expect(response.body).toHaveProperty("categoryData");
+    expect(response.body.categoryData.length).toBe(3);
+  });
 
-  //   expect(response.body).toHaveProperty("daysWithRecords");
-  //   expect(response.body.daysWithRecords).toBe(0); // Ningún día con registros
-  // });
+  it("should return existing categories with empty records for a range with no data (1st to 10th January 2025)", async () => {
+    const response = await request
+      .get(
+        `/api/habit-categories/time-metrics?startDate=2025-01-01&endDate=2025-01-10`
+      )
+      .set("Cookie", cookie);
 
-  // it("should return all categories and their entries between 1st January and 31st December 2024", async () => {
-  //   const response = await request
-  //     .get(
-  //       `/api/habit-categories/time-metrics?startDate=2024-01-01&endDate=2024-12-31`
-  //     )
-  //     .set("Cookie", cookie);
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
 
-  //   logInfo(
-  //     "Response for time metrics by date range in 2024:",
-  //     JSON.stringify(response.body, null, 2)
-  //   );
+    expect(response.body).toHaveProperty("totalMinutes");
+    expect(response.body.totalMinutes).toBe(0);
 
-  //   expect(response.status).toBe(200);
-  //   expect(response.body).toHaveProperty("totalMinutes");
-  //   expect(response.body).toHaveProperty("categoryData");
-  //   expect(response.body.categoryData.length).toBeGreaterThan(0);
-  //   expect(response.body.totalMinutes).toBeGreaterThanOrEqual(0);
-  // });
+    expect(response.body).toHaveProperty("categoryCount");
+    expect(response.body.categoryData.length).toBe(3);
 
-  // it("should return all categories and their entries between 1st January and 1st July 2024", async () => {
-  //   const response = await request
-  //     .get(
-  //       `/api/habit-categories/time-metrics?startDate=2024-01-01&endDate=2024-07-01`
-  //     )
-  //     .set("Cookie", cookie);
+    expect(response.body).toHaveProperty("daysWithRecords");
+    expect(response.body.daysWithRecords).toBe(0);
+  });
 
-  //   logInfo(
-  //     "Response for time metrics by date range in 2024:",
-  //     JSON.stringify(response.body, null, 2)
-  //   );
+  it("should fail if the date range is empty strings", async () => {
+    const response = await request
+      .get(`/api/habit-categories/time-metrics?startDate={}&endDate={}`)
+      .set("Cookie", cookie);
 
-  //   expect(response.status).toBe(200);
-  //   expect(response.body).toHaveProperty("totalMinutes");
-  //   expect(response.body).toHaveProperty("categoryData");
-  //   expect(response.body.categoryData.length).toBeGreaterThan(0);
-  //   expect(response.body.totalMinutes).toBeGreaterThanOrEqual(0);
-  // });
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty("error");
+    expect(response.body.error).toBe(
+      "Invalid date format. Please use YYYY-MM-DD format."
+    );
+  });
 
-  // it("should return time metrics for a specific category in January 2024", async () => {
-  //   const newMinutesUpdate = 20;
+  it("should fail if the date range is null", async () => {
+    const response = await request
+      .get(`/api/habit-categories/time-metrics?startDate=&endDate=`)
+      .set("Cookie", cookie);
 
-  //   // Add a record for January 2024
-  //   await request
-  //     .post(`/api/daily-records/${categoryId1}`)
-  //     .set("Cookie", cookie)
-  //     .send({
-  //       minutesUpdate: newMinutesUpdate,
-  //       date: "2024-01-05", // Record on January 5th
-  //     });
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty("error");
+    expect(response.body.error).toBe(
+      "Invalid date format. Please use YYYY-MM-DD format."
+    );
+  });
 
-  //   // Request time metrics for January 2024 for the category
-  //   const response = await request
-  //     .get(
-  //       `/api/habit-categories/time-metrics?startDate=2024-01-01&endDate=2024-01-31&categoryId=${categoryId1}`
-  //     )
-  //     .set("Cookie", cookie);
+  it("should return 404 if a category ID does not exist or doesn't belong to the user", async () => {
+    const invalidCategoryId = "610c512de7f5c72f44bc2641";
 
-  //   expect(response.status).toBe(200); // Ensure the response is OK
+    const response = await request
+      .get(
+        `/api/habit-categories/time-metrics?startDate=2024-01-01&endDate=2024-12-31&categoryId=${invalidCategoryId}`
+      )
+      .set("Cookie", cookie);
 
-  //   // Check if time data exists in the response
-  //   expect(response.body).toHaveProperty("totalMinutes");
-  //   expect(response.body.totalMinutes).toBeGreaterThanOrEqual(0);
+    expect(response.status).toBe(404);
+    expect(response.body).toHaveProperty("message");
+    expect(response.body.message).toBe("Category not found");
+  });
 
-  //   // Ensure category data is returned
-  //   expect(response.body).toHaveProperty("categoryData");
-  //   expect(response.body.categoryData.length).toBeGreaterThan(0);
+  it("should return metrics for all categories across multiple years", async () => {
+    const response = await request
+      .get(
+        `/api/habit-categories/time-metrics?startDate=2020-01-01&endDate=2024-12-31`
+      )
+      .set("Cookie", cookie);
 
-  //   // Log response body for inspection
-  //   console.log("Response body:", JSON.stringify(response.body, null, 2));
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
+    expect(response.body).toHaveProperty("totalMinutes");
+    expect(response.body.categoryData.length).toBe(3);
+  });
 
-  //   // Find the 'Work' category in the response
-  //   const category = response.body.categoryData.find(
-  //     (cat) => cat.name === "Work"
-  //   );
+  it("should return 400 error if only one of the dates is invalid", async () => {
+    const response = await request
+      .get(
+        `/api/habit-categories/time-metrics?startDate=invalid&endDate=2024-12-31`
+      )
+      .set("Cookie", cookie);
 
-  //   // Check if the category is present
-  //   expect(category).toBeDefined();
+    expect(response.status).toBe(400);
+    expect(response.body).toHaveProperty("error");
+    expect(response.body.error).toBe(
+      "Invalid date format. Please use YYYY-MM-DD format."
+    );
+  });
 
-  //   // Ensure category has records
-  //   expect(category.records.length).toBeGreaterThan(0);
+  it("should return metrics for a single day range", async () => {
+    const response = await request
+      .get(
+        `/api/habit-categories/time-metrics?startDate=2024-06-02&endDate=2024-06-02`
+      )
+      .set("Cookie", cookie);
 
-  //   // Check if each record belongs to the correct categoryId
-  //   category.records.forEach((record) => {
-  //     expect(record.categoryId).toBe(categoryId1);
-  //   });
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
+    expect(response.body.daysWithRecords).toBe(1); // Assuming there's data for this day
+  });
+});
 
-  //   // Verify that record dates are within January 2024 range
-  //   category.records.forEach((record) => {
-  //     const recordDate = new Date(record.date);
-  //     const startDate = new Date("2024-01-01");
-  //     const endDate = new Date("2024-01-31");
+describe("getTimeMetricsByDateRange when user has no categories", () => {
+  let noCategoryUser;
+  let noCategoryCookie;
 
-  //     // Compare dates as millisecond values
-  //     expect(recordDate.getTime()).toBeGreaterThanOrEqual(startDate.getTime());
-  //     expect(recordDate.getTime()).toBeLessThanOrEqual(endDate.getTime());
-  //   });
-  // });
+  beforeAll(async () => {
+    noCategoryUser = {
+      name: "No Category User",
+      email: "nocatuser@example.com",
+      password: "Test1234!",
+      dateOfBirth: "Tue Feb 01 1990",
+    };
 
-  // it("should fail if the date range is empty strings", async () => {
-  //   const response = await request
-  //     .get(`/api/habit-categories/time-metrics?startDate={}&endDate={}`)
-  //     .set("Cookie", cookie);
+    await request.post("/api/auth/sign-up").send({ user: noCategoryUser });
 
-  //   expect(response.status).toBe(400);
-  //   expect(response.body).toHaveProperty("error");
-  //   expect(response.body.error).toBe(
-  //     "Invalid date format. Please use YYYY-MM-DD format."
-  //   );
-  // });
+    const loginResponse = await request.post("/api/auth/log-in").send({
+      user: {
+        email: noCategoryUser.email,
+        password: noCategoryUser.password,
+      },
+    });
 
-  // it("should fail if the date range is null", async () => {
-  //   const response = await request
-  //     .get(`/api/habit-categories/time-metrics?startDate=&endDate=`)
-  //     .set("Cookie", cookie);
+    noCategoryCookie = loginResponse.headers["set-cookie"];
+  });
 
-  //   expect(response.status).toBe(400);
-  //   expect(response.body).toHaveProperty("error");
-  //   expect(response.body.error).toBe(
-  //     "Invalid date format. Please use YYYY-MM-DD format."
-  //   );
-  // });
+  it("should return success with no categories if the user has no categories created", async () => {
+    const response = await request
+      .get(
+        `/api/habit-categories/time-metrics?startDate=2024-01-01&endDate=2024-12-31`
+      )
+      .set("Cookie", noCategoryCookie);
 
-  // it("should return categories even if the date range is reversed (December to January 2024)", async () => {
-  //   const response = await request
-  //     .get(
-  //       `/api/habit-categories/time-metrics?startDate=2024-12-01&endDate=2024-01-01`
-  //     )
-  //     .set("Cookie", cookie);
-
-  //   expect(response.status).toBe(200);
-
-  //   expect(response.body).toHaveProperty("totalMinutes");
-  //   expect(response.body.totalMinutes).toBeGreaterThanOrEqual(0);
-
-  //   expect(response.body).toHaveProperty("categoryData");
-  //   expect(response.body.categoryData.length).toBeGreaterThan(0);
-  //   response.body.categoryData.forEach((category) => {
-  //     if (category.totalMinutes > 0) {
-  //       expect(category.records.length).toBeGreaterThan(0);
-  //     } else {
-  //       expect(category.records.length).toBe(0);
-  //     }
-  //   });
-  // });
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
+    expect(response.body.totalMinutes).toBe(0);
+    expect(response.body.categoryCount).toBe(undefined);
+    expect(response.body.daysWithRecords).toBe(undefined);
+    expect(response.body.categoryData).toEqual([]);
+  });
 });
