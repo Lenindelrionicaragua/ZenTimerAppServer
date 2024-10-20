@@ -141,17 +141,25 @@ describe("getTimeMetricsByDateRange", () => {
       )
       .set("Cookie", cookie);
 
-    // Log the response to check the results
-    logInfo(
-      "Response for time metrics by date range:",
-      JSON.stringify(response.body, null, 2)
-    );
-
     expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
+
     expect(response.body).toHaveProperty("totalMinutes");
+    expect(response.body.totalMinutes).toBe(2835);
+
+    expect(response.body).toHaveProperty("categoryCount");
+    expect(response.body.categoryData.length).toBe(3);
+
+    expect(response.body).toHaveProperty("daysWithRecords");
+    expect(response.body.daysWithRecords).toBe(21);
+
     expect(response.body).toHaveProperty("categoryData");
-    expect(response.body.categoryData.length).toBeGreaterThan(0);
-    expect(response.body.totalMinutes).toBeGreaterThanOrEqual(0);
+
+    response.body.categoryData.forEach((category) => {
+      expect(category).toHaveProperty("name");
+      expect(category).toHaveProperty("totalMinutes");
+      expect(category).toHaveProperty("percentage");
+    });
   });
 
   // it("should return all categories and their entries between 1st January and 31st December 2024", async () => {

@@ -11,6 +11,6 @@ export const calculateCategoryPercentages = (categoryStats, totalMinutes) => {
       totalMinutes > 0
         ? ((category.totalMinutes / totalMinutes) * 100).toFixed(2)
         : 0;
-    return { percentage, ...category };
+    return { ...category, percentage };
   });
 };
