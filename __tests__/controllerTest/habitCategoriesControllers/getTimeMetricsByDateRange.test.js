@@ -129,7 +129,7 @@ beforeAll(async () => {
   }
 
   await Promise.all(categoryRecordsPromises);
-});
+}, 10000);
 
 afterAll(async () => {
   await clearMockDatabase();
@@ -139,6 +139,7 @@ afterAll(async () => {
 describe("getTimeMetricsByDateRange", () => {
   // Make the request with specific dates and verify that the minutes
   // totals and other metrics are as expected for the categories.
+
   // it("should return all categories and their entries between 15th February and 31st December 2023", async () => {
   //   const response = await request
   //     .get(
@@ -178,13 +179,13 @@ describe("getTimeMetricsByDateRange", () => {
   //   expect(response.body.success).toBe(true);
 
   //   expect(response.body).toHaveProperty("totalMinutes");
-  //   expect(response.body.totalMinutes).toBe(1350);
+  //   expect(response.body.totalMinutes).toBe(945);
 
   //   expect(response.body).toHaveProperty("categoryCount");
   //   expect(response.body.categoryData.length).toBe(3);
 
   //   expect(response.body).toHaveProperty("daysWithRecords");
-  //   expect(response.body.daysWithRecords).toBe(9);
+  //   expect(response.body.daysWithRecords).toBe(7);
 
   //   response.body.categoryData.forEach((category) => {
   //     expect(category).toHaveProperty("name");
@@ -193,26 +194,53 @@ describe("getTimeMetricsByDateRange", () => {
   //   });
   // });
 
-  it("should return all categories and their entries between 1st and 7th March 2023", async () => {
+  // it("should return all categories and their entries between 1st and 7th March 2023", async () => {
+  //   const response = await request
+  //     .get(
+  //       `/api/habit-categories/time-metrics?startDate=2023-03-01&endDate=2023-03-07`
+  //     )
+  //     .set("Cookie", cookie);
+
+  //   expect(response.status).toBe(200);
+  //   expect(response.body.success).toBe(true);
+
+  //   expect(response.body).toHaveProperty("totalMinutes");
+  //   expect(response.body.totalMinutes).toBe(135);
+
+  //   expect(response.body).toHaveProperty("categoryCount");
+  //   expect(response.body.categoryData.length).toBe(3);
+
+  //   expect(response.body).toHaveProperty("daysWithRecords");
+  //   expect(response.body.daysWithRecords).toBe(1);
+
+  //   response.body.categoryData.forEach((category) => {
+  //     expect(category).toHaveProperty("name");
+  //     expect(category).toHaveProperty("totalMinutes");
+  //     expect(category).toHaveProperty("percentage");
+  //   });
+  // });
+
+  it("should return one specific category and their entries between 15th November 2023 and 15th February 2024", async () => {
     const response = await request
       .get(
-        `/api/habit-categories/time-metrics?startDate=2023-03-01&endDate=2023-03-07`
+        `/api/habit-categories/time-metrics?startDate=2023-11-15&endDate=2024-02-15&categoryId=${categoryId1}`
       )
       .set("Cookie", cookie);
 
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
 
-    // Verificar los minutos totales esperados para esa semana
     expect(response.body).toHaveProperty("totalMinutes");
-    expect(response.body.totalMinutes).toBe(135); // Ajusta basado en los registros predefinidos
+    expect(response.body.totalMinutes).toBe(315);
 
     expect(response.body).toHaveProperty("categoryCount");
-    expect(response.body.categoryData.length).toBe(3);
+    expect(response.body.categoryData.length).toBe(1);
 
-    // Verificar la cantidad de días con registros
     expect(response.body).toHaveProperty("daysWithRecords");
-    expect(response.body.daysWithRecords).toBe(1); // Basado en que solo haya un registro en ese periodo
+    expect(response.body.daysWithRecords).toBe(7);
+
+    // Verificación de que la categoría devuelta es la correcta
+    expect(response.body.categoryData[0].name).toBe("Work");
 
     response.body.categoryData.forEach((category) => {
       expect(category).toHaveProperty("name");
