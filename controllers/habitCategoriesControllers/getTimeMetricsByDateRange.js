@@ -63,6 +63,8 @@ export const getTimeMetricsByDateRange = async (req, res) => {
           success: true,
           msg: "No categories found for this user, but the request was successful.",
           totalMinutes: 0,
+          categoryCount: 0,
+          daysWithRecords: 0,
           categoryData: [],
         });
       }
@@ -95,17 +97,17 @@ export const getTimeMetricsByDateRange = async (req, res) => {
       })
     );
 
-    // Calculate total minutes across all categories
-    const totalMinutes = calculateTotalMinutes(categoryData);
-    // Count the number of categories with data
-    const categoryCount = countCategoriesWithData(categoryData);
-    // Count the unique days that have records
-    const daysWithRecords = countUniqueDays(categoryData);
-
     const cleanedCategoryStats = categoryData.map((category) => {
       const { records, ...cleanCategory } = category; // Remove records
       return cleanCategory;
     });
+
+    // Calculate total minutes across all categories
+    const totalMinutes = calculateTotalMinutes(categoryData);
+    // Count the number of categories with data
+    const categoryCount = countCategoriesWithData(categoryData, start, end);
+    // Count the unique days that have records
+    const daysWithRecords = countUniqueDays(categoryData);
 
     // Add percentage data to each category
     const categoryStats = calculateCategoryPercentages(
@@ -117,6 +119,7 @@ export const getTimeMetricsByDateRange = async (req, res) => {
     logInfo(
       `Response data: ${JSON.stringify(
         {
+          success: true,
           totalMinutes: totalMinutes,
           categoryCount: categoryCount,
           daysWithRecords: daysWithRecords,

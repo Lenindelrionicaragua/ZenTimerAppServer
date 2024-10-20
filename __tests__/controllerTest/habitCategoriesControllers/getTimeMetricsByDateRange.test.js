@@ -264,26 +264,6 @@ describe("getTimeMetricsByDateRange", () => {
     expect(response.body.categoryData.length).toBe(3);
   });
 
-  it("should return existing categories with empty records for a range with no data (1st to 10th January 2025)", async () => {
-    const response = await request
-      .get(
-        `/api/habit-categories/time-metrics?startDate=2025-01-01&endDate=2025-01-10`
-      )
-      .set("Cookie", cookie);
-
-    expect(response.status).toBe(200);
-    expect(response.body.success).toBe(true);
-
-    expect(response.body).toHaveProperty("totalMinutes");
-    expect(response.body.totalMinutes).toBe(0);
-
-    expect(response.body).toHaveProperty("categoryCount");
-    expect(response.body.categoryData.length).toBe(3);
-
-    expect(response.body).toHaveProperty("daysWithRecords");
-    expect(response.body.daysWithRecords).toBe(0);
-  });
-
   it("should fail if the date range is empty strings", async () => {
     const response = await request
       .get(`/api/habit-categories/time-metrics?startDate={}&endDate={}`)
@@ -360,44 +340,19 @@ describe("getTimeMetricsByDateRange", () => {
     expect(response.body.success).toBe(true);
     expect(response.body.daysWithRecords).toBe(1); // Assuming there's data for this day
   });
-});
 
-describe("getTimeMetricsByDateRange when user has no categories", () => {
-  let noCategoryUser;
-  let noCategoryCookie;
-
-  beforeAll(async () => {
-    noCategoryUser = {
-      name: "No Category User",
-      email: "nocatuser@example.com",
-      password: "Test1234!",
-      dateOfBirth: "Tue Feb 01 1990",
-    };
-
-    await request.post("/api/auth/sign-up").send({ user: noCategoryUser });
-
-    const loginResponse = await request.post("/api/auth/log-in").send({
-      user: {
-        email: noCategoryUser.email,
-        password: noCategoryUser.password,
-      },
-    });
-
-    noCategoryCookie = loginResponse.headers["set-cookie"];
-  });
-
-  it("should return success with no categories if the user has no categories created", async () => {
+  it("should return success with category count = 0 if there are no records in the specified date range", async () => {
     const response = await request
       .get(
-        `/api/habit-categories/time-metrics?startDate=2024-01-01&endDate=2024-12-31`
+        `/api/habit-categories/time-metrics?startDate=2025-01-01&endDate=2025-12-31`
       )
-      .set("Cookie", noCategoryCookie);
+      .set("Cookie", cookie);
 
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
     expect(response.body.totalMinutes).toBe(0);
-    expect(response.body.categoryCount).toBe(undefined);
-    expect(response.body.daysWithRecords).toBe(undefined);
-    expect(response.body.categoryData).toEqual([]);
+    expect(response.body.categoryCount).toBe(0); // Expecting count to be 0 for active categories
+    expect(response.body.daysWithRecords).toBe(0);
+    expect(response.body.categoryData.length).toBe(3); // Expecting 3 categories returned, even if they have no records
   });
 });

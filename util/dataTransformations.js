@@ -20,7 +20,14 @@ export const countUniqueDays = (categoryStats) => {
 };
 
 // Function to count the number of categories
-export const countCategoriesWithData = (categoryStats) => {
-  // Simply return the number of elements in the categoryStats array
-  return categoryStats.length;
+export const countCategoriesWithData = (categoryStats, start, end) => {
+  return categoryStats.filter((category) => {
+    return (
+      category.records.length > 0 &&
+      category.records.some((record) => {
+        const recordDate = new Date(record.date);
+        return recordDate >= start && recordDate <= end;
+      })
+    );
+  }).length;
 };
