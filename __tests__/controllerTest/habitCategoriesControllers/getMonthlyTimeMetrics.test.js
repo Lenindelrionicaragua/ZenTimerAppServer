@@ -155,6 +155,9 @@ describe("getMonthlyTimeMetrics", () => {
     expect(response.body).toHaveProperty("daysWithRecords");
     expect(response.body.daysWithRecords).toBe(2);
 
+    expect(response.body).toHaveProperty("totalDailyMinutes");
+    expect(response.body.daysWithRecords).toBe(2);
+
     expect(response.body).toHaveProperty("categoryData");
 
     response.body.categoryData.forEach((category) => {
@@ -164,31 +167,38 @@ describe("getMonthlyTimeMetrics", () => {
     });
   });
 
-  //   it("should return all categories and their entries between 15th November 2023 and 15th February 2024", async () => {
-  //     const response = await request
-  //       .get(
-  //         `/api/habit-categories/time-metrics?startDate=2023-11-15&endDate=2024-02-15`
-  //       )
-  //       .set("Cookie", cookie);
+  it("should return the correct metrics when the month is passed as a number", async () => {
+    const response = await request
+      .get(`/api/habit-categories/monthly-metrics?month=5&year=2024`)
+      .set("Cookie", cookie);
 
-  //     expect(response.status).toBe(200);
-  //     expect(response.body.success).toBe(true);
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
 
-  //     expect(response.body).toHaveProperty("totalMinutes");
-  //     expect(response.body.totalMinutes).toBe(945);
+    expect(response.body).toHaveProperty("totalMinutes");
+    expect(response.body.totalMinutes).toBe(270);
 
-  //     expect(response.body).toHaveProperty("categoryCount");
-  //     expect(response.body.categoryData.length).toBe(3);
+    expect(response.body).toHaveProperty("categoryCount");
+    expect(response.body.categoryData.length).toBe(3);
 
-  //     expect(response.body).toHaveProperty("daysWithRecords");
-  //     expect(response.body.daysWithRecords).toBe(7);
+    expect(response.body).toHaveProperty("daysWithRecords");
+    expect(response.body.daysWithRecords).toBe(2);
 
-  //     response.body.categoryData.forEach((category) => {
-  //       expect(category).toHaveProperty("name");
-  //       expect(category).toHaveProperty("totalMinutes");
-  //       expect(category).toHaveProperty("percentage");
-  //     });
-  //   });
+    expect(response.body).toHaveProperty("totalDailyMinutes");
+    expect(response.body.daysWithRecords).toBe(2);
+
+    const firstDate = Object.keys(response.body.totalDailyMinutes)[0];
+    const firstMinutes = response.body.totalDailyMinutes[firstDate];
+
+    expect(firstDate).toBe("2024-05-12");
+    expect(firstMinutes).toBe(135);
+
+    response.body.categoryData.forEach((category) => {
+      expect(category).toHaveProperty("name");
+      expect(category).toHaveProperty("totalMinutes");
+      expect(category).toHaveProperty("percentage");
+    });
+  });
 
   //   it("should return all categories and their entries between 1st and 7th March 2023", async () => {
   //     const response = await request

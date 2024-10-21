@@ -24,5 +24,13 @@ export const calculateDailyMinutes = (allRecords) => {
       (dailyMinutes[date] || 0) + (record.totalDailyMinutes || 0);
   });
 
-  return dailyMinutes;
+  // Convert the object to an array and sort it
+  const sortedDailyMinutes = Object.entries(dailyMinutes).sort(
+    ([dateA], [dateB]) => new Date(dateA) - new Date(dateB)
+  );
+
+  // Convert the array back to an object, if necessary
+  const orderedDailyMinutes = Object.fromEntries(sortedDailyMinutes);
+
+  return orderedDailyMinutes; // Now it will be in chronological order
 };

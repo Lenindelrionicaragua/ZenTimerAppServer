@@ -103,10 +103,9 @@ export const getMonthlyTimeMetrics = async (req, res) => {
 
     // Calculate total minutes across all categories
     const totalMinutes = calculateTotalMinutes(categoryData);
+
     // Combine all records to calculate total daily minutes
     const allRecords = categoryData.flatMap((cat) => cat.records);
-    logInfo(`All Records Structure: ${JSON.stringify(allRecords, null, 2)}`);
-
     const totalDailyMinutes = calculateDailyMinutes(allRecords);
 
     // Count the number of categories with data
