@@ -136,28 +136,24 @@ afterAll(async () => {
   await closeMockDatabase();
 });
 
-describe("getTimeMetricsByDateRange", () => {
-  // Make the request with specific dates and verify that the minutes
-  // totals and other metrics are as expected for the categories.
-
-  it("should return all categories and their entries between 15th February and 31st December 2023", async () => {
+describe("getMonthlyTimeMetrics", () => {
+  // Test to verify that categories and metrics for the given date range are correct
+  it("should return all categories and their entries for February 2024", async () => {
     const response = await request
-      .get(
-        `/api/habit-categories/month-metrics?startDate=2023-02-15&endDate=2023-12-31`
-      )
+      .get(`/api/habit-categories/time-metrics?month=February&year=2024`)
       .set("Cookie", cookie);
 
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
 
     expect(response.body).toHaveProperty("totalMinutes");
-    expect(response.body.totalMinutes).toBe(2835);
+    expect(response.body.totalMinutes).toBe(270);
 
     expect(response.body).toHaveProperty("categoryCount");
     expect(response.body.categoryData.length).toBe(3);
 
     expect(response.body).toHaveProperty("daysWithRecords");
-    expect(response.body.daysWithRecords).toBe(21);
+    expect(response.body.daysWithRecords).toBe(2);
 
     expect(response.body).toHaveProperty("categoryData");
 
