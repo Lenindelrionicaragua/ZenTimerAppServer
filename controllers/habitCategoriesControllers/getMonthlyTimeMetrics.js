@@ -13,7 +13,7 @@ import {
 } from "../../util/dataTransformations.js";
 
 // Controller to get categories time based on user and specified time period
-export const getTimeMetricsByDateRange = async (req, res) => {
+export const getMonthlyTimeMetrics = async (req, res) => {
   const userId = req.userId;
   let { startDate, endDate, categoryId } = req.query;
 

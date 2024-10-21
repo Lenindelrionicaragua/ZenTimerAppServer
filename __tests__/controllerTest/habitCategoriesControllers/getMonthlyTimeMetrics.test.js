@@ -143,7 +143,7 @@ describe("getTimeMetricsByDateRange", () => {
   it("should return all categories and their entries between 15th February and 31st December 2023", async () => {
     const response = await request
       .get(
-        `/api/habit-categories/time-metrics?startDate=2023-02-15&endDate=2023-12-31`
+        `/api/habit-categories/month-metrics?startDate=2023-02-15&endDate=2023-12-31`
       )
       .set("Cookie", cookie);
 
