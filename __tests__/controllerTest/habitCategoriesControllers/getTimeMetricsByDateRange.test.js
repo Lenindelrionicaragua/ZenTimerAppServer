@@ -143,7 +143,7 @@ describe("getTimeMetricsByDateRange", () => {
   it("should return all categories and their entries between 15th February and 31st December 2023", async () => {
     const response = await request
       .get(
-        `/api/habit-categories/time-metrics?startDate=2023-02-15&endDate=2023-12-31`
+        `/api/habit-categories/date-range-metrics?startDate=2023-02-15&endDate=2023-12-31`
       )
       .set("Cookie", cookie);
 
@@ -171,7 +171,7 @@ describe("getTimeMetricsByDateRange", () => {
   it("should return all categories and their entries between 15th November 2023 and 15th February 2024", async () => {
     const response = await request
       .get(
-        `/api/habit-categories/time-metrics?startDate=2023-11-15&endDate=2024-02-15`
+        `/api/habit-categories/date-range-metrics?startDate=2023-11-15&endDate=2024-02-15`
       )
       .set("Cookie", cookie);
 
@@ -197,7 +197,7 @@ describe("getTimeMetricsByDateRange", () => {
   it("should return all categories and their entries between 1st and 7th March 2023", async () => {
     const response = await request
       .get(
-        `/api/habit-categories/time-metrics?startDate=2023-03-01&endDate=2023-03-07`
+        `/api/habit-categories/date-range-metrics?startDate=2023-03-01&endDate=2023-03-07`
       )
       .set("Cookie", cookie);
 
@@ -223,7 +223,7 @@ describe("getTimeMetricsByDateRange", () => {
   it("should return one specific category and their entries between 15th November 2023 and 15th February 2024", async () => {
     const response = await request
       .get(
-        `/api/habit-categories/time-metrics?startDate=2023-11-15&endDate=2024-02-15&categoryId=${categoryId1}`
+        `/api/habit-categories/date-range-metrics?startDate=2023-11-15&endDate=2024-02-15&categoryId=${categoryId1}`
       )
       .set("Cookie", cookie);
 
@@ -251,7 +251,7 @@ describe("getTimeMetricsByDateRange", () => {
   it("should return categories even if the date range is reversed (December to January 2024)", async () => {
     const response = await request
       .get(
-        `/api/habit-categories/time-metrics?startDate=2024-12-31&endDate=2024-01-01`
+        `/api/habit-categories/date-range-metrics?startDate=2024-12-31&endDate=2024-01-01`
       )
       .set("Cookie", cookie);
 
@@ -266,7 +266,7 @@ describe("getTimeMetricsByDateRange", () => {
 
   it("should fail if the date range is empty strings", async () => {
     const response = await request
-      .get(`/api/habit-categories/time-metrics?startDate={}&endDate={}`)
+      .get(`/api/habit-categories/date-range-metrics?startDate={}&endDate={}`)
       .set("Cookie", cookie);
 
     expect(response.status).toBe(400);
@@ -278,7 +278,7 @@ describe("getTimeMetricsByDateRange", () => {
 
   it("should fail if the date range is null", async () => {
     const response = await request
-      .get(`/api/habit-categories/time-metrics?startDate=&endDate=`)
+      .get(`/api/habit-categories/date-range-metrics?startDate=&endDate=`)
       .set("Cookie", cookie);
 
     expect(response.status).toBe(400);
@@ -293,7 +293,7 @@ describe("getTimeMetricsByDateRange", () => {
 
     const response = await request
       .get(
-        `/api/habit-categories/time-metrics?startDate=2024-01-01&endDate=2024-12-31&categoryId=${invalidCategoryId}`
+        `/api/habit-categories/date-range-metrics?startDate=2024-01-01&endDate=2024-12-31&categoryId=${invalidCategoryId}`
       )
       .set("Cookie", cookie);
 
@@ -305,7 +305,7 @@ describe("getTimeMetricsByDateRange", () => {
   it("should return metrics for all categories across multiple years", async () => {
     const response = await request
       .get(
-        `/api/habit-categories/time-metrics?startDate=2020-01-01&endDate=2024-12-31`
+        `/api/habit-categories/date-range-metrics?startDate=2020-01-01&endDate=2024-12-31`
       )
       .set("Cookie", cookie);
 
@@ -318,7 +318,7 @@ describe("getTimeMetricsByDateRange", () => {
   it("should return 400 error if only one of the dates is invalid", async () => {
     const response = await request
       .get(
-        `/api/habit-categories/time-metrics?startDate=invalid&endDate=2024-12-31`
+        `/api/habit-categories/date-range-metrics?startDate=invalid&endDate=2024-12-31`
       )
       .set("Cookie", cookie);
 
@@ -332,7 +332,7 @@ describe("getTimeMetricsByDateRange", () => {
   it("should return metrics for a single day range", async () => {
     const response = await request
       .get(
-        `/api/habit-categories/time-metrics?startDate=2024-06-02&endDate=2024-06-02`
+        `/api/habit-categories/date-range-metrics?startDate=2024-06-02&endDate=2024-06-02`
       )
       .set("Cookie", cookie);
 
@@ -344,7 +344,7 @@ describe("getTimeMetricsByDateRange", () => {
   it("should return success with category count = 0 if there are no records in the specified date range", async () => {
     const response = await request
       .get(
-        `/api/habit-categories/time-metrics?startDate=2025-01-01&endDate=2025-12-31`
+        `/api/habit-categories/date-range-metrics?startDate=2025-01-01&endDate=2025-12-31`
       )
       .set("Cookie", cookie);
 

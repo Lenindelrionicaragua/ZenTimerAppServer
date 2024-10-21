@@ -140,7 +140,7 @@ describe("getMonthlyTimeMetrics", () => {
   // Test to verify that categories and metrics for the given date range are correct
   it("should return all categories and their entries for February 2024", async () => {
     const response = await request
-      .get(`/api/habit-categories/time-metrics?month=February&year=2024`)
+      .get(`/api/habit-categories/monthly-metrics?month=February&year=2024`)
       .set("Cookie", cookie);
 
     expect(response.status).toBe(200);

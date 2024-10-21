@@ -13,7 +13,7 @@ habitCategoriesRouter.post("/create", createCategory);
 habitCategoriesRouter.patch("/:categoryId/name", updateCategoryName);
 habitCategoriesRouter.delete("/:categoryId", deleteCategory);
 
-habitCategoriesRouter.get("/time-metrics", getMonthlyTimeMetrics);
-habitCategoriesRouter.get("/time-metrics", getTimeMetricsByDateRange);
+habitCategoriesRouter.get("/monthly-metrics", getMonthlyTimeMetrics);
+habitCategoriesRouter.get("/date-range-metrics", getTimeMetricsByDateRange);
 
 export default habitCategoriesRouter;
