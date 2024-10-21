@@ -25,16 +25,29 @@ export const getMonthlyTimeMetrics = async (req, res) => {
     });
   }
 
-  const { startDate, endDate } = getMonthRange(month, year);
+  let start, end;
+  try {
+    // Call getMonthRange inside try-catch to handle potential errors
+    const { startDate, endDate } = getMonthRange(month, year);
 
-  // Convert start and end date strings to Date objects and ensure valid dates
-  let start = new Date(startDate);
-  let end = new Date(endDate);
+    // Convert start and end date strings to Date objects and ensure valid dates
+    start = new Date(startDate);
+    end = new Date(endDate);
 
-  // Ensure start date is not after end date
-  if (start > end) {
-    [start, end] = [end, start];
-    logInfo("Date range was reversed by the server");
+    // Ensure start date is not after end date
+    if (start > end) {
+      [start, end] = [end, start];
+      logInfo("Date range was reversed by the server");
+    }
+  } catch (error) {
+    // Catch errors from getMonthRange and return a structured error response
+    logError(`Error in getMonthRange: ${error.message}`);
+    const generalError = validationErrorMessage([error.message]);
+
+    return res.status(404).json({
+      success: false,
+      error: generalError,
+    });
   }
 
   try {

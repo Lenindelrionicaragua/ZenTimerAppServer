@@ -200,31 +200,99 @@ describe("getMonthlyTimeMetrics", () => {
     });
   });
 
-  //   it("should return all categories and their entries between 1st and 7th March 2023", async () => {
-  //     const response = await request
-  //       .get(
-  //         `/api/habit-categories/time-metrics?startDate=2023-03-01&endDate=2023-03-07`
-  //       )
-  //       .set("Cookie", cookie);
+  it("should return a 404 error for an invalid date format", async () => {
+    const response = await request
+      .get(`/api/habit-categories/monthly-metrics?month=2023-11-15&year=2023`)
+      .set("Cookie", cookie);
 
-  //     expect(response.status).toBe(200);
-  //     expect(response.body.success).toBe(true);
+    expect(response.status).toBe(404);
+    expect(response.body).toHaveProperty("error");
+    expect(response.body.error).toBe(
+      "BAD REQUEST: Invalid month name or format provided"
+    );
+  });
 
-  //     expect(response.body).toHaveProperty("totalMinutes");
-  //     expect(response.body.totalMinutes).toBe(135);
+  it("should return a 404 error for an invalid month number (greater than 12)", async () => {
+    const response = await request
+      .get(`/api/habit-categories/monthly-metrics?month=13&year=2023`)
+      .set("Cookie", cookie);
 
-  //     expect(response.body).toHaveProperty("categoryCount");
-  //     expect(response.body.categoryData.length).toBe(3);
+    expect(response.status).toBe(404);
+    expect(response.body).toHaveProperty("error");
+    expect(response.body.error).toBe(
+      "BAD REQUEST: Invalid month number provided. It should be an integer between 1 and 12."
+    );
+  });
 
-  //     expect(response.body).toHaveProperty("daysWithRecords");
-  //     expect(response.body.daysWithRecords).toBe(1);
+  it("should return a 404 error for an invalid month name", async () => {
+    const response = await request
+      .get(`/api/habit-categories/monthly-metrics?month=invalid&year=2023`)
+      .set("Cookie", cookie);
 
-  //     response.body.categoryData.forEach((category) => {
-  //       expect(category).toHaveProperty("name");
-  //       expect(category).toHaveProperty("totalMinutes");
-  //       expect(category).toHaveProperty("percentage");
-  //     });
+    expect(response.status).toBe(404);
+    expect(response.body).toHaveProperty("error");
+    expect(response.body.error).toBe(
+      "BAD REQUEST: Invalid month name or format provided"
+    );
+  });
+
+  it("should return a 404 error for a month less than 1", async () => {
+    const response = await request
+      .get(`/api/habit-categories/monthly-metrics?month=0&year=2023`)
+      .set("Cookie", cookie);
+
+    expect(response.status).toBe(404);
+    expect(response.body).toHaveProperty("error");
+    expect(response.body.error).toBe(
+      "BAD REQUEST: Invalid month number provided. It should be an integer between 1 and 12."
+    );
+  });
+
+  it("should return a 404 error for a non-integer month", async () => {
+    const nonIntegerMonths = ["12.5", "1.1", "7.8"]; // Non-integer month values
+
+    for (const month of nonIntegerMonths) {
+      const response = await request
+        .get(`/api/habit-categories/monthly-metrics?month=${month}&year=2023`)
+        .set("Cookie", cookie);
+
+      expect(response.status).toBe(404);
+      expect(response.body).toHaveProperty("error");
+      expect(response.body.error).toBe(
+        "BAD REQUEST: Invalid month number provided. It should be an integer between 1 and 12."
+      );
+    }
+  });
+
+  // it("should correctly handle valid month names regardless of case", () => {
+  //   const validMonths = ["January", "january", "JANUARY", "JaNuArY"];
+
+  //   validMonths.forEach((month) => {
+  //     const { startDate, endDate } = getMonthRange(month, 2023);
+  //     expect(startDate).toEqual(new Date(2023, 0, 1)); // January 1, 2023
+  //     expect(endDate).toEqual(new Date(2023, 0, 31)); // January 31, 2023
   //   });
+  // });
+
+  // it("should throw an error for invalid month names", () => {
+  //   const invalidMonths = ["Marzo", "Feburary", "InvalidMonth", ""];
+
+  //   invalidMonths.forEach((month) => {
+  //     expect(() => getMonthRange(month, 2023)).toThrow(
+  //       "Invalid month name or format provided"
+  //     );
+  //   });
+  // });
+
+  // it("should throw an error for non-string or empty month input", () => {
+  //   const invalidInputs = [null, undefined, 123, {}, []];
+
+  //   invalidInputs.forEach((input) => {
+  //     expect(() => getMonthRange(input, 2023)).toThrow(
+  //       "Invalid month name or format provided"
+  //     );
+  //   });
+  // });
 
   //   it("should return one specific category and their entries between 15th November 2023 and 15th February 2024", async () => {
   //     const response = await request

@@ -9,12 +9,14 @@ export const getMonthRange = (month, year) => {
     }
     monthNumber = date.getMonth() + 1;
   } else {
-    monthNumber = parseInt(month, 10);
+    monthNumber = parseFloat(month); // Change to parseFloat to keep decimals
   }
 
-  // Validate the month range (1-12)
-  if (monthNumber < 1 || monthNumber > 12) {
-    throw new Error("Invalid month number provided");
+  // Validate the month range (1-12) and ensure it is an integer
+  if (!Number.isInteger(monthNumber) || monthNumber < 1 || monthNumber > 12) {
+    throw new Error(
+      "Invalid month number provided. It should be an integer between 1 and 12."
+    );
   }
 
   // Create start and end date objects

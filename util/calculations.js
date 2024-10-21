@@ -32,5 +32,5 @@ export const calculateDailyMinutes = (allRecords) => {
   // Convert the array back to an object, if necessary
   const orderedDailyMinutes = Object.fromEntries(sortedDailyMinutes);
 
-  return orderedDailyMinutes; // Now it will be in chronological order
+  return orderedDailyMinutes;
 };
