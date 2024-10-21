@@ -5,6 +5,7 @@ import validationErrorMessage from "../../util/validationErrorMessage.js";
 import {
   calculateTotalMinutes,
   calculateCategoryPercentages,
+  calculateDailyMinutes,
 } from "../../util/calculations.js";
 import { getMonthRange } from "../../util/dateUtils.js";
 import {
@@ -13,35 +14,30 @@ import {
   countCategoriesWithData,
 } from "../../util/dataTransformations.js";
 
-// Controller to get categories time based on user and specified time period
 export const getMonthlyTimeMetrics = async (req, res) => {
   const userId = req.userId;
   let { month, year, categoryId } = req.query;
 
+  if (!month || !year) {
+    return res.status(400).json({
+      success: false,
+      error: "Both 'month' and 'year' are required in the query parameters.",
+    });
+  }
+
+  const { startDate, endDate } = getMonthRange(month, year);
+
+  // Convert start and end date strings to Date objects and ensure valid dates
+  let start = new Date(startDate);
+  let end = new Date(endDate);
+
+  // Ensure start date is not after end date
+  if (start > end) {
+    [start, end] = [end, start];
+    logInfo("Date range was reversed by the server");
+  }
+
   try {
-    // Check for invalid date formats
-    if (!month || !year) {
-      return res.status(400).json({
-        success: false,
-        error: "Both 'month' and 'year' are required in the query parameters.",
-      });
-    }
-
-    const { startDate, endDate } = getMonthRange(month, year);
-
-    // Convert start and end date strings to Date objects and ensure valid dates
-    let start = new Date(startDate);
-    let end = new Date(endDate);
-
-    // Ensure start date is not after end date
-    if (start > end) {
-      [start, end] = [end, start];
-      logInfo("Date range was reversed by the server");
-    }
-
-    // Set start and end time to cover the full day
-    start.setUTCHours(0, 0, 0, 0);
-    end.setUTCHours(23, 59, 59, 999);
     let userCategories;
 
     // Get the categories for the user, optionally filtering by categoryId
@@ -107,6 +103,12 @@ export const getMonthlyTimeMetrics = async (req, res) => {
 
     // Calculate total minutes across all categories
     const totalMinutes = calculateTotalMinutes(categoryData);
+    // Combine all records to calculate total daily minutes
+    const allRecords = categoryData.flatMap((cat) => cat.records);
+    logInfo(`All Records Structure: ${JSON.stringify(allRecords, null, 2)}`);
+
+    const totalDailyMinutes = calculateDailyMinutes(allRecords);
+
     // Count the number of categories with data
     const categoryCount = countCategoriesWithData(categoryData, start, end);
     // Count the unique days that have records
@@ -126,6 +128,7 @@ export const getMonthlyTimeMetrics = async (req, res) => {
           totalMinutes: totalMinutes,
           categoryCount: categoryCount,
           daysWithRecords: daysWithRecords,
+          totalDailyMinutes: totalDailyMinutes,
           categoryData: categoryStats,
         },
         null,
@@ -139,6 +142,7 @@ export const getMonthlyTimeMetrics = async (req, res) => {
       totalMinutes: totalMinutes,
       categoryCount: categoryCount,
       daysWithRecords: daysWithRecords,
+      totalDailyMinutes: totalDailyMinutes,
       categoryData: categoryStats,
     });
   } catch (error) {

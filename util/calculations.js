@@ -14,3 +14,15 @@ export const calculateCategoryPercentages = (categoryStats, totalMinutes) => {
     return { ...category, percentage };
   });
 };
+
+export const calculateDailyMinutes = (allRecords) => {
+  const dailyMinutes = {};
+
+  allRecords.forEach((record) => {
+    const date = record.date.toISOString().split("T")[0];
+    dailyMinutes[date] =
+      (dailyMinutes[date] || 0) + (record.totalDailyMinutes || 0);
+  });
+
+  return dailyMinutes;
+};
