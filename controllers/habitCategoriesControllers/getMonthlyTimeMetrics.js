@@ -6,6 +6,7 @@ import {
   calculateTotalMinutes,
   calculateCategoryPercentages,
 } from "../../util/calculations.js";
+import { getMonthRange } from "../../util/dateUtils.js";
 import {
   mapRecordsToDateAndMinutes,
   countUniqueDays,
@@ -15,31 +16,32 @@ import {
 // Controller to get categories time based on user and specified time period
 export const getMonthlyTimeMetrics = async (req, res) => {
   const userId = req.userId;
-  let { startDate, endDate, categoryId } = req.query;
-
-  // Convert start and end date strings to Date objects and ensure valid dates
-  let start = new Date(startDate);
-  let end = new Date(endDate);
-
-  // Check for invalid date formats
-  if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-    return res.status(400).json({
-      success: false,
-      error: "Invalid date format. Please use YYYY-MM-DD format.",
-    });
-  }
-
-  // Ensure start date is not after end date
-  if (start > end) {
-    [start, end] = [end, start];
-    logInfo("Date range was reversed by the server");
-  }
-
-  // Set start and end time to cover the full day
-  start.setUTCHours(0, 0, 0, 0);
-  end.setUTCHours(23, 59, 59, 999);
+  let { month, year, categoryId } = req.query;
 
   try {
+    // Check for invalid date formats
+    if (!month || !year) {
+      return res.status(400).json({
+        success: false,
+        error: "Both 'month' and 'year' are required in the query parameters.",
+      });
+    }
+
+    const { startDate, endDate } = getMonthRange(month, year);
+
+    // Convert start and end date strings to Date objects and ensure valid dates
+    let start = new Date(startDate);
+    let end = new Date(endDate);
+
+    // Ensure start date is not after end date
+    if (start > end) {
+      [start, end] = [end, start];
+      logInfo("Date range was reversed by the server");
+    }
+
+    // Set start and end time to cover the full day
+    start.setUTCHours(0, 0, 0, 0);
+    end.setUTCHours(23, 59, 59, 999);
     let userCategories;
 
     // Get the categories for the user, optionally filtering by categoryId
@@ -62,9 +64,10 @@ export const getMonthlyTimeMetrics = async (req, res) => {
         return res.status(200).json({
           success: true,
           msg: "No categories found for this user, but the request was successful.",
-          totalMinutes: 0,
+          totalMonthlyMinutes: 0,
           categoryCount: 0,
-          daysWithRecords: 0,
+          daysWithRecordsCount: 0,
+          totalDailyMinutes: 0,
           categoryData: [],
         });
       }

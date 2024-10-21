@@ -343,9 +343,7 @@ describe("getTimeMetricsByDateRange", () => {
 
   it("should return success with category count = 0 if there are no records in the specified date range", async () => {
     const response = await request
-      .get(
-        `/api/habit-categories/time-metrics?startDate=2025-01-01&endDate=2025-12-31`
-      )
+      .get(`/api/habit-categories/time-metrics?month=January&year=2024`)
       .set("Cookie", cookie);
 
     expect(response.status).toBe(200);
