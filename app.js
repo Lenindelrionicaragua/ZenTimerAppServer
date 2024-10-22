@@ -48,6 +48,6 @@ app.use(cookieParser());
 app.use("/api/auth", authRouter);
 app.use("/api/user", requireAuth, userRouter);
 app.use("/api/habit-categories", requireAuth, habitCategoriesRouter);
-app.use("/api/daily-records", requireAuth, recordsRouter);
+app.use("/api/time-records", requireAuth, recordsRouter);
 
 export default app;
