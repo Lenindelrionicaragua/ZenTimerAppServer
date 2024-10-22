@@ -1,13 +1,12 @@
-# .github/workflows/deploy.yml
 name: Heroku Deploy
 
 on:
   pull_request:
     branches:
-      - main # Despliegue en Pull Request hacia main
+      - main 
   push:
     branches:
-      - main # Despliegue en push hacia main
+      - main 
 
 jobs:
   deploy:
