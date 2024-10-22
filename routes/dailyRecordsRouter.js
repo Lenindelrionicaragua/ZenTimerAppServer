@@ -1,5 +1,5 @@
 import express from "express";
-import { updateAndCreateRecords } from "../controllers/dailyRecordsControllers/updateAndCreateRecords";
+import { updateAndCreateRecords } from "../controllers/dailyRecordsControllers/updateAndCreateRecordsNew";
 
 const dailyRecordsRouter = express.Router();
 
