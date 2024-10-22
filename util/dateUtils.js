@@ -1,18 +1,33 @@
 export const getMonthRange = (month, year) => {
+  const validMonthNames = [
+    "january",
+    "february",
+    "march",
+    "april",
+    "may",
+    "june",
+    "july",
+    "august",
+    "september",
+    "october",
+    "november",
+    "december",
+  ];
+
   let monthNumber;
 
-  // Convert month string to number if needed, and handle invalid month strings
+  // Check if the month is a valid name or number
   if (isNaN(month)) {
-    const date = new Date(`${month} 1, ${year}`);
-    if (isNaN(date.getTime())) {
+    if (!validMonthNames.includes(month.toLowerCase())) {
       throw new Error("Invalid month name or format provided");
     }
+    const date = new Date(`${month} 1, ${year}`);
     monthNumber = date.getMonth() + 1;
   } else {
-    monthNumber = parseFloat(month); // Change to parseFloat to keep decimals
+    monthNumber = parseFloat(month);
   }
 
-  // Validate the month range (1-12) and ensure it is an integer
+  // Validate that the month is an integer and within range (1-12)
   if (!Number.isInteger(monthNumber) || monthNumber < 1 || monthNumber > 12) {
     throw new Error(
       "Invalid month number provided. It should be an integer between 1 and 12."
