@@ -24,6 +24,11 @@ export const calculateDailyMinutes = (allRecords) => {
       (dailyMinutes[date] || 0) + (record.totalDailyMinutes || 0);
   });
 
+  // If no records, return 0 instead of an empty object
+  if (Object.keys(dailyMinutes).length === 0) {
+    return 0;
+  }
+
   // Convert the object to an array and sort it
   const sortedDailyMinutes = Object.entries(dailyMinutes).sort(
     ([dateA], [dateB]) => new Date(dateA) - new Date(dateB)

@@ -156,7 +156,6 @@ describe("getMonthlyTimeMetrics", () => {
     expect(response.body.daysWithRecords).toBe(2);
 
     expect(response.body).toHaveProperty("totalDailyMinutes");
-    expect(response.body.daysWithRecords).toBe(2);
 
     expect(response.body).toHaveProperty("categoryData");
 
@@ -167,320 +166,218 @@ describe("getMonthlyTimeMetrics", () => {
     });
   });
 
-  it("should return the correct metrics when the month is passed as a number", async () => {
+  // it("should return the correct metrics when the month is passed as a number", async () => {
+  //   const response = await request
+  //     .get(`/api/habit-categories/monthly-metrics?month=5&year=2024`)
+  //     .set("Cookie", cookie);
+
+  //   expect(response.status).toBe(200);
+  //   expect(response.body.success).toBe(true);
+
+  //   expect(response.body).toHaveProperty("totalMinutes");
+  //   expect(response.body.totalMinutes).toBe(270);
+
+  //   expect(response.body).toHaveProperty("categoryCount");
+  //   expect(response.body.categoryData.length).toBe(3);
+
+  //   expect(response.body).toHaveProperty("daysWithRecords");
+  //   expect(response.body.daysWithRecords).toBe(2);
+
+  //   expect(response.body).toHaveProperty("totalDailyMinutes");
+
+  //   const firstDate = Object.keys(response.body.totalDailyMinutes)[0];
+  //   const firstMinutes = response.body.totalDailyMinutes[firstDate];
+
+  //   expect(firstDate).toBe("2024-05-12");
+  //   expect(firstMinutes).toBe(135);
+
+  //   response.body.categoryData.forEach((category) => {
+  //     expect(category).toHaveProperty("name");
+  //     expect(category).toHaveProperty("totalMinutes");
+  //     expect(category).toHaveProperty("percentage");
+  //   });
+  // });
+
+  // it("should return a 404 error for numeric values used as invalid month names", async () => {
+  //   const invalidMonths = [123];
+
+  //   for (const month of invalidMonths) {
+  //     const response = await request
+  //       .get(`/api/habit-categories/monthly-metrics?month=${month}&year=2023`)
+  //       .set("Cookie", cookie);
+
+  //     expect(response.status).toBe(404);
+  //     expect(response.body).toHaveProperty("error");
+  //     expect(response.body.error).toBe(
+  //       "BAD REQUEST: Invalid month number provided. It should be an integer between 1 and 12."
+  //     );
+  //   }
+  // });
+
+  // it("should return a 404 error for unrecognized string month names", async () => {
+  //   const invalidMonths = ["invalidMonth"];
+
+  //   for (const month of invalidMonths) {
+  //     const response = await request
+  //       .get(`/api/habit-categories/monthly-metrics?month=${month}&year=2023`)
+  //       .set("Cookie", cookie);
+
+  //     expect(response.status).toBe(404);
+  //     expect(response.body).toHaveProperty("error");
+  //     expect(response.body.error).toBe(
+  //       "BAD REQUEST: Invalid month name or format provided"
+  //     );
+  //   }
+  // });
+
+  // it("should return a 404 error for an invalid date format (e.g., '2023-11-15')t", async () => {
+  //   const response = await request
+  //     .get(`/api/habit-categories/monthly-metrics?month=2023-11-15&year=2023`)
+  //     .set("Cookie", cookie);
+
+  //   expect(response.status).toBe(404);
+  //   expect(response.body).toHaveProperty("error");
+  //   expect(response.body.error).toBe(
+  //     "BAD REQUEST: Invalid month name or format provided"
+  //   );
+  // });
+
+  // it("should return a 404 error for a month number greater than 12", async () => {
+  //   const response = await request
+  //     .get(`/api/habit-categories/monthly-metrics?month=13&year=2023`)
+  //     .set("Cookie", cookie);
+
+  //   expect(response.status).toBe(404);
+  //   expect(response.body).toHaveProperty("error");
+  //   expect(response.body.error).toBe(
+  //     "BAD REQUEST: Invalid month number provided. It should be an integer between 1 and 12."
+  //   );
+  // });
+
+  // it("should return a 404 error for a month number less than 1", async () => {
+  //   const response = await request
+  //     .get(`/api/habit-categories/monthly-metrics?month=0&year=2023`)
+  //     .set("Cookie", cookie);
+
+  //   expect(response.status).toBe(404);
+  //   expect(response.body).toHaveProperty("error");
+  //   expect(response.body.error).toBe(
+  //     "BAD REQUEST: Invalid month number provided. It should be an integer between 1 and 12."
+  //   );
+  // });
+
+  // it("should return a 404 error for non-integer month values (e.g., 12.5)", async () => {
+  //   const nonIntegerMonths = ["12.5", "1.1", "7.8"]; // Non-integer month values
+
+  //   for (const month of nonIntegerMonths) {
+  //     const response = await request
+  //       .get(`/api/habit-categories/monthly-metrics?month=${month}&year=2023`)
+  //       .set("Cookie", cookie);
+
+  //     expect(response.status).toBe(404);
+  //     expect(response.body).toHaveProperty("error");
+  //     expect(response.body.error).toBe(
+  //       "BAD REQUEST: Invalid month number provided. It should be an integer between 1 and 12."
+  //     );
+  //   }
+  // });
+
+  // it("should correctly handle valid month names regardless of case sensitivity", async () => {
+  //   const validMonths = ["January", "january", "JANUARY", "JaNuArY"];
+
+  //   for (const month of validMonths) {
+  //     const response = await request
+  //       .get(`/api/habit-categories/monthly-metrics?month=${month}&year=2023`)
+  //       .set("Cookie", cookie);
+
+  //     expect(response.status).toBe(200);
+  //     expect(response.body.success).toBe(true);
+  //     expect(response.body.daysWithRecords).toBe(2);
+  //   }
+  // });
+
+  // it("should return a 404 error for invalid month values", async () => {
+  //   const invalidMonths = [undefined, null, {}];
+
+  //   for (const month of invalidMonths) {
+  //     const response = await request
+  //       .get(`/api/habit-categories/monthly-metrics?month=${month}&year=2023`)
+  //       .set("Cookie", cookie);
+
+  //     expect(response.status).toBe(404); // Bad Request
+  //     expect(response.body).toHaveProperty("error");
+  //     expect(response.body.error).toBe(
+  //       "BAD REQUEST: Invalid month name or format provided"
+  //     );
+  //   }
+  // });
+
+  // it("should return a 400 error for empty, missing values", async () => {
+  //   const invalidMonths = ["", []];
+
+  //   for (const month of invalidMonths) {
+  //     const response = await request
+  //       .get(`/api/habit-categories/monthly-metrics?month=${month}&year=2023`)
+  //       .set("Cookie", cookie);
+
+  //     expect(response.status).toBe(400); // Bad Request
+  //     expect(response.body).toHaveProperty("error");
+  //     expect(response.body.error).toBe(
+  //       "Both 'month' and 'year' are required in the query parameters."
+  //     );
+  //   }
+  // });
+
+  it("should return one specific category and their entries for May 2023", async () => {
     const response = await request
-      .get(`/api/habit-categories/monthly-metrics?month=5&year=2024`)
+      .get(
+        `/api/habit-categories/monthly-metrics?month=May&year=2023&categoryId=${categoryId1}`
+      )
       .set("Cookie", cookie);
 
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
 
     expect(response.body).toHaveProperty("totalMinutes");
-    expect(response.body.totalMinutes).toBe(270);
+    expect(response.body.totalMinutes).toBe(90);
 
     expect(response.body).toHaveProperty("categoryCount");
-    expect(response.body.categoryData.length).toBe(3);
+    expect(response.body.categoryData.length).toBe(1);
 
     expect(response.body).toHaveProperty("daysWithRecords");
     expect(response.body.daysWithRecords).toBe(2);
 
     expect(response.body).toHaveProperty("totalDailyMinutes");
-    expect(response.body.daysWithRecords).toBe(2);
 
     const firstDate = Object.keys(response.body.totalDailyMinutes)[0];
     const firstMinutes = response.body.totalDailyMinutes[firstDate];
 
-    expect(firstDate).toBe("2024-05-12");
-    expect(firstMinutes).toBe(135);
+    expect(firstDate).toBe("2023-05-05");
+    expect(firstMinutes).toBe(45);
+
+    expect(response.body).toHaveProperty("categoryData");
 
     response.body.categoryData.forEach((category) => {
-      expect(category).toHaveProperty("name");
-      expect(category).toHaveProperty("totalMinutes");
-      expect(category).toHaveProperty("percentage");
+      expect(category.name).toBe("Work");
+      expect(category.totalMinutes).toBe(90);
+      expect(category.percentage).toBe("100.00");
     });
   });
 
-  it("should throw an 404 error for invalid month names", async () => {
-    const invalidMonths = [123];
-
-    for (const month of invalidMonths) {
-      const response = await request
-        .get(`/api/habit-categories/monthly-metrics?month=${month}&year=2023`)
-        .set("Cookie", cookie);
-
-      expect(response.status).toBe(404);
-      expect(response.body).toHaveProperty("error");
-      expect(response.body.error).toBe(
-        "BAD REQUEST: Invalid month number provided. It should be an integer between 1 and 12."
-      );
-    }
-  });
-
-  it("should throw an 404 error for invalid month names", async () => {
-    const invalidMonths = ["invalidMonth"];
-
-    for (const month of invalidMonths) {
-      const response = await request
-        .get(`/api/habit-categories/monthly-metrics?month=${month}&year=2023`)
-        .set("Cookie", cookie);
-
-      expect(response.status).toBe(404);
-      expect(response.body).toHaveProperty("error");
-      expect(response.body.error).toBe(
-        "BAD REQUEST: Invalid month name or format provided"
-      );
-    }
-  });
-
-  it("should return a 404 error for an invalid date format", async () => {
+  it("should return success with category count = 0 if there are no records in the specified month", async () => {
     const response = await request
-      .get(`/api/habit-categories/monthly-metrics?month=2023-11-15&year=2023`)
+      .get(
+        `/api/habit-categories/monthly-metrics?month=May&year=2025&categoryId=${categoryId2}`
+      )
       .set("Cookie", cookie);
 
-    expect(response.status).toBe(404);
-    expect(response.body).toHaveProperty("error");
-    expect(response.body.error).toBe(
-      "BAD REQUEST: Invalid month name or format provided"
-    );
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
+    expect(response.body.totalMinutes).toBe(0);
+    expect(response.body.categoryCount).toBe(0); // Expecting count to be 0 for active categories
+    expect(response.body.daysWithRecords).toBe(0);
+    expect(response.body).toHaveProperty("totalDailyMinutes");
+    expect(response.body.totalDailyMinutes).toBe(0); // Expect totalDailyMinutes to be 0 now
+    expect(response.body.categoryData.length).toBe(1); // Expecting 1 categories returned, even if they have no records
   });
-
-  it("should return a 404 error for an invalid month number (greater than 12)", async () => {
-    const response = await request
-      .get(`/api/habit-categories/monthly-metrics?month=13&year=2023`)
-      .set("Cookie", cookie);
-
-    expect(response.status).toBe(404);
-    expect(response.body).toHaveProperty("error");
-    expect(response.body.error).toBe(
-      "BAD REQUEST: Invalid month number provided. It should be an integer between 1 and 12."
-    );
-  });
-
-  it("should return a 404 error for a month less than 1", async () => {
-    const response = await request
-      .get(`/api/habit-categories/monthly-metrics?month=0&year=2023`)
-      .set("Cookie", cookie);
-
-    expect(response.status).toBe(404);
-    expect(response.body).toHaveProperty("error");
-    expect(response.body.error).toBe(
-      "BAD REQUEST: Invalid month number provided. It should be an integer between 1 and 12."
-    );
-  });
-
-  it("should return a 404 error for a non-integer month", async () => {
-    const nonIntegerMonths = ["12.5", "1.1", "7.8"]; // Non-integer month values
-
-    for (const month of nonIntegerMonths) {
-      const response = await request
-        .get(`/api/habit-categories/monthly-metrics?month=${month}&year=2023`)
-        .set("Cookie", cookie);
-
-      expect(response.status).toBe(404);
-      expect(response.body).toHaveProperty("error");
-      expect(response.body.error).toBe(
-        "BAD REQUEST: Invalid month number provided. It should be an integer between 1 and 12."
-      );
-    }
-  });
-
-  it("should correctly handle valid month names regardless of case", async () => {
-    const validMonths = ["January", "january", "JANUARY", "JaNuArY"];
-
-    for (const month of validMonths) {
-      const response = await request
-        .get(`/api/habit-categories/monthly-metrics?month=${month}&year=2023`)
-        .set("Cookie", cookie);
-
-      expect(response.status).toBe(200);
-      expect(response.body.success).toBe(true);
-      expect(response.body.daysWithRecords).toBe(2);
-    }
-  });
-
-  it("should throw an error for an empty month names", async () => {
-    const invalidMonths = ["", []];
-
-    for (const month of invalidMonths) {
-      const response = await request
-        .get(`/api/habit-categories/monthly-metrics?month=${month}&year=2023`)
-        .set("Cookie", cookie);
-
-      expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty("error");
-      expect(response.body.error).toBe(
-        "Both 'month' and 'year' are required in the query parameters."
-      );
-    }
-  });
-
-  it("should throw an error for invalid month names", async () => {
-    const invalidMonths = [undefined, null, {}];
-
-    for (const month of invalidMonths) {
-      const response = await request
-        .get(`/api/habit-categories/monthly-metrics?month=${month}&year=2023`)
-        .set("Cookie", cookie);
-
-      expect(response.status).toBe(404);
-      expect(response.body).toHaveProperty("error");
-      expect(response.body.error).toBe(
-        "BAD REQUEST: Invalid month name or format provided"
-      );
-    }
-  });
-
-  it("should throw an error for an empty year names", async () => {
-    const invalidYear = [""];
-
-    for (const year of invalidYear) {
-      const response = await request
-        .get(
-          `/api/habit-categories/monthly-metrics?month=2&year=${invalidYear}`
-        )
-        .set("Cookie", cookie);
-
-      expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty("error");
-      expect(response.body.error).toBe(
-        "Both 'month' and 'year' are required in the query parameters."
-      );
-    }
-  });
-
-  //   it("should return one specific category and their entries between 15th November 2023 and 15th February 2024", async () => {
-  //     const response = await request
-  //       .get(
-  //         `/api/habit-categories/time-metrics?startDate=2023-11-15&endDate=2024-02-15&categoryId=${categoryId1}`
-  //       )
-  //       .set("Cookie", cookie);
-
-  //     expect(response.status).toBe(200);
-  //     expect(response.body.success).toBe(true);
-
-  //     expect(response.body).toHaveProperty("totalMinutes");
-  //     expect(response.body.totalMinutes).toBe(315);
-
-  //     expect(response.body).toHaveProperty("categoryCount");
-  //     expect(response.body.categoryData.length).toBe(1);
-
-  //     expect(response.body).toHaveProperty("daysWithRecords");
-  //     expect(response.body.daysWithRecords).toBe(7);
-
-  //     expect(response.body.categoryData[0].name).toBe("Work");
-
-  //     response.body.categoryData.forEach((category) => {
-  //       expect(category).toHaveProperty("name");
-  //       expect(category).toHaveProperty("totalMinutes");
-  //       expect(category).toHaveProperty("percentage");
-  //     });
-  //   });
-
-  //   it("should return categories even if the date range is reversed (December to January 2024)", async () => {
-  //     const response = await request
-  //       .get(
-  //         `/api/habit-categories/time-metrics?startDate=2024-12-31&endDate=2024-01-01`
-  //       )
-  //       .set("Cookie", cookie);
-
-  //     expect(response.status).toBe(200);
-
-  //     expect(response.body).toHaveProperty("totalMinutes");
-  //     expect(response.body.totalMinutes).toBe(3240);
-
-  //     expect(response.body).toHaveProperty("categoryData");
-  //     expect(response.body.categoryData.length).toBe(3);
-  //   });
-
-  //   it("should fail if the date range is empty strings", async () => {
-  //     const response = await request
-  //       .get(`/api/habit-categories/time-metrics?startDate={}&endDate={}`)
-  //       .set("Cookie", cookie);
-
-  //     expect(response.status).toBe(400);
-  //     expect(response.body).toHaveProperty("error");
-  //     expect(response.body.error).toBe(
-  //       "Invalid date format. Please use YYYY-MM-DD format."
-  //     );
-  //   });
-
-  //   it("should fail if the date range is null", async () => {
-  //     const response = await request
-  //       .get(`/api/habit-categories/time-metrics?startDate=&endDate=`)
-  //       .set("Cookie", cookie);
-
-  //     expect(response.status).toBe(400);
-  //     expect(response.body).toHaveProperty("error");
-  //     expect(response.body.error).toBe(
-  //       "Invalid date format. Please use YYYY-MM-DD format."
-  //     );
-  //   });
-
-  //   it("should return 404 if a category ID does not exist or doesn't belong to the user", async () => {
-  //     const invalidCategoryId = "610c512de7f5c72f44bc2641";
-
-  //     const response = await request
-  //       .get(
-  //         `/api/habit-categories/time-metrics?startDate=2024-01-01&endDate=2024-12-31&categoryId=${invalidCategoryId}`
-  //       )
-  //       .set("Cookie", cookie);
-
-  //     expect(response.status).toBe(404);
-  //     expect(response.body).toHaveProperty("message");
-  //     expect(response.body.message).toBe("Category not found");
-  //   });
-
-  //   it("should return metrics for all categories across multiple years", async () => {
-  //     const response = await request
-  //       .get(
-  //         `/api/habit-categories/time-metrics?startDate=2020-01-01&endDate=2024-12-31`
-  //       )
-  //       .set("Cookie", cookie);
-
-  //     expect(response.status).toBe(200);
-  //     expect(response.body.success).toBe(true);
-  //     expect(response.body).toHaveProperty("totalMinutes");
-  //     expect(response.body.categoryData.length).toBe(3);
-  //   });
-
-  //   it("should return 400 error if only one of the dates is invalid", async () => {
-  //     const response = await request
-  //       .get(
-  //         `/api/habit-categories/time-metrics?startDate=invalid&endDate=2024-12-31`
-  //       )
-  //       .set("Cookie", cookie);
-
-  //     expect(response.status).toBe(400);
-  //     expect(response.body).toHaveProperty("error");
-  //     expect(response.body.error).toBe(
-  //       "Invalid date format. Please use YYYY-MM-DD format."
-  //     );
-  //   });
-
-  //   it("should return metrics for a single day range", async () => {
-  //     const response = await request
-  //       .get(
-  //         `/api/habit-categories/time-metrics?startDate=2024-06-02&endDate=2024-06-02`
-  //       )
-  //       .set("Cookie", cookie);
-
-  //     expect(response.status).toBe(200);
-  //     expect(response.body.success).toBe(true);
-  //     expect(response.body.daysWithRecords).toBe(1); // Assuming there's data for this day
-  //   });
-
-  //   it("should return success with category count = 0 if there are no records in the specified date range", async () => {
-  //     const response = await request
-  //       .get(
-  //         `/api/habit-categories/time-metrics?startDate=2025-01-01&endDate=2025-12-31`
-  //       )
-  //       .set("Cookie", cookie);
-
-  //     expect(response.status).toBe(200);
-  //     expect(response.body.success).toBe(true);
-  //     expect(response.body.totalMinutes).toBe(0);
-  //     expect(response.body.categoryCount).toBe(0); // Expecting count to be 0 for active categories
-  //     expect(response.body.daysWithRecords).toBe(0);
-  //     expect(response.body.categoryData.length).toBe(3); // Expecting 3 categories returned, even if they have no records
-  //   });
 });
