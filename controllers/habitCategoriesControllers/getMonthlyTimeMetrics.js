@@ -73,10 +73,7 @@ export const getMonthlyTimeMetrics = async (req, res) => {
         return res.status(200).json({
           success: true,
           msg: "No categories found for this user, but the request was successful.",
-          totalMonthlyMinutes: 0,
           categoryCount: 0,
-          daysWithRecordsCount: 0,
-          totalDailyMinutes: 0,
           categoryData: [],
         });
       }

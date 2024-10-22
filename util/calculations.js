@@ -1,6 +1,6 @@
 export const calculateTotalMinutes = (categoryStats) => {
   return categoryStats.reduce(
-    (sum, category) => sum + category.totalMinutes,
+    (sum, category) => sum + (category.totalMinutes || 0),
     0
   );
 };
