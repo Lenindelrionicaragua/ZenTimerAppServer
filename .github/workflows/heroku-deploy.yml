@@ -1,8 +1,12 @@
-name: Heroku Deploy on Pull Request
+name: Heroku Deploy
 
 on:
   pull_request:
-    types: [opened, synchronize]
+    branches:
+      - main 
+  push:
+    branches:
+      - main 
 
 jobs:
   deploy:
@@ -10,18 +14,16 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3 # Updated to the latest version
+      uses: actions/checkout@v2
 
     - name: Set up Node.js
-      uses: actions/setup-node@v3 # Updated to the latest version
+      uses: actions/setup-node@v2
       with:
-        node-version: '20' # Update to Node.js 20 or use '16' if necessary
+        node-version: '16'
 
     - name: Install dependencies
       run: npm install
-
-    # - name: Build project
-    #   run: npm run build # Uncomment if needed
+      working-directory: server
 
     - name: Deploy to Heroku
       env:
