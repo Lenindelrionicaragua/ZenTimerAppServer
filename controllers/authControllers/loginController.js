@@ -15,7 +15,6 @@ export const login = async (req, res) => {
   const { email, password, ...additionalFields } = req.body.user;
 
   // Validation Errors
-
   try {
     const errors = [];
     if (!email || !password) {
@@ -35,8 +34,6 @@ export const login = async (req, res) => {
     // Continue with the login process if there are no validation errors
     const userFound = await User.findOne({ email: email });
 
-    logInfo("User does not exist");
-
     if (userFound) {
       logInfo(`User found: ${JSON.stringify(userFound)}`);
 
@@ -46,10 +43,8 @@ export const login = async (req, res) => {
       );
 
       // After the comparison
-      logInfo(`Is password valid? ${isPasswordValid}`);
 
       if (isPasswordValid) {
-        logInfo(`Password is valid for user: ${userFound.email}`);
         // Create jwt token
         const token = jwt.sign(
           { userId: userFound._id.toString() },

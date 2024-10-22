@@ -16,7 +16,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
       with:
-        fetch-depth: 0 
+        fetch-depth: 0  # Asegúrate de tener toda la historia del repositorio
 
     - name: Set up Node.js
       uses: actions/setup-node@v2
@@ -24,8 +24,8 @@ jobs:
         node-version: '16'
 
     - name: Install dependencies
-      run: npm install  
-      
+      run: npm install  # Se ejecuta en la raíz porque no se especifica un working-directory
+
     - name: Authenticate with Heroku
       env:
         HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
