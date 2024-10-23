@@ -25,7 +25,7 @@ const recordSchema = new mongoose.Schema({
   },
 });
 
-export const validateDailyRecords = (recordObject) => {
+export const validateRecords = (recordObject) => {
   const errorList = [];
   const allowedFields = ["minutesUpdate", "categoryId", "userId", "date"];
 
@@ -89,5 +89,5 @@ export const validateDailyRecords = (recordObject) => {
   return errorList;
 };
 
-const record = mongoose.model("record", recordSchema);
-export default record;
+const DailyTimeRecord = mongoose.model("DailyTimeRecord", recordSchema);
+export default DailyTimeRecord;
