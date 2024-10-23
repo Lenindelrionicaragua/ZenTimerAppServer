@@ -1,6 +1,6 @@
 import HabitCategory from "../../models/habitCategory.js";
 import { logInfo, logError } from "../../util/logging.js";
-import DailyRecord from "../../models/dailyRecords.js";
+import DailyRecord from "../../models/dailyTimeRecord.js";
 import validationErrorMessage from "../../util/validationErrorMessage.js";
 import {
   calculateTotalMinutes,

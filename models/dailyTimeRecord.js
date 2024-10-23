@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import validateAllowedFields from "../util/validateAllowedFields.js";
 import { logInfo } from "../util/logging.js";
 
-const recordSchema = new mongoose.Schema({
+const dailyTimeRecordSchema = new mongoose.Schema({
   categoryId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "HabitCategory",
@@ -25,7 +25,7 @@ const recordSchema = new mongoose.Schema({
   },
 });
 
-export const validateRecords = (recordObject) => {
+export const validateDailyRecords = (recordObject) => {
   const errorList = [];
   const allowedFields = ["minutesUpdate", "categoryId", "userId", "date"];
 
@@ -89,5 +89,8 @@ export const validateRecords = (recordObject) => {
   return errorList;
 };
 
-const DailyTimeRecord = mongoose.model("DailyTimeRecord", recordSchema);
+const DailyTimeRecord = mongoose.model(
+  "DailyTimeRecord",
+  dailyTimeRecordSchema
+);
 export default DailyTimeRecord;

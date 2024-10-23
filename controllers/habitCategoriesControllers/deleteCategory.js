@@ -1,5 +1,5 @@
 import HabitCategory from "../../models/habitCategory.js";
-import DailyRecord from "../../models/dailyRecords.js";
+import DailyRecord from "../../models/dailyTimeRecord.js";
 import { logError, logInfo } from "../../util/logging.js";
 
 export const deleteCategory = async (req, res) => {

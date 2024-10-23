@@ -1,6 +1,6 @@
-import { validateDailyRecords } from "../../models/dailyRecords.js";
+import DailyRecord from "../../models/dailyTimeRecord.js";
+import { validateDailyRecords } from "../../models/dailyTimeRecord.js";
 import { logError, logInfo } from "../../util/logging.js";
-import DailyRecord from "../../models/dailyRecords.js";
 
 export const createRecords = async (req, res) => {
   const { minutesUpdate, date } = req.body;
