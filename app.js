@@ -6,7 +6,7 @@ import { requireAuth } from "./middleware/authMiddleware.js";
 import userRouter from "./routes/userRoutes.js";
 import authRouter from "./routes/authRoutes.js";
 import habitCategoriesRouter from "./routes/habitCategoriesRouter.js";
-import dailyRecordsRouter from "./routes/dailyRecordsRouter.js";
+import recordsRouter from "./routes/records.js";
 
 dotenv.config();
 
@@ -48,6 +48,6 @@ app.use(cookieParser());
 app.use("/api/auth", authRouter);
 app.use("/api/user", requireAuth, userRouter);
 app.use("/api/habit-categories", requireAuth, habitCategoriesRouter);
-app.use("/api/daily-records", requireAuth, dailyRecordsRouter);
+app.use("/api/time-records", requireAuth, recordsRouter);
 
 export default app;

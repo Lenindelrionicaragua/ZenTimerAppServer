@@ -70,7 +70,7 @@ describe("Daily Record Creation Tests", () => {
     };
 
     const response = await request
-      .post(`/api/daily-records/${categoryId}`)
+      .post(`/api/time-records/${categoryId}`)
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
@@ -91,7 +91,7 @@ describe("Daily Record Creation Tests", () => {
     };
 
     const response = await request
-      .post(`/api/daily-records/${categoryId}`)
+      .post(`/api/time-records/${categoryId}`)
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
@@ -108,7 +108,7 @@ describe("Daily Record Creation Tests", () => {
     };
 
     const response = await request
-      .post(`/api/daily-records/${categoryId}`)
+      .post(`/api/time-records/${categoryId}`)
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
@@ -122,7 +122,7 @@ describe("Daily Record Creation Tests", () => {
     };
 
     const response = await request
-      .post(`/api/daily-records/${categoryId}`)
+      .post(`/api/time-records/${categoryId}`)
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
@@ -138,7 +138,7 @@ describe("Daily Record Creation Tests", () => {
     const InvalidCategoryId = "invalidIdObject";
 
     const response = await request
-      .post(`/api/daily-records/${InvalidCategoryId}`)
+      .post(`/api/time-records/${InvalidCategoryId}`)
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
@@ -157,7 +157,7 @@ describe("Daily Record Creation Tests", () => {
     const nullCategoryId = null;
 
     const response = await request
-      .post(`/api/daily-records/${nullCategoryId}`)
+      .post(`/api/time-records/${nullCategoryId}`)
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
@@ -176,7 +176,7 @@ describe("Daily Record Creation Tests", () => {
     const emptyCategoryId = "";
 
     const response = await request
-      .post(`/api/daily-records/${emptyCategoryId}`)
+      .post(`/api/time-records/${emptyCategoryId}`)
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
@@ -190,7 +190,7 @@ describe("Daily Record Creation Tests", () => {
     };
 
     const response = await request
-      .post(`/api/daily-records/${categoryId}`)
+      .post(`/api/time-records/${categoryId}`)
       .set("Cookie", "") // No cookie (not authenticated)
       .send(dailyRecordData);
 
@@ -205,7 +205,7 @@ describe("Daily Record Creation Tests", () => {
     };
 
     const response = await request
-      .post(`/api/daily-records/${categoryId}`)
+      .post(`/api/time-records/${categoryId}`)
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
@@ -222,7 +222,7 @@ describe("Daily Record Creation Tests", () => {
     };
 
     const response = await request
-      .post(`/api/daily-records/${categoryId}`)
+      .post(`/api/time-records/${categoryId}`)
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
@@ -242,7 +242,7 @@ describe("Daily Record Creation Tests", () => {
     };
 
     const response = await request
-      .post(`/api/daily-records/${categoryId}`)
+      .post(`/api/time-records/${categoryId}`)
       .set("Cookie", cookie)
       .send(invalidDailyRecordData);
 
@@ -259,7 +259,7 @@ describe("Daily Record Creation Tests", () => {
     };
 
     const response = await request
-      .post(`/api/daily-records/${categoryId}`)
+      .post(`/api/time-records/${categoryId}`)
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
@@ -323,7 +323,7 @@ describe("Daily Record Creation Tests", () => {
     };
 
     const dailyRecordResponse = await request
-      .post(`/api/daily-records/${categoryId}`)
+      .post(`/api/time-records/${categoryId}`)
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
@@ -334,7 +334,7 @@ describe("Daily Record Creation Tests", () => {
   it("should update the existing daily record", async () => {
     const newMinutesUpdate = 20;
     const response = await request
-      .post(`/api/daily-records/${categoryId}`)
+      .post(`/api/time-records/${categoryId}`)
       .set("Cookie", cookie)
       .send({
         minutesUpdate: newMinutesUpdate,
@@ -350,7 +350,7 @@ describe("Daily Record Creation Tests", () => {
 
   it("should return 400 if minutesUpdate is missing", async () => {
     const response = await request
-      .post(`/api/daily-records/${categoryId}`)
+      .post(`/api/time-records/${categoryId}`)
       .set("Cookie", cookie)
       .send({
         date: "2024-10-12",
@@ -362,7 +362,7 @@ describe("Daily Record Creation Tests", () => {
 
   it("should return 400 if date format is invalid", async () => {
     const response = await request
-      .post(`/api/daily-records/${categoryId}`)
+      .post(`/api/time-records/${categoryId}`)
       .set("Cookie", cookie)
       .send({
         minutesUpdate: 25,
