@@ -83,7 +83,7 @@ export const getMonthlyTimeMetrics = async (req, res) => {
     const categoryData = await Promise.all(
       userCategories.map(async (category) => {
         // Fetch records for the category within the date range
-        const categoryRecords = await DailyRecord.find({
+        const categoryRecords = await DailyTimeRecord.find({
           userId,
           categoryId: category._id,
           date: { $gte: start, $lte: end },
