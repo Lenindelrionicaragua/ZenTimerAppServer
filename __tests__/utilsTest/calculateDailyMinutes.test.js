@@ -23,9 +23,9 @@ describe("calculateDailyMinutes", () => {
     });
   });
 
-  it("should return an empty object if no records are provided", () => {
+  it("should return 0 if no records are provided", () => {
     const dailyMinutes = calculateDailyMinutes(emptyRecordsMock);
 
-    expect(dailyMinutes).toEqual({}); // No records should yield an empty object
+    expect(dailyMinutes).toEqual(0); // No records should yield an empty object
   });
 });
