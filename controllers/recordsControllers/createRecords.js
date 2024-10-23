@@ -2,7 +2,7 @@ import { validateDailyRecords } from "../../models/dailyRecords.js";
 import { logError, logInfo } from "../../util/logging.js";
 import DailyRecord from "../../models/dailyRecords.js";
 
-export const updateAndCreateRecords = async (req, res) => {
+export const createRecords = async (req, res) => {
   const { minutesUpdate, date } = req.body;
   const { categoryId } = req.params;
   const userId = req.userId;
