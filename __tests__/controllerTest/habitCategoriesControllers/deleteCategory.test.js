@@ -164,7 +164,7 @@ describe("Habit Category Deletion Tests", () => {
 
   it("should delete the category and all associated daily records", async () => {
     // Confirm that the daily records exist before deletion
-    let recordsBeforeDeletion = await DailyRecord.find({ categoryId });
+    let recordsBeforeDeletion = await DailyTimeRecord.find({ categoryId });
     expect(recordsBeforeDeletion.length).toBe(2); // Should have 2 daily records
 
     // Send delete request to remove category and associated records
@@ -183,7 +183,7 @@ describe("Habit Category Deletion Tests", () => {
     expect(categoryAfterDeletion).toBeNull(); // Category should be deleted
 
     // Check that the associated daily records are deleted
-    let recordsAfterDeletion = await DailyRecord.find({ categoryId });
+    let recordsAfterDeletion = await DailyTimeRecord.find({ categoryId });
     expect(recordsAfterDeletion.length).toBe(0); // All daily records should be deleted
   });
 

@@ -21,11 +21,11 @@ export const deleteCategory = async (req, res) => {
     }
 
     // Find and delete all daily records associated with the category
-    const DailyTimeRecord = await DailyTimeRecord.find({
+    const dailyTimeRecord = await DailyTimeRecord.find({
       categoryId: categoryId,
     });
 
-    if (DailyTimeRecord.length > 0) {
+    if (dailyTimeRecord.length > 0) {
       // Delete all daily records first
       await DailyTimeRecord.deleteMany({ categoryId: categoryId });
     }
