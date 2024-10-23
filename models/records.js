@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import validateAllowedFields from "../util/validateAllowedFields.js";
 import { logInfo } from "../util/logging.js";
 
-const dailyRecordSchema = new mongoose.Schema({
+const recordSchema = new mongoose.Schema({
   categoryId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "HabitCategory",
@@ -25,12 +25,12 @@ const dailyRecordSchema = new mongoose.Schema({
   },
 });
 
-export const validateDailyRecords = (dailyRecordObject) => {
+export const validateDailyRecords = (recordObject) => {
   const errorList = [];
   const allowedFields = ["minutesUpdate", "categoryId", "userId", "date"];
 
   const validatedKeysMessage = validateAllowedFields(
-    dailyRecordObject,
+    recordObject,
     allowedFields
   );
 
@@ -44,15 +44,15 @@ export const validateDailyRecords = (dailyRecordObject) => {
 
   // Validate 'minutesUpdate': required, must be a number, and between 0 and 1440 minutes
   if (
-    dailyRecordObject.minutesUpdate === undefined ||
-    dailyRecordObject.minutesUpdate === null
+    recordObject.minutesUpdate === undefined ||
+    recordObject.minutesUpdate === null
   ) {
     errorList.push("minutesUpdate is required.");
-  } else if (typeof dailyRecordObject.minutesUpdate !== "number") {
+  } else if (typeof recordObject.minutesUpdate !== "number") {
     errorList.push("minutesUpdate must be a number.");
   } else if (
-    dailyRecordObject.minutesUpdate < 0 ||
-    dailyRecordObject.minutesUpdate > 1440
+    recordObject.minutesUpdate < 0 ||
+    recordObject.minutesUpdate > 1440
   ) {
     errorList.push(
       "minutesUpdate must be between 0 and 1440 (24 hours in minutes)."
@@ -61,22 +61,22 @@ export const validateDailyRecords = (dailyRecordObject) => {
 
   // Validate 'categoryId': must be a valid ObjectId (MongoDB's unique identifier)
   if (
-    dailyRecordObject.categoryId &&
-    !mongoose.Types.ObjectId.isValid(dailyRecordObject.categoryId)
+    recordObject.categoryId &&
+    !mongoose.Types.ObjectId.isValid(recordObject.categoryId)
   ) {
     errorList.push("categoryId must be a valid ObjectId.");
   }
 
   // Validate 'userId': must be a valid ObjectId (MongoDB's unique identifier)
   if (
-    dailyRecordObject.userId &&
-    !mongoose.Types.ObjectId.isValid(dailyRecordObject.userId)
+    recordObject.userId &&
+    !mongoose.Types.ObjectId.isValid(recordObject.userId)
   ) {
     errorList.push("userId must be a valid ObjectId.");
   }
 
   // If 'date' is provided, check if it's valid
-  if (dailyRecordObject.date && isNaN(Date.parse(dailyRecordObject.date))) {
+  if (recordObject.date && isNaN(Date.parse(recordObject.date))) {
     errorList.push("Date must be in a valid ISO format.");
   }
 
@@ -89,5 +89,5 @@ export const validateDailyRecords = (dailyRecordObject) => {
   return errorList;
 };
 
-const DailyRecord = mongoose.model("DailyRecord", dailyRecordSchema);
-export default DailyRecord;
+const record = mongoose.model("record", recordSchema);
+export default record;
