@@ -112,7 +112,7 @@ beforeAll(async () => {
     for (const categoryId of categoriesToUpdate) {
       categoryRecordsPromises.push(
         request
-          .post(`/api/daily-records/${categoryId}`)
+          .post(`/api/time-records/${categoryId}`)
           .set("Cookie", cookie)
           .send({
             minutesUpdate: 45,
