@@ -1,6 +1,6 @@
 import HabitCategory from "../../models/habitCategory.js";
 import { logInfo, logError } from "../../util/logging.js";
-import DailyRecord from "../../models/dailyTimeRecord.js";
+import DailyTimeRecord from "../../models/dailyTimeRecord.js";
 import validationErrorMessage from "../../util/validationErrorMessage.js";
 import {
   calculateTotalMinutes,
@@ -74,7 +74,7 @@ export const getTimeMetricsByDateRange = async (req, res) => {
     const categoryData = await Promise.all(
       userCategories.map(async (category) => {
         // Fetch records for the category within the date range
-        const categoryRecords = await DailyRecord.find({
+        const categoryRecords = await DailyTimeRecord.find({
           userId,
           categoryId: category._id,
           date: { $gte: start, $lte: end },

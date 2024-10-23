@@ -1,5 +1,5 @@
 import HabitCategory from "../../models/habitCategory.js";
-import DailyRecord from "../../models/dailyTimeRecord.js";
+import DailyTimeRecord from "../../models/dailyTimeRecord.js";
 import { logError, logInfo } from "../../util/logging.js";
 
 export const deleteCategory = async (req, res) => {
@@ -21,11 +21,13 @@ export const deleteCategory = async (req, res) => {
     }
 
     // Find and delete all daily records associated with the category
-    const dailyRecords = await DailyRecord.find({ categoryId: categoryId });
+    const DailyTimeRecord = await DailyTimeRecord.find({
+      categoryId: categoryId,
+    });
 
-    if (dailyRecords.length > 0) {
+    if (DailyTimeRecord.length > 0) {
       // Delete all daily records first
-      await DailyRecord.deleteMany({ categoryId: categoryId });
+      await DailyTimeRecord.deleteMany({ categoryId: categoryId });
     }
 
     // Now delete the category itself

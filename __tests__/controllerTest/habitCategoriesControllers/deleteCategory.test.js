@@ -7,7 +7,7 @@ import {
 import app from "../../../app.js";
 import { logInfo } from "../../../util/logging.js";
 import HabitCategory from "../../../models/habitCategory.js";
-import DailyRecord from "../../../models/dailyRecords.js";
+import DailyTimeRecord from "../../../models/dailyTimeRecord.js";
 
 const request = supertest(app);
 
@@ -64,7 +64,7 @@ describe("Habit Category Deletion Tests", () => {
     logInfo(`Category created by user: ${JSON.stringify(testUserId)}`);
 
     // Create daily records associated with the category
-    const dailyRecords = [
+    const dailyTimeRecords = [
       {
         userId: categoryResponse.body.category.createdBy,
         categoryId: categoryId,
@@ -80,7 +80,7 @@ describe("Habit Category Deletion Tests", () => {
     ];
 
     // Save daily records
-    await DailyRecord.insertMany(dailyRecords);
+    await DailyTimeRecord.insertMany(dailyTimeRecords);
   });
 
   it("should delete the category if it exists", async () => {

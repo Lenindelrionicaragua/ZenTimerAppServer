@@ -5,14 +5,14 @@ describe("validateDailyRecords", () => {
   // Category: Required Fields Validation
   describe("Required Fields Validation", () => {
     test("should return an empty array if all required fields are provided correctly", () => {
-      const dailyRecord = {
+      const dailyTimeRecord = {
         categoryId: new mongoose.Types.ObjectId(),
         userId: new mongoose.Types.ObjectId(),
         date: "2024-10-12",
         minutesUpdate: 30,
       };
 
-      const errors = validateDailyRecords(dailyRecord);
+      const errors = validateDailyRecords(dailyTimeRecord);
 
       expect(errors).toHaveLength(0);
     });
