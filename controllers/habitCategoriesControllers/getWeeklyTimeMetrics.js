@@ -12,6 +12,7 @@ import {
   mapRecordsToDateAndMinutes,
   countUniqueDays,
   countCategoriesWithData,
+  addPercentagePerDayToRecords,
 } from "../../util/dataTransformations.js";
 
 export const getWeeklyTimeMetrics = async (req, res) => {
@@ -106,17 +107,27 @@ export const getWeeklyTimeMetrics = async (req, res) => {
       })
     );
 
-    // const cleanedCategoryStats = categoryData.map((category) => {
-    //   const { records, ...cleanCategory } = category; // Remove records
-    //   return cleanCategory;
-    // });
-
     // Calculate total minutes across all categories
     const totalMinutes = calculateTotalMinutes(categoryData);
 
     // Combine all records to calculate total daily minutes
     const allRecords = categoryData.flatMap((cat) => cat.records);
     const totalDailyMinutes = calculateDailyMinutes(allRecords);
+
+    const recordsWithPercentage = addPercentagePerDayToRecords(
+      allRecords,
+      totalDailyMinutes
+    );
+
+    const categoryDataWithPercentages = categoryData.map((category) => {
+      return {
+        ...category,
+        records: addPercentagePerDayToRecords(
+          category.records,
+          totalDailyMinutes
+        ), // Add percentages to each category's records
+      };
+    });
 
     // Count the number of categories with data
     const categoryCount = countCategoriesWithData(categoryData, start, end);
@@ -125,7 +136,7 @@ export const getWeeklyTimeMetrics = async (req, res) => {
 
     // Add percentage data to each category
     const categoryStats = calculateCategoryPercentages(
-      categoryData,
+      categoryDataWithPercentages,
       totalMinutes
     );
 
