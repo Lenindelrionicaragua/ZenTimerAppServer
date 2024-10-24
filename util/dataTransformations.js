@@ -5,6 +5,27 @@ export const mapRecordsToDateAndMinutes = (records) => {
   }));
 };
 
+export const addPercentagePerDayToRecords = (records, totalDailyMinutes) => {
+  return records.map((record) => {
+    const dateString =
+      record.date instanceof Date
+        ? record.date.toISOString()
+        : String(record.date);
+    const dateKey = dateString.split("T")[0];
+    const totalForDay = totalDailyMinutes[dateKey];
+
+    const percentage = totalForDay
+      ? (record.totalDailyMinutes / totalForDay) * 100
+      : 0;
+
+    return {
+      ...record,
+      date: dateString,
+      dailyPercentage: percentage.toFixed(2),
+    };
+  });
+};
+
 // Function to count unique days across all categories
 export const countUniqueDays = (categoryStats) => {
   // Use a Set to ensure only unique dates are kept
