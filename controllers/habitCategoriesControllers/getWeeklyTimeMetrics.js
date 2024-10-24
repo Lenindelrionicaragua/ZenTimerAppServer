@@ -106,10 +106,10 @@ export const getWeeklyTimeMetrics = async (req, res) => {
       })
     );
 
-    const cleanedCategoryStats = categoryData.map((category) => {
-      const { records, ...cleanCategory } = category; // Remove records
-      return cleanCategory;
-    });
+    // const cleanedCategoryStats = categoryData.map((category) => {
+    //   const { records, ...cleanCategory } = category; // Remove records
+    //   return cleanCategory;
+    // });
 
     // Calculate total minutes across all categories
     const totalMinutes = calculateTotalMinutes(categoryData);
@@ -125,7 +125,7 @@ export const getWeeklyTimeMetrics = async (req, res) => {
 
     // Add percentage data to each category
     const categoryStats = calculateCategoryPercentages(
-      cleanedCategoryStats,
+      categoryData,
       totalMinutes
     );
 

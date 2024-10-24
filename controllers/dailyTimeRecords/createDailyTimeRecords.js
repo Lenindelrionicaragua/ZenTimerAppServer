@@ -1,6 +1,7 @@
 import DailyTimeRecord from "../../models/dailyTimeRecord.js";
 import { validateDailyRecords } from "../../models/dailyTimeRecord.js";
 import { logError, logInfo } from "../../util/logging.js";
+import { calculateCategoryPercentages } from "../../util/calculations.js";
 
 export const createDailyTimeRecords = async (req, res) => {
   const { minutesUpdate, date } = req.body;
@@ -61,8 +62,8 @@ export const createDailyTimeRecords = async (req, res) => {
     const newRecord = new DailyTimeRecord({
       userId,
       categoryId,
-      totalDailyMinutes: minutesUpdate,
       date: date || Date.now(),
+      totalDailyMinutes: minutesUpdate,
     });
 
     await newRecord.save();
