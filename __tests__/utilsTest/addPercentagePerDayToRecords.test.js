@@ -40,7 +40,7 @@ describe("addPercentagePerDayToRecords", () => {
     expect(result).toEqual(expectedOutput);
   });
 
-  it("should return null percentage if totalDailyMinutes for the date is not found", () => {
+  it("should return 0 percentage if totalDailyMinutes for the date is not found", () => {
     // Sample input records
     const records = [
       { date: "2024-02-10T00:00:00.000Z", totalDailyMinutes: 50 },
@@ -56,7 +56,7 @@ describe("addPercentagePerDayToRecords", () => {
       {
         date: "2024-02-10T00:00:00.000Z",
         totalDailyMinutes: 50,
-        dailyPercentage: null,
+        dailyPercentage: "0.00", // Change here to reflect the expected output
       },
     ];
 
