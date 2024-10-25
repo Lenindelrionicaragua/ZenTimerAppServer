@@ -85,8 +85,8 @@ export const validateCategory = (categoryObject, requireName = true) => {
       !Number.isInteger(categoryObject.dailyGoal)
     ) {
       errorList.push("Daily goal must be an integer.");
-    } else if (categoryObject.dailyGoal < 30) {
-      errorList.push("Daily goal must be at least 30 minutes.");
+    } else if (categoryObject.dailyGoal < 15) {
+      errorList.push("Daily goal must be at least 15 minutes.");
     } else if (categoryObject.dailyGoal > 1440) {
       errorList.push("Daily goal cannot exceed 1440 minutes (24 hours).");
     }
