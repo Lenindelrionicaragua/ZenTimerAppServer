@@ -315,6 +315,19 @@ describe("getTimeMetricsByDateRange", () => {
     expect(response.body.categoryData.length).toBe(3);
   });
 
+  it("should return metrics for all categories for a specific year", async () => {
+    const response = await request
+      .get(
+        `/api/habit-categories/date-range-metrics?startDate=2024-01-01&endDate=2024-12-31`
+      )
+      .set("Cookie", cookie);
+
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
+    expect(response.body).toHaveProperty("totalMinutes");
+    expect(response.body.categoryData.length).toBe(3);
+  });
+
   it("should return 400 error if only one of the dates is invalid", async () => {
     const response = await request
       .get(
