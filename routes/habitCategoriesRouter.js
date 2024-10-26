@@ -5,6 +5,7 @@ import { deleteCategory } from "../controllers/habitCategoriesControllers/delete
 import { getTimeMetricsByDateRange } from "../controllers/habitCategoriesControllers/getTimeMetricsByDateRange.js";
 import { getMonthlyTimeMetrics } from "../controllers/habitCategoriesControllers/getMonthlyTimeMetrics.js";
 import { getWeeklyTimeMetrics } from "../controllers/habitCategoriesControllers/getWeeklyTimeMetrics.js";
+import { getCategory } from "../controllers/habitCategoriesControllers/getCategory.js";
 
 const habitCategoriesRouter = express.Router();
 
@@ -15,5 +16,6 @@ habitCategoriesRouter.delete("/:categoryId", deleteCategory);
 habitCategoriesRouter.get("/date-range-metrics", getTimeMetricsByDateRange);
 habitCategoriesRouter.get("/monthly-metrics", getMonthlyTimeMetrics);
 habitCategoriesRouter.get("/weekly-metrics", getWeeklyTimeMetrics);
+habitCategoriesRouter.get("/", getCategory);
 
 export default habitCategoriesRouter;
