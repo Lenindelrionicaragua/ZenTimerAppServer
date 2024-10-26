@@ -8,11 +8,43 @@ describe("validateCategory function", () => {
       createdAt: new Date(),
       createdBy: new mongoose.Types.ObjectId(),
       categoryId: new mongoose.Types.ObjectId(),
+      dailyGoal: 60, // Valid dailyGoal in minutes
     };
 
     const errors = validateCategory(category);
-
     expect(errors).toHaveLength(0);
+  });
+
+  test("should return an error if 'dailyGoal' is below the minimum value", () => {
+    const category = {
+      name: "Fitness",
+      dailyGoal: 14, // Below the minimum of 15 minutes
+    };
+
+    const errors = validateCategory(category);
+    expect(errors).toContain("Daily goal must be at least 15 minutes.");
+  });
+
+  test("should return an error if 'dailyGoal' is not an integer", () => {
+    const category = {
+      name: "Fitness",
+      dailyGoal: 45.5, // Not an integer
+    };
+
+    const errors = validateCategory(category);
+    expect(errors).toContain("Daily goal must be an integer.");
+  });
+
+  test("should return an error if 'dailyGoal' exceeds the maximum value", () => {
+    const category = {
+      name: "Fitness",
+      dailyGoal: 1500, // Above the maximum of 1440 minutes (24 hours)
+    };
+
+    const errors = validateCategory(category);
+    expect(errors).toContain(
+      "Daily goal cannot exceed 1440 minutes (24 hours)."
+    );
   });
 
   test("should return an array with error messages if required fields are missing", () => {
@@ -21,6 +53,37 @@ describe("validateCategory function", () => {
     const errors = validateCategory(category);
 
     expect(errors).toContain("Category name is required.");
+  });
+
+  test("should pass if 'dailyGoal' is exactly at the minimum value", () => {
+    const category = {
+      name: "Fitness",
+      dailyGoal: 30, // Minimum allowed value
+    };
+
+    const errors = validateCategory(category);
+    expect(errors).toHaveLength(0);
+  });
+
+  test("should pass if 'dailyGoal' is exactly at the maximum value", () => {
+    const category = {
+      name: "Fitness",
+      dailyGoal: 1440, // Maximum allowed value
+    };
+
+    const errors = validateCategory(category);
+    expect(errors).toHaveLength(0);
+  });
+
+  test("should pass if 'dailyGoal' is not provided (optional field)", () => {
+    const category = {
+      name: "Fitness",
+      createdBy: new mongoose.Types.ObjectId(),
+      createdAt: new Date(),
+    };
+
+    const errors = validateCategory(category);
+    expect(errors).toHaveLength(0);
   });
 
   test("should return an error message if the name is null", () => {

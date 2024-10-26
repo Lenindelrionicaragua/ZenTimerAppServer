@@ -41,11 +41,15 @@ export const createCategory = async (req, res) => {
     // Set createdAt if not provided
     const finalCreatedAt = habitCategory.createdAt || Date.now();
 
+    // Set dailyGoal, defaulting to 0 if not provided
+    const dailyGoal = habitCategory.dailyGoal || 0;
+
     // Create new habit category
     const newCategory = new HabitCategory({
       name: habitCategory.name,
       createdBy: userId,
       createdAt: finalCreatedAt,
+      dailyGoal: dailyGoal,
     });
 
     // Save the new category

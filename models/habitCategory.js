@@ -19,12 +19,22 @@ const habitCategorySchema = new mongoose.Schema({
     default: Date.now,
     required: true,
   },
+  dailyGoal: {
+    type: Number,
+    default: 0,
+  },
 });
 
 // Validation function for the category
 export const validateCategory = (categoryObject, requireName = true) => {
   const errorList = [];
-  const allowedKeys = ["name", "createdBy", "createdAt", "categoryId"];
+  const allowedKeys = [
+    "name",
+    "createdBy",
+    "createdAt",
+    "categoryId",
+    "dailyGoal",
+  ];
 
   // Validate allowed fields
   const validatedKeysMessage = validateAllowedFields(
@@ -66,6 +76,20 @@ export const validateCategory = (categoryObject, requireName = true) => {
     !mongoose.Types.ObjectId.isValid(categoryObject.categoryId)
   ) {
     errorList.push("Invalid 'categoryId' provided.");
+  }
+
+  // Validate 'dailyGoal' range
+  if (categoryObject.dailyGoal !== undefined) {
+    if (
+      typeof categoryObject.dailyGoal !== "number" ||
+      !Number.isInteger(categoryObject.dailyGoal)
+    ) {
+      errorList.push("Daily goal must be an integer.");
+    } else if (categoryObject.dailyGoal < 15) {
+      errorList.push("Daily goal must be at least 15 minutes.");
+    } else if (categoryObject.dailyGoal > 1440) {
+      errorList.push("Daily goal cannot exceed 1440 minutes (24 hours).");
+    }
   }
 
   // Log validation results

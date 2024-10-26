@@ -61,6 +61,89 @@ describe("Create a new habit-category (test route)", () => {
     expect(response.body.message).toBe("Category created successfully.");
     expect(response.body.category.name).toBe(newCategory.habitCategory.name);
     expect(response.body.category.createdAt).toBeDefined(); // createdAt should be set automatically
+    expect(response.body.category.dailyGoal).toBe(0); // dailyGoal should be 0 by default
+  });
+
+  it("should create a new category with a specified dailyGoal", async () => {
+    const newCategory = {
+      habitCategory: {
+        name: "Exercise",
+        dailyGoal: 20,
+      },
+    };
+
+    const response = await request
+      .post("/api/habit-categories/create")
+      .set("Cookie", cookie)
+      .send(newCategory);
+
+    expect(response.status).toBe(201);
+    expect(response.body.success).toBe(true);
+    expect(response.body.message).toBe("Category created successfully.");
+    expect(response.body.category.name).toBe(newCategory.habitCategory.name);
+    expect(response.body.category.dailyGoal).toBe(
+      newCategory.habitCategory.dailyGoal
+    ); // Check that dailyGoal is correctly set
+  });
+
+  it("should fail if the dailyGoal is more than 1440 minutes", async () => {
+    const newCategory = {
+      habitCategory: {
+        name: "Exercise",
+        dailyGoal: 1600, // Exceeds the limit
+      },
+    };
+
+    const response = await request
+      .post("/api/habit-categories/create")
+      .set("Cookie", cookie)
+      .send(newCategory);
+
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.msg).toContain(
+      "BAD REQUEST: Daily goal cannot exceed 1440 minutes (24 hours)."
+    ); // Adjust based on your validation logic
+  });
+
+  it("should fail if the dailyGoal is less than 15 minutes", async () => {
+    const newCategory = {
+      habitCategory: {
+        name: "Exercise",
+        dailyGoal: 14, // Below the minimum
+      },
+    };
+
+    const response = await request
+      .post("/api/habit-categories/create")
+      .set("Cookie", cookie)
+      .send(newCategory);
+
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.msg).toContain(
+      "BAD REQUEST: Daily goal must be at least 15 minutes."
+    ); // Adjust based on your validation logic
+  });
+
+  it("should fail if the dailyGoal is a negative number", async () => {
+    const newCategory = {
+      habitCategory: {
+        name: "Exercise",
+        dailyGoal: -15, // Negative number
+      },
+    };
+
+    const response = await request
+      .post("/api/habit-categories/create")
+      .set("Cookie", cookie)
+      .send(newCategory);
+
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.msg).toContain(
+      "BAD REQUEST: Daily goal must be at least 15 minutes."
+    ); // Adjust based on your validation logic
   });
 
   it("should fail if invalid fields are sent", async () => {
