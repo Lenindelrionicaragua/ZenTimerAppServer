@@ -18,6 +18,18 @@ export const updateCategoryDailyGoal = async (req, res) => {
     });
   }
 
+  // Validate that dailyGoal is provided
+  if (
+    newDailyGoal === undefined ||
+    newDailyGoal === null ||
+    newDailyGoal === ""
+  ) {
+    return res.status(400).json({
+      success: false,
+      message: "BAD REQUEST: dailyGoal is required.",
+    });
+  }
+
   // Validate allowed fields
   const invalidFieldsError = validateAllowedFields(req.body, allowedFields);
   if (invalidFieldsError) {

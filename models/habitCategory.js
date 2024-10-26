@@ -78,8 +78,8 @@ export const validateCategory = (categoryObject, requireName = true) => {
     errorList.push("Invalid 'categoryId' provided.");
   }
 
-  // Validate 'dailyGoal' as a number in the valid range
-  if (categoryObject.dailyGoal) {
+  // Validate 'dailyGoal' range
+  if (categoryObject.dailyGoal !== undefined) {
     if (
       typeof categoryObject.dailyGoal !== "number" ||
       !Number.isInteger(categoryObject.dailyGoal)
