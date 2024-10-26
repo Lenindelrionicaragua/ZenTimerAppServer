@@ -37,9 +37,9 @@ beforeAll(async () => {
   cookie = loginResponse.headers["set-cookie"];
 
   const categories = [
-    { name: "Work", createdAt: "2024-01-12" },
-    { name: "Exercise", createdAt: "2024-01-12" },
-    { name: "Study", createdAt: "2024-01-12" },
+    { name: "Work", createdAt: "2024-01-12", dailyGoal: 90 },
+    { name: "Exercise", createdAt: "2024-01-12", dailyGoal: 90 },
+    { name: "Study", createdAt: "2024-01-12", dailyGoal: 20 },
   ];
 
   const categoryPromises = categories.map(async (category, index) => {
