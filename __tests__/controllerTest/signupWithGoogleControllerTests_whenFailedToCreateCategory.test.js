@@ -27,29 +27,23 @@ afterAll(async () => {
   await closeMockDatabase();
 });
 
-describe("Signup with Category Creation Failure", () => {
-  test("Should create user and fail to create default categories", async () => {
-    const newUser = {
-      name: "Test User",
-      email: "testuser@example.com",
-      password: "Test1234!",
-      dateOfBirth: "Tue Feb 01 1990",
-    };
-
+describe("signInWithGoogleController", () => {
+  test("Should fail to create default categories if an error occurs during user creation", async () => {
     // Mock the autoCreateDefaultCategories to throw an error for this test
     autoCreateDefaultCategories.mockImplementation(() => {
       throw new Error("Failed to create default categories");
     });
 
-    const response = await request
-      .post("/api/auth/sign-up/")
-      .send({ user: newUser });
+    const response = await request.post("/api/auth/sign-in-with-google").send({
+      name: "Test User",
+      email: "test@example.com",
+      platform: "Web",
+    });
 
-    expect(response.status).toBe(201); // User created successfully
+    expect(response.status).toBe(201);
     expect(response.body.success).toBe(true);
-    expect(response.body.msg).toContain(
-      "User created successfully, but there was an issue creating default categories"
+    expect(response.body.message).toBe(
+      "User signed in successfully, but there was an issue creating default categories."
     );
-    expect(response.body.user).toHaveProperty("_id"); // Check user object has an ID
   });
 });
