@@ -4,6 +4,7 @@ import { validateUser } from "../../models/userModels.js";
 import User from "../../models/userModels.js";
 import validateAllowedFields from "../../util/validateAllowedFields.js";
 import { sendVerificationEmail } from "./emailVerificationController.js";
+import { autoCreateDefaultCategories } from "../../util/autoCreateDefaultCategories.js";
 
 export const signup = async (req, res) => {
   const allowedFields = ["name", "email", "password", "dateOfBirth"];
@@ -63,6 +64,26 @@ export const signup = async (req, res) => {
     }
 
     const newUser = await User.create(req.body.user);
+
+    // Attempt to create default categories
+    try {
+      await autoCreateDefaultCategories(newUser._id);
+    } catch (categoryError) {
+      logError(`Error creating default categories: ${categoryError}`);
+
+      // Use the category error message if available; otherwise, provide a default message
+      const categoryErrorMsg =
+        categoryError.message ||
+        "Unable to create default categories. You can create them manually later.";
+      logInfo("Default categories were not created for user.");
+
+      return res.status(201).json({
+        success: true,
+        msg: `User created successfully, but there was an issue creating default categories: ${categoryErrorMsg}`,
+        user: newUser,
+      });
+    }
+
     await sendVerificationEmail(newUser, res);
     logInfo(`User created successfully: ${newUser.email}`);
 

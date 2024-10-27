@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import User from "../../models/userModels.js";
 import { logError, logInfo } from "../../util/logging.js";
 import { sendWelcomeEmail } from "./emailWelcomeController.js";
+import { autoCreateDefaultCategories } from "../../util/autoCreateDefaultCategories.js";
 
 // OAuth2 clients
 const clients = {
@@ -23,6 +24,8 @@ export const signInWithGoogleController = async (req, res) => {
     return res.status(400).json({ error: "Invalid platform" });
   }
 
+  let isNewUser = false; // Track if a new user is being created
+
   // Special handling for web platform in development/testing
   if (platform === "Web" && !token) {
     try {
@@ -35,6 +38,7 @@ export const signInWithGoogleController = async (req, res) => {
         const password = await bcrypt.hash("defaultPassword", 10); // Hash a default password
         user = new User({ name, email, picture, password });
         await user.save();
+        isNewUser = true;
 
         await sendWelcomeEmail(user, res);
         logInfo(`User created successfully: ${user.email}`);
@@ -51,6 +55,23 @@ export const signInWithGoogleController = async (req, res) => {
       // Set the session cookie
       res.cookie("session", jwtToken, { httpOnly: true });
       logInfo("Session cookie set for Web platform");
+
+      // Create default categories if this is a new user
+      if (isNewUser) {
+        try {
+          await autoCreateDefaultCategories(user._id);
+        } catch (categoryError) {
+          logError(
+            `Error creating default categories for new user: ${categoryError.message}`
+          );
+          return res.status(201).json({
+            success: true,
+            message:
+              "User signed in successfully, but there was an issue creating default categories.",
+            token: jwtToken,
+          });
+        }
+      }
 
       return res.status(200).json({
         success: true,
@@ -92,6 +113,7 @@ export const signInWithGoogleController = async (req, res) => {
       logInfo("User not found, creating a new user for platform: " + platform);
       user = new User({ name, email, picture });
       await user.save();
+      isNewUser = true;
 
       await sendWelcomeEmail(user, res);
       logInfo(`User created successfully: ${user.email}`);
@@ -108,6 +130,23 @@ export const signInWithGoogleController = async (req, res) => {
     // Set the session cookie
     res.cookie("session", jwtToken, { httpOnly: true });
     logInfo("Session cookie set for platform: " + platform);
+
+    // Create default categories if this is a new user
+    if (isNewUser) {
+      try {
+        await autoCreateDefaultCategories(user._id);
+      } catch (categoryError) {
+        logError(
+          `Error creating default categories for new user: ${categoryError.message}`
+        );
+        return res.status(201).json({
+          success: true,
+          message:
+            "User signed in successfully, but there was an issue creating default categories.",
+          token: jwtToken,
+        });
+      }
+    }
 
     return res.status(200).json({
       success: true,
