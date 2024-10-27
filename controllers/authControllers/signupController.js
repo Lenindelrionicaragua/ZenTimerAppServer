@@ -4,6 +4,7 @@ import { validateUser } from "../../models/userModels.js";
 import User from "../../models/userModels.js";
 import validateAllowedFields from "../../util/validateAllowedFields.js";
 import { sendVerificationEmail } from "./emailVerificationController.js";
+import { autoCreateDefaultCategories } from "../../util/autoCreateDefaultCategories.js";
 
 export const signup = async (req, res) => {
   const allowedFields = ["name", "email", "password", "dateOfBirth"];
@@ -63,6 +64,9 @@ export const signup = async (req, res) => {
     }
 
     const newUser = await User.create(req.body.user);
+
+    await autoCreateDefaultCategories(newUser._id);
+
     await sendVerificationEmail(newUser, res);
     logInfo(`User created successfully: ${newUser.email}`);
 
