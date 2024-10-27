@@ -20,8 +20,6 @@ export const autoCreateDefaultCategories = async (userId) => {
       const habitCategory = {
         ...categoryData,
         createdBy: userId,
-        createdAt: Date.now(),
-        dailyGoal: 0, // Default daily goal
       };
 
       // Validate category data
