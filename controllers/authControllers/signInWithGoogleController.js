@@ -24,6 +24,8 @@ export const signInWithGoogleController = async (req, res) => {
     return res.status(400).json({ error: "Invalid platform" });
   }
 
+  let isNewUser = false; // Track if a new user is being created
+
   // Special handling for web platform in development/testing
   if (platform === "Web" && !token) {
     try {
@@ -56,7 +58,19 @@ export const signInWithGoogleController = async (req, res) => {
 
       // Create default categories if this is a new user
       if (isNewUser) {
-        await autoCreateDefaultCategories(user._id);
+        try {
+          await autoCreateDefaultCategories(user._id);
+        } catch (categoryError) {
+          logError(
+            `Error creating default categories for new user: ${categoryError.message}`
+          );
+          return res.status(201).json({
+            success: true,
+            message:
+              "User signed in successfully, but there was an issue creating default categories.",
+            token: jwtToken,
+          });
+        }
       }
 
       return res.status(200).json({
@@ -119,7 +133,19 @@ export const signInWithGoogleController = async (req, res) => {
 
     // Create default categories if this is a new user
     if (isNewUser) {
-      await autoCreateDefaultCategories(user._id);
+      try {
+        await autoCreateDefaultCategories(user._id);
+      } catch (categoryError) {
+        logError(
+          `Error creating default categories for new user: ${categoryError.message}`
+        );
+        return res.status(201).json({
+          success: true,
+          message:
+            "User signed in successfully, but there was an issue creating default categories.",
+          token: jwtToken,
+        });
+      }
     }
 
     return res.status(200).json({
