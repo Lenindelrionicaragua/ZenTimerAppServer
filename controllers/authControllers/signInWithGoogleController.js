@@ -36,7 +36,8 @@ export const signInWithGoogleController = async (req, res) => {
         user = new User({ name, email, picture, password });
         await user.save();
         isNewUser = true;
-        await sendWelcomeEmail(user, res);
+
+        await sendWelcomeEmail(user);
         logInfo(`New Web user created: ${user.email}`);
       }
 
@@ -90,11 +91,13 @@ export const signInWithGoogleController = async (req, res) => {
     let user = await User.findOne({ email });
 
     try {
+      user = await User.findOne({ email });
+
       if (!user) {
         user = new User({ name, email, picture });
         await user.save();
         isNewUser = true;
-        await sendWelcomeEmail(user, res);
+        await sendWelcomeEmail(user);
       }
     } catch (userError) {
       logError("User creation error: " + userError.message);
