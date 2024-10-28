@@ -65,4 +65,35 @@ describe("signInWithGoogleController", () => {
     expect(response.status).toBe(400);
     expect(response.body.error).toBe("idToken from Google is missing.");
   });
+
+  test("Should create a new user if user does not exist in the database", async () => {
+    // Precondition: The user should not exist in the database before the test.
+    const nonExistentEmail = "newuser@example.com";
+    let user = await User.findOne({ email: nonExistentEmail });
+    expect(user).toBeNull(); // Ensure no user exists with this email.
+
+    // Send a sign-in request for a non-existent user to simulate the creation process.
+    const response = await request.post("/api/auth/sign-in-with-google").send({
+      name: "New User",
+      email: nonExistentEmail,
+      picture: "http://example.com/newuser.jpg",
+      platform: "Web",
+    });
+
+    // Verify that the response is successful and a token is returned.
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
+    expect(response.body.message).toBe("User signed in successfully");
+    expect(response.body.token).toBeDefined();
+
+    // Confirm that the user has been created in the database with the expected details.
+    user = await User.findOne({ email: nonExistentEmail });
+    expect(user).toBeDefined(); // The user should now exist in the database.
+    expect(user.name).toBe("New User");
+    expect(user.email).toBe(nonExistentEmail);
+
+    // Check that the default categories have been created for the new user.
+    const categories = await HabitCategory.find({ userId: user._id });
+    expect(categories).toHaveLength(6); // Expect six default categories.
+  });
 });
