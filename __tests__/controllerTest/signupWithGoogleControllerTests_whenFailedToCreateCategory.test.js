@@ -43,7 +43,7 @@ describe("signInWithGoogleController", () => {
     expect(response.status).toBe(201);
     expect(response.body.success).toBe(true);
     expect(response.body.message).toBe(
-      "User signed in successfully, but there was an issue creating default categories."
+      "User signed in, but default categories could not be created."
     );
   });
 });
