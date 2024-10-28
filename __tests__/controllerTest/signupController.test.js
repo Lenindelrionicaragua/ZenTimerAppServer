@@ -23,249 +23,249 @@ afterAll(async () => {
 });
 
 describe("signupController", () => {
-  // test("Should fail if the request body contains an empty user object", async () => {
-  //   const user = {};
+  test("Should fail if the request body contains an empty user object", async () => {
+    const user = {};
 
-  //   const response = await request.post("/api/auth/sign-up/").send({ user });
+    const response = await request.post("/api/auth/sign-up/").send({ user });
 
-  //   expect(response.status).toBe(400);
-  //   expect(response.body.success).toBe(false);
-  //   expect(response.body.msg).toBe(
-  //     "Name, email, password, and date of birth are required."
-  //   );
-  // });
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.msg).toBe(
+      "Name, email, password, and date of birth are required."
+    );
+  });
 
-  // test("Should fail if the request body does not contain a user object", async () => {
-  //   const user = null;
+  test("Should fail if the request body does not contain a user object", async () => {
+    const user = null;
 
-  //   const response = await request.post("/api/auth/sign-up/").send({ user });
+    const response = await request.post("/api/auth/sign-up/").send({ user });
 
-  //   expect(response.status).toBe(400);
-  //   expect(response.body.success).toBe(false);
-  //   expect(response.body.msg).toBe(
-  //     "Invalid request: You need to provide a valid 'user' object. Received: null"
-  //   );
-  // });
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.msg).toBe(
+      "Invalid request: You need to provide a valid 'user' object. Received: null"
+    );
+  });
 
-  // test("Should fail if the request body does not contain a user object", async () => {
-  //   const response = await request.post("/api/auth/sign-up/").send();
+  test("Should fail if the request body does not contain a user object", async () => {
+    const response = await request.post("/api/auth/sign-up/").send();
 
-  //   expect(response.status).toBe(400);
-  //   expect(response.body.success).toBe(false);
-  //   expect(response.body.msg).toBe(
-  //     "Invalid request: You need to provide a valid 'user' object. Received: undefined"
-  //   );
-  // });
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.msg).toBe(
+      "Invalid request: You need to provide a valid 'user' object. Received: undefined"
+    );
+  });
 
-  // test("Should fail if the request does not contain a valid name", async () => {
-  //   const user = {
-  //     name: "Mary!",
-  //     email: "mary@email.com",
-  //     password: "Password1234!",
-  //     dateOfBirth: "Tue Feb 01 2022",
-  //   };
+  test("Should fail if the request does not contain a valid name", async () => {
+    const user = {
+      name: "Mary!",
+      email: "mary@email.com",
+      password: "Password1234!",
+      dateOfBirth: "Tue Feb 01 2022",
+    };
 
-  //   const response = await request.post("/api/auth/sign-up/").send({ user });
+    const response = await request.post("/api/auth/sign-up/").send({ user });
 
-  //   expect(response.status).toBe(400);
-  //   expect(response.body.success).toBe(false);
-  //   expect(response.body.msg).toBe(
-  //     "BAD REQUEST: Name can only contain letters, numbers, and a single space between words"
-  //   );
-  // });
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.msg).toBe(
+      "BAD REQUEST: Name can only contain letters, numbers, and a single space between words"
+    );
+  });
 
-  // test("Should fail if the request does not contain a name field", async () => {
-  //   const user = {
-  //     email: "mary@email.com",
-  //     password: "Password1234!",
-  //     dateOfBirth: "Tue Feb 01 2022",
-  //   };
+  test("Should fail if the request does not contain a name field", async () => {
+    const user = {
+      email: "mary@email.com",
+      password: "Password1234!",
+      dateOfBirth: "Tue Feb 01 2022",
+    };
 
-  //   const response = await request.post("/api/auth/sign-up/").send({ user });
+    const response = await request.post("/api/auth/sign-up/").send({ user });
 
-  //   expect(response.status).toBe(400);
-  //   expect(response.body.success).toBe(false);
-  //   expect(response.body.msg).toBe(
-  //     "Name, email, password, and date of birth are required."
-  //   );
-  // });
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.msg).toBe(
+      "Name, email, password, and date of birth are required."
+    );
+  });
 
-  // test("Should fail if the request does not contain a valid email", async () => {
-  //   const user = {
-  //     name: "Mary Jane",
-  //     email: "mary.com",
-  //     password: "Password1234!",
-  //     dateOfBirth: "Tue Feb 01 2022",
-  //   };
+  test("Should fail if the request does not contain a valid email", async () => {
+    const user = {
+      name: "Mary Jane",
+      email: "mary.com",
+      password: "Password1234!",
+      dateOfBirth: "Tue Feb 01 2022",
+    };
 
-  //   const response = await request.post("/api/auth/sign-up/").send({ user });
+    const response = await request.post("/api/auth/sign-up/").send({ user });
 
-  //   expect(response.status).toBe(400);
-  //   expect(response.body.success).toBe(false);
-  //   expect(response.body.msg).toBe(
-  //     "BAD REQUEST: Email is not in a valid format"
-  //   );
-  // });
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.msg).toBe(
+      "BAD REQUEST: Email is not in a valid format"
+    );
+  });
 
-  // test("Should fail if the request does not contain a email field", async () => {
-  //   const user = {
-  //     name: "Mary Jane",
-  //     email: "mary.com",
-  //     password: "Password1234!",
-  //   };
+  test("Should fail if the request does not contain a email field", async () => {
+    const user = {
+      name: "Mary Jane",
+      email: "mary.com",
+      password: "Password1234!",
+    };
 
-  //   const response = await request.post("/api/auth/sign-up/").send({ user });
+    const response = await request.post("/api/auth/sign-up/").send({ user });
 
-  //   expect(response.status).toBe(400);
-  //   expect(response.body.success).toBe(false);
-  //   expect(response.body.msg).toBe(
-  //     "Name, email, password, and date of birth are required."
-  //   );
-  // });
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.msg).toBe(
+      "Name, email, password, and date of birth are required."
+    );
+  });
 
-  // test("Should fail if the request does not contain a valid password", async () => {
-  //   const user = {
-  //     name: "Mary Jane",
-  //     email: "mary@email.com",
-  //     password: "password",
-  //     dateOfBirth: "Tue Feb 01 2022",
-  //   };
+  test("Should fail if the request does not contain a valid password", async () => {
+    const user = {
+      name: "Mary Jane",
+      email: "mary@email.com",
+      password: "password",
+      dateOfBirth: "Tue Feb 01 2022",
+    };
 
-  //   const response = await request.post("/api/auth/sign-up/").send({ user });
+    const response = await request.post("/api/auth/sign-up/").send({ user });
 
-  //   expect(response.status).toBe(400);
-  //   expect(response.body.success).toBe(false);
-  //   expect(response.body.msg).toBe(
-  //     "BAD REQUEST: Password must contain at least one uppercase letter, Password must contain at least one special character"
-  //   );
-  // });
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.msg).toBe(
+      "BAD REQUEST: Password must contain at least one uppercase letter, Password must contain at least one special character"
+    );
+  });
 
-  // test("Should fail if the request does not contain a password field", async () => {
-  //   const user = {
-  //     name: "Mary Jane",
-  //     email: "mary@email.com",
-  //     dateOfBirth: "Tue Feb 01 2022",
-  //   };
+  test("Should fail if the request does not contain a password field", async () => {
+    const user = {
+      name: "Mary Jane",
+      email: "mary@email.com",
+      dateOfBirth: "Tue Feb 01 2022",
+    };
 
-  //   const response = await request.post("/api/auth/sign-up/").send({ user });
+    const response = await request.post("/api/auth/sign-up/").send({ user });
 
-  //   expect(response.status).toBe(400);
-  //   expect(response.body.success).toBe(false);
-  //   expect(response.body.msg).toBe(
-  //     "Name, email, password, and date of birth are required."
-  //   );
-  // });
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.msg).toBe(
+      "Name, email, password, and date of birth are required."
+    );
+  });
 
-  // test("Should fail if the request does not contain a valid password", async () => {
-  //   const user = {
-  //     name: "Mary Jane",
-  //     email: "mary@email.com",
-  //     password: "nopass",
-  //     dateOfBirth: "Tue Feb 01 2022",
-  //   };
+  test("Should fail if the request does not contain a valid password", async () => {
+    const user = {
+      name: "Mary Jane",
+      email: "mary@email.com",
+      password: "nopass",
+      dateOfBirth: "Tue Feb 01 2022",
+    };
 
-  //   const response = await request.post("/api/auth/sign-up/").send({ user });
+    const response = await request.post("/api/auth/sign-up/").send({ user });
 
-  //   expect(response.status).toBe(400);
-  //   expect(response.body.success).toBe(false);
-  //   expect(response.body.msg).toBe(
-  //     "BAD REQUEST: Password must be at least 8 characters long, Password must contain at least one uppercase letter, Password must contain at least one special character"
-  //   );
-  // });
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.msg).toBe(
+      "BAD REQUEST: Password must be at least 8 characters long, Password must contain at least one uppercase letter, Password must contain at least one special character"
+    );
+  });
 
-  // test("Should fail if the request does not contain a valid dateOfBirth", async () => {
-  //   const user = {
-  //     name: "Mary Jane",
-  //     email: "mary@email.com",
-  //     password: "Password1234!",
-  //     dateOfBirth: "not valid format",
-  //   };
+  test("Should fail if the request does not contain a valid dateOfBirth", async () => {
+    const user = {
+      name: "Mary Jane",
+      email: "mary@email.com",
+      password: "Password1234!",
+      dateOfBirth: "not valid format",
+    };
 
-  //   const response = await request.post("/api/auth/sign-up/").send({ user });
+    const response = await request.post("/api/auth/sign-up/").send({ user });
 
-  //   expect(response.status).toBe(400);
-  //   expect(response.body.success).toBe(false);
-  //   expect(response.body.msg).toBe(
-  //     "BAD REQUEST: Date Of Birth is a required field with valid format (MM/DD/YYYY)"
-  //   );
-  // });
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.msg).toBe(
+      "BAD REQUEST: Date Of Birth is a required field with valid format (MM/DD/YYYY)"
+    );
+  });
 
-  // test("Should fail if the request does not contain a dateOfBirth field", async () => {
-  //   const user = {
-  //     name: "Mary Jane",
-  //     email: "mary@email.com",
-  //     password: "Password1234!",
-  //   };
+  test("Should fail if the request does not contain a dateOfBirth field", async () => {
+    const user = {
+      name: "Mary Jane",
+      email: "mary@email.com",
+      password: "Password1234!",
+    };
 
-  //   const response = await request.post("/api/auth/sign-up/").send({ user });
+    const response = await request.post("/api/auth/sign-up/").send({ user });
 
-  //   expect(response.status).toBe(400);
-  //   expect(response.body.success).toBe(false);
-  //   expect(response.body.msg).toBe(
-  //     "Name, email, password, and date of birth are required."
-  //   );
-  // });
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.msg).toBe(
+      "Name, email, password, and date of birth are required."
+    );
+  });
 
-  // test("Should fail if the request contain invalid fields", async () => {
-  //   const user = {
-  //     name: "Mary Jane",
-  //     email: "mary@email.com",
-  //     password: "Password1234!",
-  //     dateOfBirth: "Tue Feb 01 2022",
-  //     fakeInvalidField: "invalid content",
-  //   };
+  test("Should fail if the request contain invalid fields", async () => {
+    const user = {
+      name: "Mary Jane",
+      email: "mary@email.com",
+      password: "Password1234!",
+      dateOfBirth: "Tue Feb 01 2022",
+      fakeInvalidField: "invalid content",
+    };
 
-  //   const response = await request.post("/api/auth/sign-up/").send({ user });
+    const response = await request.post("/api/auth/sign-up/").send({ user });
 
-  //   expect(response.status).toBe(400);
-  //   expect(response.body.success).toBe(false);
-  //   expect(response.body.msg).toBe(
-  //     "Invalid request: the following properties are not allowed to be set: fakeInvalidField"
-  //   );
-  // });
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.msg).toBe(
+      "Invalid request: the following properties are not allowed to be set: fakeInvalidField"
+    );
+  });
 
-  // test("Should fail if the user already exist", async () => {
-  //   const testUser1 = {
-  //     name: "John",
-  //     email: "john@email.com",
-  //     password: "Password1234!",
-  //     dateOfBirth: "Tue Feb 01 1984",
-  //   };
+  test("Should fail if the user already exist", async () => {
+    const testUser1 = {
+      name: "John",
+      email: "john@email.com",
+      password: "Password1234!",
+      dateOfBirth: "Tue Feb 01 1984",
+    };
 
-  //   await addUserToMockDB(testUser1);
+    await addUserToMockDB(testUser1);
 
-  //   const newUser = {
-  //     name: "John",
-  //     email: "john@email.com",
-  //     password: "Password1234!",
-  //     dateOfBirth: "Tue Feb 01 1984",
-  //   };
+    const newUser = {
+      name: "John",
+      email: "john@email.com",
+      password: "Password1234!",
+      dateOfBirth: "Tue Feb 01 1984",
+    };
 
-  //   const response = await request
-  //     .post("/api/auth/sign-up/")
-  //     .send({ user: newUser });
+    const response = await request
+      .post("/api/auth/sign-up/")
+      .send({ user: newUser });
 
-  //   expect(response.status).toBe(400);
-  //   expect(response.body.success).toBe(false);
-  //   expect(response.body.msg).toBe("User already exists");
-  // });
+    expect(response.status).toBe(400);
+    expect(response.body.success).toBe(false);
+    expect(response.body.msg).toBe("User already exists");
+  });
 
-  // test("Should pass if the request contains all required fields and successfully creates a user", async () => {
-  //   const newUser = {
-  //     name: "Ana Laura",
-  //     email: "ana@email.com",
-  //     password: "Password1234!",
-  //     dateOfBirth: "Tue Feb 01 2022",
-  //   };
+  test("Should pass if the request contains all required fields and successfully creates a user", async () => {
+    const newUser = {
+      name: "Ana Laura",
+      email: "ana@email.com",
+      password: "Password1234!",
+      dateOfBirth: "Tue Feb 01 2022",
+    };
 
-  //   const response = await request
-  //     .post("/api/auth/sign-up/")
-  //     .send({ user: newUser });
+    const response = await request
+      .post("/api/auth/sign-up/")
+      .send({ user: newUser });
 
-  //   expect(response.status).toBe(201);
-  //   expect(response.body.success).toBe(true);
-  //   expect(response.body.msg).toBe("User created successfully");
-  // });
+    expect(response.status).toBe(201);
+    expect(response.body.success).toBe(true);
+    expect(response.body.msg).toBe("User created successfully");
+  });
 
   test("Should create default categories when a user signs up successfully", async () => {
     const newUser = {
