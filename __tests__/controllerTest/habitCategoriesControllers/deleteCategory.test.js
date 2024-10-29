@@ -50,7 +50,7 @@ describe("Habit Category Deletion Tests", () => {
     // Create a habit category
     const newCategory = {
       habitCategory: {
-        name: "Exercise",
+        name: "NewCategory",
       },
     };
 
