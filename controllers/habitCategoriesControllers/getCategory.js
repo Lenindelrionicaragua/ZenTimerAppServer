@@ -26,8 +26,17 @@ export const getCategory = async (req, res) => {
       dailyGoal: category.dailyGoal || 0, // Set default dailyGoal to 0 if undefined
     }));
 
-    // Log the retrieval success
-    logInfo(`Categories retrieved successfully for user ${userId}`);
+    // Log the entire response data structure for debugging
+    logInfo(
+      `Response data: ${JSON.stringify(
+        {
+          success: true,
+          categories: categoryData,
+        },
+        null,
+        2
+      )}`
+    );
 
     // Return a response containing all user categories
     return res.status(200).json({

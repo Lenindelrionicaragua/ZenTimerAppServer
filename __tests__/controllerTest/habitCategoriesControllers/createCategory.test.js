@@ -47,7 +47,7 @@ describe("Create a new habit-category (test route)", () => {
   it("should create a new category if it does not exist", async () => {
     const newCategory = {
       habitCategory: {
-        name: "Work!",
+        name: "Meditation",
       },
     };
 
@@ -67,7 +67,7 @@ describe("Create a new habit-category (test route)", () => {
   it("should create a new category with a specified dailyGoal", async () => {
     const newCategory = {
       habitCategory: {
-        name: "Exercise",
+        name: "NewCategory",
         dailyGoal: 20,
       },
     };
@@ -89,7 +89,7 @@ describe("Create a new habit-category (test route)", () => {
   it("should fail if the dailyGoal is more than 1440 minutes", async () => {
     const newCategory = {
       habitCategory: {
-        name: "Exercise",
+        name: "NewCategory",
         dailyGoal: 1600, // Exceeds the limit
       },
     };
@@ -109,7 +109,7 @@ describe("Create a new habit-category (test route)", () => {
   it("should fail if the dailyGoal is less than 15 minutes", async () => {
     const newCategory = {
       habitCategory: {
-        name: "Exercise",
+        name: "NewCategory",
         dailyGoal: 14, // Below the minimum
       },
     };
@@ -129,7 +129,7 @@ describe("Create a new habit-category (test route)", () => {
   it("should fail if the dailyGoal is a negative number", async () => {
     const newCategory = {
       habitCategory: {
-        name: "Exercise",
+        name: "NewCategory",
         dailyGoal: -15, // Negative number
       },
     };
@@ -149,7 +149,7 @@ describe("Create a new habit-category (test route)", () => {
   it("should fail if invalid fields are sent", async () => {
     const invalidCategory = {
       habitCategory: {
-        name: "Work",
+        name: "NewCategory",
         extraField: "SomeValue", // This field is not allowed
       },
     };
@@ -205,7 +205,7 @@ describe("Create a new habit-category (test route)", () => {
   it("should fail if a category with the same name already exists", async () => {
     const category = {
       habitCategory: {
-        name: "Work",
+        name: "NewCategory",
       },
     };
 
@@ -264,13 +264,13 @@ describe("Create a new habit-category (test route)", () => {
   it("should fail if a category with the same name (case-sensitive) already exists", async () => {
     const category1 = {
       habitCategory: {
-        name: "Work",
+        name: "NewCategory",
       },
     };
 
     const category2 = {
       habitCategory: {
-        name: "work", // Same name, different case
+        name: "newCategory", // Same name, different case
       },
     };
 
