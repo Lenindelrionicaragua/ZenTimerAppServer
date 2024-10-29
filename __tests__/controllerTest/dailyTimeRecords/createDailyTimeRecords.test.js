@@ -49,7 +49,7 @@ describe("Daily Record Creation Tests", () => {
     // Create a habit category
     const newCategory = {
       habitCategory: {
-        name: "Exercise",
+        name: "NewCategory",
       },
     };
 
@@ -303,7 +303,7 @@ describe("Daily Record Creation Tests", () => {
     // Create a habit category
     const newCategory = {
       habitCategory: {
-        name: "Exercise",
+        name: "NewCategory",
       },
     };
 

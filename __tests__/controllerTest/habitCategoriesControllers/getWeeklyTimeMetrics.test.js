@@ -37,9 +37,9 @@ beforeAll(async () => {
   cookie = loginResponse.headers["set-cookie"];
 
   const categories = [
-    { name: "Work", createdAt: "2024-01-12" },
-    { name: "Exercise", createdAt: "2024-01-12" },
-    { name: "Study", createdAt: "2024-01-12" },
+    { name: "NewCategory1", createdAt: "2024-01-12" },
+    { name: "NewCategory2", createdAt: "2024-01-12" },
+    { name: "NewCategory3", createdAt: "2024-01-12" },
   ];
 
   const categoryPromises = categories.map(async (category, index) => {
@@ -150,7 +150,7 @@ describe("getWeeklyTimeMetrics", () => {
     expect(response.body.totalMinutes).toBe(270);
 
     expect(response.body).toHaveProperty("categoryCount");
-    expect(response.body.categoryData.length).toBe(3);
+    expect(response.body.categoryData.length).toBe(9);
 
     expect(response.body).toHaveProperty("daysWithRecords");
     expect(response.body.daysWithRecords).toBe(2);
@@ -238,7 +238,7 @@ describe("getWeeklyTimeMetrics", () => {
     expect(response.body.totalMinutes).toBe(270);
 
     expect(response.body).toHaveProperty("categoryCount");
-    expect(response.body.categoryData.length).toBe(3);
+    expect(response.body.categoryData.length).toBe(9);
 
     expect(response.body).toHaveProperty("daysWithRecords");
     expect(response.body.daysWithRecords).toBe(2);
