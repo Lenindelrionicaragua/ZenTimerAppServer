@@ -38,6 +38,19 @@ export const createCategory = async (req, res) => {
       });
     }
 
+    // Check the number of existing categories for the user
+    const existingCategoriesCount = await HabitCategory.countDocuments({
+      createdBy: userId,
+    });
+
+    // Limit to 6 categories
+    if (existingCategoriesCount >= 6) {
+      return res.status(400).json({
+        success: false,
+        msg: "You can only have up to 6 categories.",
+      });
+    }
+
     // Set createdAt if not provided
     const finalCreatedAt = habitCategory.createdAt || Date.now();
 
