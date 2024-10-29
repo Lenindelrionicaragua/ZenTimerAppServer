@@ -47,7 +47,7 @@ describe("Create a new habit-category (test route)", () => {
   it("should create a new category if it does not exist", async () => {
     const newCategory = {
       habitCategory: {
-        name: "Meditation",
+        name: "NewCategory",
       },
     };
 
