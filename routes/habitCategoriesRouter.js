@@ -7,12 +7,16 @@ import { getMonthlyTimeMetrics } from "../controllers/habitCategoriesControllers
 import { getWeeklyTimeMetrics } from "../controllers/habitCategoriesControllers/getWeeklyTimeMetrics.js";
 import { getCategory } from "../controllers/habitCategoriesControllers/getCategory.js";
 import { updateCategoryDailyGoal } from "../controllers/habitCategoriesControllers/updateCategoryDailyGoal.js";
+import { deleteAllCategories } from "../controllers/habitCategoriesControllers/deleteAllCategories.js";
 
 const habitCategoriesRouter = express.Router();
 
 habitCategoriesRouter.post("/create", createCategory);
 habitCategoriesRouter.patch("/:categoryId/name", updateCategoryName);
+
 habitCategoriesRouter.delete("/:categoryId", deleteCategory);
+habitCategoriesRouter.delete("/delete-all-categories/", deleteAllCategories);
+
 habitCategoriesRouter.patch(
   "/:categoryId/update-daily-goal",
   updateCategoryDailyGoal

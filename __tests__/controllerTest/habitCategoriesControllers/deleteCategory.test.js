@@ -47,10 +47,15 @@ describe("Habit Category Deletion Tests", () => {
 
     cookie = loginResponse.headers["set-cookie"];
 
+    // Use the deleteAllCategories route to remove the default categories
+    await request
+      .delete("/api/habit-categories/delete-all-categories")
+      .set("Cookie", cookie);
+
     // Create a habit category
     const newCategory = {
       habitCategory: {
-        name: "NewCategory",
+        name: "Exercise",
       },
     };
 

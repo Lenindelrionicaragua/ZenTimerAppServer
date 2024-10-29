@@ -366,6 +366,6 @@ describe("getTimeMetricsByDateRange", () => {
     expect(response.body.totalMinutes).toBe(0);
     expect(response.body.categoryCount).toBe(0); // Expecting count to be 0 for active categories
     expect(response.body.daysWithRecords).toBe(0);
-    expect(response.body.categoryData.length).toBe(9); // Expecting 3 categories returned, even if they have no records
+    expect(response.body.categoryData.length).toBe(9); // Expecting 9 categories returned, even if they have no records
   });
 });
