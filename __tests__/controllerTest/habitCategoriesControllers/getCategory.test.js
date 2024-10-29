@@ -22,7 +22,7 @@ beforeAll(async () => {
     dateOfBirth: "Tue Feb 01 1990",
   };
 
-  // Sign up the test user
+  // Sign up the test user (categories should be created automatically)
   await request.post("/api/auth/sign-up").send({ user: testUser });
 
   // Log in to get a session cookie for authenticated requests
@@ -31,22 +31,6 @@ beforeAll(async () => {
     .send({ user: { email: testUser.email, password: testUser.password } });
 
   cookie = loginResponse.headers["set-cookie"];
-
-  // Create several categories for the test user
-  const categories = [
-    { name: "Work", dailyGoal: 90 },
-    { name: "Exercise", dailyGoal: 60 },
-    { name: "Study", dailyGoal: 30 },
-  ];
-
-  await Promise.all(
-    categories.map(async (category) => {
-      await request
-        .post("/api/habit-categories/create")
-        .set("Cookie", cookie)
-        .send({ habitCategory: category });
-    })
-  );
 }, 10000);
 
 afterAll(async () => {
@@ -56,7 +40,7 @@ afterAll(async () => {
 });
 
 describe("getCategory", () => {
-  it("should return all categories for the authenticated user", async () => {
+  it("should return the default categories for the authenticated user", async () => {
     const response = await request
       .get("/api/habit-categories")
       .set("Cookie", cookie);
@@ -65,9 +49,9 @@ describe("getCategory", () => {
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
 
-    // Ensure that the response contains the categories array
+    // Ensure that the response contains exactly 6 categories
     expect(response.body).toHaveProperty("categories");
-    expect(response.body.categories.length).toBe(3);
+    expect(response.body.categories.length).toBe(6);
 
     // Check each category's properties
     response.body.categories.forEach((category) => {
@@ -78,7 +62,7 @@ describe("getCategory", () => {
     });
   });
 
-  it("should return an empty array if the user has no categories", async () => {
+  it("should return an empty array if the categories are cleared", async () => {
     // Clear categories for this test case
     await clearMockDatabase();
 
