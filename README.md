@@ -1,7 +1,7 @@
 
-# ZenTimer
+# ZenTimerAppServer
 
-Zen Timer: A React Native app for effective time management. Features customizable intervals, voice control, Google authentication, and detailed statistics.
+The Zen Timer server powers a robust backend for the Zen Timer app, handling user authentication through both native and Google login methods. It securely stores user data, including habit categories and daily records, allowing users to track and analyze their productivity over various time ranges. With this backend, users can receive detailed statistics about their time management habits, helping them make data-driven improvements. Additionally, the server provides real-time data and seamless communication with the app, supporting a smooth and personalized user experience.
 
 ## Features
 - Basic stopwatch functionality with start, stop, and restart buttons.
