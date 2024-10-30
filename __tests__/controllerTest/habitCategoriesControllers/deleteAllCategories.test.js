@@ -183,7 +183,7 @@ describe("deleteAllCategories Endpoint Tests", () => {
     expect(deleteResponse.status).toBe(401);
     expect(deleteResponse.body.success).toBe(false);
     expect(deleteResponse.body.msg).toBe(
-      "UBAD REQUEST: Authentication required."
+      "BAD REQUEST: Authentication required."
     );
   });
 });
