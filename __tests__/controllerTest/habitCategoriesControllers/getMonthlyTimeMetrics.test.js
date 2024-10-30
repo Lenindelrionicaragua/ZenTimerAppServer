@@ -37,7 +37,7 @@ beforeAll(async () => {
   cookie = loginResponse.headers["set-cookie"];
 
   // delete the default categories
-  const deleteDefaultCategories = await request
+  await request
     .delete("/api/habit-categories/delete-all-categories")
     .set("Cookie", cookie);
 

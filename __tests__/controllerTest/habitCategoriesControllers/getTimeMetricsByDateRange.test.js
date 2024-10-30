@@ -36,6 +36,11 @@ beforeAll(async () => {
 
   cookie = loginResponse.headers["set-cookie"];
 
+  // delete the default categories
+  await request
+    .delete("/api/habit-categories/delete-all-categories")
+    .set("Cookie", cookie);
+
   const categories = [
     { name: "NewCategory1", createdAt: "2024-01-12" },
     { name: "NewCategory2", createdAt: "2024-01-12" },
@@ -154,7 +159,7 @@ describe("getTimeMetricsByDateRange", () => {
     expect(response.body.totalMinutes).toBe(2835);
 
     expect(response.body).toHaveProperty("categoryCount");
-    expect(response.body.categoryData.length).toBe(9);
+    expect(response.body.categoryData.length).toBe(3);
 
     expect(response.body).toHaveProperty("daysWithRecords");
     expect(response.body.daysWithRecords).toBe(21);
@@ -182,7 +187,7 @@ describe("getTimeMetricsByDateRange", () => {
     expect(response.body.totalMinutes).toBe(945);
 
     expect(response.body).toHaveProperty("categoryCount");
-    expect(response.body.categoryData.length).toBe(9);
+    expect(response.body.categoryData.length).toBe(3);
 
     expect(response.body).toHaveProperty("daysWithRecords");
     expect(response.body.daysWithRecords).toBe(7);
@@ -208,7 +213,7 @@ describe("getTimeMetricsByDateRange", () => {
     expect(response.body.totalMinutes).toBe(135);
 
     expect(response.body).toHaveProperty("categoryCount");
-    expect(response.body.categoryData.length).toBe(9);
+    expect(response.body.categoryData.length).toBe(3);
 
     expect(response.body).toHaveProperty("daysWithRecords");
     expect(response.body.daysWithRecords).toBe(1);
@@ -261,7 +266,7 @@ describe("getTimeMetricsByDateRange", () => {
     expect(response.body.totalMinutes).toBe(3240);
 
     expect(response.body).toHaveProperty("categoryData");
-    expect(response.body.categoryData.length).toBe(9);
+    expect(response.body.categoryData.length).toBe(3);
   });
 
   it("should fail if the date range is empty strings", async () => {
@@ -312,7 +317,7 @@ describe("getTimeMetricsByDateRange", () => {
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
     expect(response.body).toHaveProperty("totalMinutes");
-    expect(response.body.categoryData.length).toBe(9);
+    expect(response.body.categoryData.length).toBe(3);
   });
 
   it("should return metrics for all categories for a specific year", async () => {
@@ -325,7 +330,7 @@ describe("getTimeMetricsByDateRange", () => {
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
     expect(response.body).toHaveProperty("totalMinutes");
-    expect(response.body.categoryData.length).toBe(9);
+    expect(response.body.categoryData.length).toBe(3);
   });
 
   it("should return 400 error if only one of the dates is invalid", async () => {
@@ -366,6 +371,6 @@ describe("getTimeMetricsByDateRange", () => {
     expect(response.body.totalMinutes).toBe(0);
     expect(response.body.categoryCount).toBe(0); // Expecting count to be 0 for active categories
     expect(response.body.daysWithRecords).toBe(0);
-    expect(response.body.categoryData.length).toBe(9); // Expecting 9 categories returned, even if they have no records
+    expect(response.body.categoryData.length).toBe(3); // Expecting 9 categories returned, even if they have no records
   });
 });
