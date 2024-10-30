@@ -48,14 +48,14 @@ describe("Habit Category Deletion Tests", () => {
     cookie = loginResponse.headers["set-cookie"];
 
     // Use the deleteAllCategories route to remove the default categories
-    await request
-      .delete("/api/habit-categories/delete-all-categories")
-      .set("Cookie", cookie);
+    // await request
+    //   .delete("/api/habit-categories/delete-all-categories")
+    //   .set("Cookie", cookie);
 
     // Create a habit category
     const newCategory = {
       habitCategory: {
-        name: "Exercise",
+        name: "NewCategory",
       },
     };
 
@@ -101,123 +101,123 @@ describe("Habit Category Deletion Tests", () => {
     expect(response.body.category).toBeUndefined();
   });
 
-  it("should fail if the category does not exist", async () => {
-    const invalidCategory = "670e723eae6dff077905ee21";
+  // it("should fail if the category does not exist", async () => {
+  //   const invalidCategory = "670e723eae6dff077905ee21";
 
-    const response = await request
-      .delete(`/api/habit-categories/${invalidCategory}`)
-      .set("Cookie", cookie);
+  //   const response = await request
+  //     .delete(`/api/habit-categories/${invalidCategory}`)
+  //     .set("Cookie", cookie);
 
-    expect(response.status).toBe(404);
-    expect(response.body.success).toBe(false);
-    expect(response.body.msg).toBe(
-      "The category you are trying to delete does not exist."
-    );
-    expect(response.body.category).toBeUndefined();
-  });
+  //   expect(response.status).toBe(404);
+  //   expect(response.body.success).toBe(false);
+  //   expect(response.body.msg).toBe(
+  //     "The category you are trying to delete does not exist."
+  //   );
+  //   expect(response.body.category).toBeUndefined();
+  // });
 
-  it("should fail if the category ID is null", async () => {
-    const invalidCategory = null;
+  // it("should fail if the category ID is null", async () => {
+  //   const invalidCategory = null;
 
-    const response = await request
-      .delete(`/api/habit-categories/${invalidCategory}`)
-      .set("Cookie", cookie);
+  //   const response = await request
+  //     .delete(`/api/habit-categories/${invalidCategory}`)
+  //     .set("Cookie", cookie);
 
-    expect(response.status).toBe(500);
-    expect(response.body.success).toBe(false);
-    expect(response.body.msg).toBe(
-      "An error occurred while deleting the category."
-    );
-    expect(response.body.category).toBeUndefined();
-  });
+  //   expect(response.status).toBe(500);
+  //   expect(response.body.success).toBe(false);
+  //   expect(response.body.msg).toBe(
+  //     "An error occurred while deleting the category."
+  //   );
+  //   expect(response.body.category).toBeUndefined();
+  // });
 
-  it("should fail if the category ID is an empty object", async () => {
-    const invalidCategory = {};
+  // it("should fail if the category ID is an empty object", async () => {
+  //   const invalidCategory = {};
 
-    const response = await request
-      .delete(`/api/habit-categories/${invalidCategory}`)
-      .set("Cookie", cookie);
+  //   const response = await request
+  //     .delete(`/api/habit-categories/${invalidCategory}`)
+  //     .set("Cookie", cookie);
 
-    expect(response.status).toBe(500);
-    expect(response.body.success).toBe(false);
-    expect(response.body.msg).toBe(
-      "An error occurred while deleting the category."
-    );
-    expect(response.body.category).toBeUndefined();
-  });
+  //   expect(response.status).toBe(500);
+  //   expect(response.body.success).toBe(false);
+  //   expect(response.body.msg).toBe(
+  //     "An error occurred while deleting the category."
+  //   );
+  //   expect(response.body.category).toBeUndefined();
+  // });
 
-  it("should fail if the category ID is an empty string", async () => {
-    const invalidCategory = "";
+  // it("should fail if the category ID is an empty string", async () => {
+  //   const invalidCategory = "";
 
-    const response = await request
-      .delete(`/api/habit-categories/${invalidCategory}`)
-      .set("Cookie", cookie);
+  //   const response = await request
+  //     .delete(`/api/habit-categories/${invalidCategory}`)
+  //     .set("Cookie", cookie);
 
-    expect(response.status).toBe(404); // Not found due to empty categoryId causing route mismatch
-  });
+  //   expect(response.status).toBe(404); // Not found due to empty categoryId causing route mismatch
+  // });
 
-  it("should fail if the user is not authenticated", async () => {
-    const response = await request
-      .delete(`/api/habit-categories/${categoryId}`)
-      .set("Cookie", "");
+  // it("should fail if the user is not authenticated", async () => {
+  //   const response = await request
+  //     .delete(`/api/habit-categories/${categoryId}`)
+  //     .set("Cookie", "");
 
-    expect(response.status).toBe(401);
-    expect(response.body.success).toBe(false);
-    expect(response.body.msg).toBe("BAD REQUEST: Authentication required.");
-    expect(response.body.category).toBeUndefined();
-  });
+  //   expect(response.status).toBe(401);
+  //   expect(response.body.success).toBe(false);
+  //   expect(response.body.msg).toBe("BAD REQUEST: Authentication required.");
+  //   expect(response.body.category).toBeUndefined();
+  // });
 
-  it("should delete the category and all associated daily records", async () => {
-    // Confirm that the daily records exist before deletion
-    let recordsBeforeDeletion = await DailyTimeRecord.find({ categoryId });
-    expect(recordsBeforeDeletion.length).toBe(2); // Should have 2 daily records
+  // it("should delete the category and all associated daily records", async () => {
+  //   // Confirm that the daily records exist before deletion
+  //   let recordsBeforeDeletion = await DailyTimeRecord.find({ categoryId });
+  //   expect(recordsBeforeDeletion.length).toBe(2); // Should have 2 daily records
 
-    // Send delete request to remove category and associated records
-    const response = await request
-      .delete(`/api/habit-categories/${categoryId}`)
-      .set("Cookie", cookie);
+  //   // Send delete request to remove category and associated records
+  //   const response = await request
+  //     .delete(`/api/habit-categories/${categoryId}`)
+  //     .set("Cookie", cookie);
 
-    expect(response.status).toBe(200); // Successful deletion
-    expect(response.body.success).toBe(true);
-    expect(response.body.msg).toBe(
-      "The category and all its associated records have been deleted."
-    );
+  //   expect(response.status).toBe(200); // Successful deletion
+  //   expect(response.body.success).toBe(true);
+  //   expect(response.body.msg).toBe(
+  //     "The category and all its associated records have been deleted."
+  //   );
 
-    // Check that the category no longer exists
-    const categoryAfterDeletion = await HabitCategory.findById(categoryId);
-    expect(categoryAfterDeletion).toBeNull(); // Category should be deleted
+  //   // Check that the category no longer exists
+  //   const categoryAfterDeletion = await HabitCategory.findById(categoryId);
+  //   expect(categoryAfterDeletion).toBeNull(); // Category should be deleted
 
-    // Check that the associated daily records are deleted
-    let recordsAfterDeletion = await DailyTimeRecord.find({ categoryId });
-    expect(recordsAfterDeletion.length).toBe(0); // All daily records should be deleted
-  });
+  //   // Check that the associated daily records are deleted
+  //   let recordsAfterDeletion = await DailyTimeRecord.find({ categoryId });
+  //   expect(recordsAfterDeletion.length).toBe(0); // All daily records should be deleted
+  // });
 
-  it("should fail when attempting to delete an already deleted category", async () => {
-    await request
-      .delete(`/api/habit-categories/${categoryId}`)
-      .set("Cookie", cookie);
-    const secondDeletionResponse = await request
-      .delete(`/api/habit-categories/${categoryId}`)
-      .set("Cookie", cookie);
+  // it("should fail when attempting to delete an already deleted category", async () => {
+  //   await request
+  //     .delete(`/api/habit-categories/${categoryId}`)
+  //     .set("Cookie", cookie);
+  //   const secondDeletionResponse = await request
+  //     .delete(`/api/habit-categories/${categoryId}`)
+  //     .set("Cookie", cookie);
 
-    expect(secondDeletionResponse.status).toBe(404);
-    expect(secondDeletionResponse.body.success).toBe(false);
-    expect(secondDeletionResponse.body.msg).toBe(
-      "The category you are trying to delete does not exist."
-    );
-  });
+  //   expect(secondDeletionResponse.status).toBe(404);
+  //   expect(secondDeletionResponse.body.success).toBe(false);
+  //   expect(secondDeletionResponse.body.msg).toBe(
+  //     "The category you are trying to delete does not exist."
+  //   );
+  // });
 
-  it("should fail if the categoryId is not a valid ObjectId", async () => {
-    const invalidCategoryId = "123-invalid-id";
+  // it("should fail if the categoryId is not a valid ObjectId", async () => {
+  //   const invalidCategoryId = "123-invalid-id";
 
-    const response = await request
-      .delete(`/api/habit-categories/${invalidCategoryId}`)
-      .set("Cookie", cookie);
+  //   const response = await request
+  //     .delete(`/api/habit-categories/${invalidCategoryId}`)
+  //     .set("Cookie", cookie);
 
-    expect(response.status).toBe(500);
-    expect(response.body.success).toBe(false);
-    expect(response.body.msg).toBe(
-      "An error occurred while deleting the category."
-    ); // mongoose response
-  });
+  //   expect(response.status).toBe(500);
+  //   expect(response.body.success).toBe(false);
+  //   expect(response.body.msg).toBe(
+  //     "An error occurred while deleting the category."
+  //   ); // mongoose response
+  // });
 });

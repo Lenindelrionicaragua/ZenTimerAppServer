@@ -6,26 +6,38 @@ export const deleteAllCategories = async (req, res) => {
   const userId = req.userId;
 
   try {
-    // Find all categories created by the user
+    if (!userId) {
+      logError("User ID not found in request.");
+      return res.status(400).json({
+        success: false,
+        msg: "User ID is required.",
+      });
+    }
+
+    logInfo(`Deleting all categories for user ID: ${userId}`);
+
     const categories = await HabitCategory.find({ createdBy: userId });
+    logInfo(`Fetched categories for user ID: ${userId}`);
 
     if (categories.length === 0) {
+      logInfo(`No categories found for user ID: ${userId}`);
       return res.status(404).json({
         success: false,
         msg: `No categories found for the user.`,
       });
     }
 
-    // Extract all category IDs
     const categoryIds = categories.map((category) => category._id);
+    logInfo(
+      `Found ${categoryIds.length} categories to delete for user ID: ${userId}`
+    );
 
-    // Delete all daily records associated with these categories
     await DailyTimeRecord.deleteMany({ categoryId: { $in: categoryIds } });
+    logInfo(`Associated daily records deleted for categories: ${categoryIds}`);
 
-    // Now delete all categories for the user
     await HabitCategory.deleteMany({ createdBy: userId });
+    logInfo(`Categories deleted for user ID: ${userId}`);
 
-    // Return success response
     return res.status(200).json({
       success: true,
       msg: `All categories and their associated records have been deleted.`,

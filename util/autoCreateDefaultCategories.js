@@ -50,9 +50,9 @@ export const autoCreateDefaultCategories = async (userId) => {
       // Create and save the new category
       const newCategory = new HabitCategory(habitCategory);
       await newCategory.save();
-      // logInfo(
-      //   `Default category "${categoryData.name}" created for user ${userId}`
-      // );
+      logInfo(
+        `Default category "${categoryData.name}" created for user ${userId}`
+      );
     }
   } catch (error) {
     // Log any error encountered during category creation

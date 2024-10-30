@@ -14,8 +14,8 @@ const habitCategoriesRouter = express.Router();
 habitCategoriesRouter.post("/create", createCategory);
 habitCategoriesRouter.patch("/:categoryId/name", updateCategoryName);
 
+habitCategoriesRouter.delete("/delete-all-categories", deleteAllCategories);
 habitCategoriesRouter.delete("/:categoryId", deleteCategory);
-habitCategoriesRouter.delete("/delete-all-categories/", deleteAllCategories);
 
 habitCategoriesRouter.patch(
   "/:categoryId/update-daily-goal",

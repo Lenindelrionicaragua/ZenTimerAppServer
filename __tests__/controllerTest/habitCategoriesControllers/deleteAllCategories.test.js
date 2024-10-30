@@ -6,6 +6,8 @@ import {
 } from "../../../__testUtils__/dbMock.js";
 import app from "../../../app.js";
 import HabitCategory from "../../../models/habitCategory.js";
+import DailyTimeRecord from "../../../models/dailyTimeRecord.js";
+import { logInfo } from "../../../util/logging.js";
 
 const request = supertest(app);
 
@@ -24,6 +26,13 @@ afterAll(async () => {
 describe("deleteAllCategories Endpoint Tests", () => {
   let testUser;
   let cookie;
+  let categoryId1,
+    categoryId2,
+    categoryId3,
+    categoryId4,
+    categoryId5,
+    categoryId6;
+  let createdBy;
 
   beforeEach(async () => {
     testUser = {
@@ -42,19 +51,79 @@ describe("deleteAllCategories Endpoint Tests", () => {
       .send({ user: { email: testUser.email, password: testUser.password } });
 
     cookie = loginResponse.headers["set-cookie"];
-  });
 
-  it("should create 6 default categories on user sign-up", async () => {
-    // Verify that 6 categories were created for the user
-    const categories = await HabitCategory.find({});
-    expect(categories.length).toBe(6);
+    // Fetch categories
+    const getCategoryResponse = await request
+      .get("/api/habit-categories")
+      .set("Cookie", cookie);
+
+    [
+      categoryId1,
+      categoryId2,
+      categoryId3,
+      categoryId4,
+      categoryId5,
+      categoryId6,
+    ] = getCategoryResponse.body.categories.map((c) => c.id);
+
+    createdBy = getCategoryResponse.body.categories[0].createdBy;
+
+    // logInfo({
+    //   categoryId1,
+    //   categoryId2,
+    //   categoryId3,
+    //   categoryId4,
+    //   categoryId5,
+    //   categoryId6,
+    // });
+
+    // logInfo(createdBy);
+
+    // Create daily records associated with the category
+    const dailyTimeRecords = [
+      {
+        userId: createdBy,
+        categoryId: categoryId1,
+        totalDailyMinutes: 60,
+        date: "2023-10-01",
+      },
+      {
+        userId: createdBy,
+        categoryId: categoryId2,
+        totalDailyMinutes: 30,
+        date: "2023-10-02",
+      },
+      {
+        userId: createdBy,
+        categoryId: categoryId3,
+        totalDailyMinutes: 30,
+        date: "2023-10-02",
+      },
+      {
+        userId: createdBy,
+        categoryId: categoryId4,
+        totalDailyMinutes: 30,
+        date: "2023-10-02",
+      },
+      {
+        userId: createdBy,
+        categoryId: categoryId5,
+        totalDailyMinutes: 30,
+        date: "2023-10-02",
+      },
+      {
+        userId: createdBy,
+        categoryId: categoryId6,
+        totalDailyMinutes: 30,
+        date: "2023-10-02",
+      },
+    ];
+
+    // Save daily records
+    await DailyTimeRecord.insertMany(dailyTimeRecords);
   });
 
   it("should delete all categories for the user using deleteAllCategories", async () => {
-    // Verify that the user has 6 default categories before deletion
-    let initialCategories = await HabitCategory.find({});
-    expect(initialCategories.length).toBe(6);
-
     // Send delete request to remove all categories
     const deleteResponse = await request
       .delete("/api/habit-categories/delete-all-categories")
@@ -69,5 +138,9 @@ describe("deleteAllCategories Endpoint Tests", () => {
     // Verify that all categories have been deleted
     const remainingCategories = await HabitCategory.find({});
     expect(remainingCategories.length).toBe(0);
+
+    // Verify that all daily records associated with the user  have been deleted
+    const remainingRecords = await DailyTimeRecord.find({ userId: createdBy });
+    expect(remainingRecords.length).toBe(0);
   });
 });
