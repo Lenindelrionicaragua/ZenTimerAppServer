@@ -5,9 +5,9 @@ import {
   clearMockDatabase,
 } from "../../../__testUtils__/dbMock.js";
 import app from "../../../app.js";
-import { logInfo } from "../../../util/logging.js";
 import HabitCategory from "../../../models/habitCategory.js";
 import DailyTimeRecord from "../../../models/dailyTimeRecord.js";
+import { logInfo } from "../../../util/logging.js";
 
 const request = supertest(app);
 
@@ -23,11 +23,11 @@ afterAll(async () => {
   await closeMockDatabase();
 });
 
-describe("Habit Category Deletion Tests", () => {
+describe("deleteAllCategories Endpoint Tests", () => {
   let testUser;
-  let testUserId;
   let cookie;
-  let categoryId;
+  let categoryIds = [];
+  let createdBy;
 
   beforeEach(async () => {
     testUser = {
@@ -37,47 +37,34 @@ describe("Habit Category Deletion Tests", () => {
       dateOfBirth: "Tue Feb 01 1990",
     };
 
-    // User sign-up
+    // Sign up a new user
     await request.post("/api/auth/sign-up").send({ user: testUser });
 
-    // User login
+    // Log in the user
     const loginResponse = await request
       .post("/api/auth/log-in")
       .send({ user: { email: testUser.email, password: testUser.password } });
 
     cookie = loginResponse.headers["set-cookie"];
 
-    // Create a habit category
-    const newCategory = {
-      habitCategory: {
-        name: "Exercise",
-      },
-    };
+    // Fetch categories and select the first three for testing
+    const getCategoryResponse = await request
+      .get("/api/habit-categories")
+      .set("Cookie", cookie);
 
-    const categoryResponse = await request
-      .post("/api/habit-categories/create")
-      .set("Cookie", cookie)
-      .send(newCategory);
+    // Get the first three category IDs and createdBy field
+    categoryIds = getCategoryResponse.body.categories
+      .slice(0, 3)
+      .map((c) => c.id);
+    createdBy = getCategoryResponse.body.categories[0].createdBy;
 
-    categoryId = categoryResponse.body.category._id;
-    testUserId = categoryResponse.body.category.createdBy;
-    logInfo(`Category created by user: ${JSON.stringify(testUserId)}`);
-
-    // Create daily records associated with the category
-    const dailyTimeRecords = [
-      {
-        userId: categoryResponse.body.category.createdBy,
-        categoryId: categoryId,
-        totalDailyMinutes: 60,
-        date: "2023-10-01",
-      },
-      {
-        userId: categoryResponse.body.category.createdBy,
-        categoryId: categoryId,
-        totalDailyMinutes: 30,
-        date: "2023-10-02",
-      },
-    ];
+    // Create daily records associated with the categories
+    const dailyTimeRecords = categoryIds.map((id, index) => ({
+      userId: createdBy,
+      categoryId: id,
+      totalDailyMinutes: 30 + index * 10, // Different minutes for diversity
+      date: `2023-10-0${index + 1}`,
+    }));
 
     // Save daily records
     await DailyTimeRecord.insertMany(dailyTimeRecords);
@@ -85,7 +72,7 @@ describe("Habit Category Deletion Tests", () => {
 
   it("should delete the category if it exists", async () => {
     const response = await request
-      .delete(`/api/habit-categories/${categoryId}`)
+      .delete(`/api/habit-categories/${categoryIds[0]}`)
       .set("Cookie", cookie);
 
     expect(response.status).toBe(200);
@@ -153,7 +140,7 @@ describe("Habit Category Deletion Tests", () => {
 
   it("should fail if the user is not authenticated", async () => {
     const response = await request
-      .delete(`/api/habit-categories/${categoryId}`)
+      .delete(`/api/habit-categories/${categoryIds[0]}`)
       .set("Cookie", "");
 
     expect(response.status).toBe(401);
@@ -164,12 +151,14 @@ describe("Habit Category Deletion Tests", () => {
 
   it("should delete the category and all associated daily records", async () => {
     // Confirm that the daily records exist before deletion
-    let recordsBeforeDeletion = await DailyTimeRecord.find({ categoryId });
-    expect(recordsBeforeDeletion.length).toBe(2); // Should have 2 daily records
+    let recordsBeforeDeletion = await DailyTimeRecord.find({
+      categoryId: categoryIds[0],
+    });
+    expect(recordsBeforeDeletion.length).toBe(1); // Should have 1 daily record
 
     // Send delete request to remove category and associated records
     const response = await request
-      .delete(`/api/habit-categories/${categoryId}`)
+      .delete(`/api/habit-categories/${categoryIds[0]}`)
       .set("Cookie", cookie);
 
     expect(response.status).toBe(200); // Successful deletion
@@ -179,20 +168,23 @@ describe("Habit Category Deletion Tests", () => {
     );
 
     // Check that the category no longer exists
-    const categoryAfterDeletion = await HabitCategory.findById(categoryId);
+    const categoryAfterDeletion = await HabitCategory.findById(categoryIds[0]);
     expect(categoryAfterDeletion).toBeNull(); // Category should be deleted
 
     // Check that the associated daily records are deleted
-    let recordsAfterDeletion = await DailyTimeRecord.find({ categoryId });
-    expect(recordsAfterDeletion.length).toBe(0); // All daily records should be deleted
+    let recordsAfterDeletion = await DailyTimeRecord.find({
+      categoryId: categoryIds[0],
+    });
+    expect(recordsAfterDeletion.length).toBe(0); // All records should be deleted
   });
 
   it("should fail when attempting to delete an already deleted category", async () => {
     await request
-      .delete(`/api/habit-categories/${categoryId}`)
+      .delete(`/api/habit-categories/${categoryIds[0]}`)
       .set("Cookie", cookie);
+
     const secondDeletionResponse = await request
-      .delete(`/api/habit-categories/${categoryId}`)
+      .delete(`/api/habit-categories/${categoryIds[0]}`)
       .set("Cookie", cookie);
 
     expect(secondDeletionResponse.status).toBe(404);

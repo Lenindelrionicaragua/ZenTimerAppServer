@@ -123,30 +123,35 @@ describe("Auto-create default categories", () => {
     });
   });
 
-  it("should skip creating categories that already exist with createCategory Route", async () => {
+  it("should fail to create a 7th category and ensure the total remains 6", async () => {
     const response = await request
       .post("/api/auth/log-in")
       .send({ user: { email: testUser.email, password: testUser.password } });
 
     const cookie = response.headers["set-cookie"];
 
-    // Create a new category
-    await request
+    await autoCreateDefaultCategories(testUser._id);
+
+    let categoriesResponse = await request
+      .get("/api/habit-categories")
+      .set("Cookie", cookie);
+
+    let categories = categoriesResponse.body.categories;
+    expect(categories.length).toBe(6);
+
+    const createResponse = await request
       .post("/api/habit-categories/create")
       .set("Cookie", cookie)
       .send({ habitCategory: { name: "Projects" } });
 
-    // Call the auto-create function
-    await autoCreateDefaultCategories(testUser._id);
+    expect(createResponse.status).toBe(400);
 
-    const categoriesResponse = await request
+    categoriesResponse = await request
       .get("/api/habit-categories")
       .set("Cookie", cookie);
 
-    const categories = categoriesResponse.body.categories;
+    categories = categoriesResponse.body.categories;
 
-    // Verify that the number of categories is still 7 (6 default + 1 new)
-    expect(categories.length).toBe(7);
-    expect(categories.some((cat) => cat.name === "Projects")).toBe(true);
+    expect(categories.length).toBe(6);
   });
 });

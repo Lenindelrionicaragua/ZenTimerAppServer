@@ -43,6 +43,11 @@ describe("Update Daily Goal Tests", () => {
 
     cookie = loginResponse.headers["set-cookie"];
 
+    // delete the default categories
+    await request
+      .delete("/api/habit-categories/delete-all-categories")
+      .set("Cookie", cookie);
+
     // Create a habit category
     const newCategory = {
       habitCategory: { name: "Exercise", dailyGoal: 30 },

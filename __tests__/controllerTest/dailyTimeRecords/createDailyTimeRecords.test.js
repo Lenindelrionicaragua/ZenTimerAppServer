@@ -5,6 +5,8 @@ import {
   clearMockDatabase,
 } from "../../../__testUtils__/dbMock.js";
 import app from "../../../app.js";
+import HabitCategory from "../../../models/habitCategory.js";
+import DailyTimeRecord from "../../../models/dailyTimeRecord.js";
 import { logInfo } from "../../../util/logging.js";
 
 const request = supertest(app);
@@ -21,14 +23,18 @@ afterAll(async () => {
   await closeMockDatabase();
 });
 
-describe("Daily Record Creation Tests", () => {
+describe("deleteAllCategories Endpoint Tests", () => {
   let testUser;
-  let testUserId;
   let cookie;
-  let categoryId;
+  let categoryId1,
+    categoryId2,
+    categoryId3,
+    categoryId4,
+    categoryId5,
+    categoryId6;
+  let createdBy;
 
   beforeEach(async () => {
-    // Preparing test user data for sign up and login
     testUser = {
       name: "Test User",
       email: "testuser@example.com",
@@ -36,31 +42,85 @@ describe("Daily Record Creation Tests", () => {
       dateOfBirth: "Tue Feb 01 1990",
     };
 
-    // User sign-up
+    // Sign up a new user
     await request.post("/api/auth/sign-up").send({ user: testUser });
 
-    // User login
+    // Log in the user
     const loginResponse = await request
       .post("/api/auth/log-in")
       .send({ user: { email: testUser.email, password: testUser.password } });
 
     cookie = loginResponse.headers["set-cookie"];
 
-    // Create a habit category
-    const newCategory = {
-      habitCategory: {
-        name: "Exercise",
+    // Fetch categories
+    const getCategoryResponse = await request
+      .get("/api/habit-categories")
+      .set("Cookie", cookie);
+
+    [
+      categoryId1,
+      categoryId2,
+      categoryId3,
+      categoryId4,
+      categoryId5,
+      categoryId6,
+    ] = getCategoryResponse.body.categories.map((c) => c.id);
+
+    createdBy = getCategoryResponse.body.categories[0].createdBy;
+
+    // logInfo({
+    //   categoryId1,
+    //   categoryId2,
+    //   categoryId3,
+    //   categoryId4,
+    //   categoryId5,
+    //   categoryId6,
+    // });
+
+    // logInfo(createdBy);
+
+    // Create daily records associated with the category
+    const dailyTimeRecords = [
+      {
+        userId: createdBy,
+        categoryId: categoryId1,
+        totalDailyMinutes: 60,
+        date: "2023-10-01",
       },
-    };
+      {
+        userId: createdBy,
+        categoryId: categoryId2,
+        totalDailyMinutes: 30,
+        date: "2023-10-02",
+      },
+      {
+        userId: createdBy,
+        categoryId: categoryId3,
+        totalDailyMinutes: 30,
+        date: "2023-10-02",
+      },
+      {
+        userId: createdBy,
+        categoryId: categoryId4,
+        totalDailyMinutes: 30,
+        date: "2023-10-02",
+      },
+      {
+        userId: createdBy,
+        categoryId: categoryId5,
+        totalDailyMinutes: 30,
+        date: "2023-10-02",
+      },
+      {
+        userId: createdBy,
+        categoryId: categoryId6,
+        totalDailyMinutes: 30,
+        date: "2023-10-02",
+      },
+    ];
 
-    const categoryResponse = await request
-      .post("/api/habit-categories/create")
-      .set("Cookie", cookie)
-      .send(newCategory);
-
-    categoryId = categoryResponse.body.category._id;
-    testUserId = categoryResponse.body.category.createdBy;
-    logInfo(`Category created by user: ${JSON.stringify(testUserId)}`);
+    // Save daily records
+    await DailyTimeRecord.insertMany(dailyTimeRecords);
   });
 
   it("should create a daily record for the user and category", async () => {
@@ -70,7 +130,7 @@ describe("Daily Record Creation Tests", () => {
     };
 
     const response = await request
-      .post(`/api/time-records/${categoryId}`)
+      .post(`/api/time-records/${categoryId1}`)
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
@@ -80,8 +140,8 @@ describe("Daily Record Creation Tests", () => {
       dailyRecordData.minutesUpdate
     );
     expect(response.body.record.date).toBe("2024-10-12T00:00:00.000Z");
-    expect(response.body.record.userId).toBe(testUserId);
-    expect(response.body.record.categoryId).toBe(categoryId);
+    expect(response.body.record.userId).toBe(createdBy);
+    expect(response.body.record.categoryId).toBe(categoryId1);
   });
 
   it("should fail if the date is not in a valid format", async () => {
@@ -91,7 +151,7 @@ describe("Daily Record Creation Tests", () => {
     };
 
     const response = await request
-      .post(`/api/time-records/${categoryId}`)
+      .post(`/api/time-records/${categoryId1}`)
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
@@ -108,7 +168,7 @@ describe("Daily Record Creation Tests", () => {
     };
 
     const response = await request
-      .post(`/api/time-records/${categoryId}`)
+      .post(`/api/time-records/${categoryId3}`)
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
@@ -122,7 +182,7 @@ describe("Daily Record Creation Tests", () => {
     };
 
     const response = await request
-      .post(`/api/time-records/${categoryId}`)
+      .post(`/api/time-records/${categoryId2}`)
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
@@ -190,7 +250,7 @@ describe("Daily Record Creation Tests", () => {
     };
 
     const response = await request
-      .post(`/api/time-records/${categoryId}`)
+      .post(`/api/time-records/${categoryId4}`)
       .set("Cookie", "") // No cookie (not authenticated)
       .send(dailyRecordData);
 
@@ -205,7 +265,7 @@ describe("Daily Record Creation Tests", () => {
     };
 
     const response = await request
-      .post(`/api/time-records/${categoryId}`)
+      .post(`/api/time-records/${categoryId4}`)
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
@@ -222,7 +282,7 @@ describe("Daily Record Creation Tests", () => {
     };
 
     const response = await request
-      .post(`/api/time-records/${categoryId}`)
+      .post(`/api/time-records/${categoryId2}`)
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
@@ -231,8 +291,8 @@ describe("Daily Record Creation Tests", () => {
     expect(response.body.success).toBe(true);
 
     // Verify that the created record contains the correct userId and categoryId
-    expect(response.body.record.userId).toBe(testUserId);
-    expect(response.body.record.categoryId).toBe(categoryId);
+    expect(response.body.record.userId).toBe(createdBy);
+    expect(response.body.record.categoryId).toBe(categoryId2);
   });
 
   it("should fail if minutesUpdate is not a number", async () => {
@@ -242,7 +302,7 @@ describe("Daily Record Creation Tests", () => {
     };
 
     const response = await request
-      .post(`/api/time-records/${categoryId}`)
+      .post(`/api/time-records/${categoryId3}`)
       .set("Cookie", cookie)
       .send(invalidDailyRecordData);
 
@@ -259,7 +319,7 @@ describe("Daily Record Creation Tests", () => {
     };
 
     const response = await request
-      .post(`/api/time-records/${categoryId}`)
+      .post(`/api/time-records/${categoryId4}`)
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
@@ -300,10 +360,14 @@ describe("Daily Record Creation Tests", () => {
 
     cookie = loginResponse.headers["set-cookie"];
 
+    await request
+      .delete("/api/habit-categories/delete-all-categories")
+      .set("Cookie", cookie);
+
     // Create a habit category
     const newCategory = {
       habitCategory: {
-        name: "Exercise",
+        name: "NewCategory",
       },
     };
 

@@ -44,6 +44,11 @@ describe("Update an existing habit-category name (test route)", () => {
 
     cookie = loginResponse.headers["set-cookie"]; // Capture session cookie
 
+    // delete the default categories
+    await request
+      .delete("/api/habit-categories/delete-all-categories")
+      .set("Cookie", cookie);
+
     const newCategory = {
       habitCategory: {
         name: "Work!",
