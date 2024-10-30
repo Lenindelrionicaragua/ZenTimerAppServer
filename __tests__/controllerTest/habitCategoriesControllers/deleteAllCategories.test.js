@@ -143,4 +143,47 @@ describe("deleteAllCategories Endpoint Tests", () => {
     const remainingRecords = await DailyTimeRecord.find({ userId: createdBy });
     expect(remainingRecords.length).toBe(0);
   });
+
+  it("should return 404 when the user has no categories", async () => {
+    // delete the default categories
+    await request
+      .delete("/api/habit-categories/delete-all-categories")
+      .set("Cookie", cookie);
+
+    const deleteResponse = await request
+      .delete("/api/habit-categories/delete-all-categories")
+      .set("Cookie", cookie);
+
+    expect(deleteResponse.status).toBe(404);
+    expect(deleteResponse.body.success).toBe(false);
+    expect(deleteResponse.body.msg).toBe("No categories found for the user.");
+  });
+
+  it("should return 500 if there is a database error", async () => {
+    jest.spyOn(HabitCategory, "find").mockImplementationOnce(() => {
+      throw new Error("Database error");
+    });
+
+    const deleteResponse = await request
+      .delete("/api/habit-categories/delete-all-categories")
+      .set("Cookie", cookie);
+
+    expect(deleteResponse.status).toBe(500);
+    expect(deleteResponse.body.success).toBe(false);
+    expect(deleteResponse.body.msg).toBe(
+      "An error occurred while deleting all categories."
+    );
+  });
+
+  it("should return 400 if user ID is not authenticated", async () => {
+    const deleteResponse = await request
+      .delete("/api/habit-categories/delete-all-categories")
+      .set("Cookie", "");
+
+    expect(deleteResponse.status).toBe(401);
+    expect(deleteResponse.body.success).toBe(false);
+    expect(deleteResponse.body.msg).toBe(
+      "UBAD REQUEST: Authentication required."
+    );
+  });
 });
