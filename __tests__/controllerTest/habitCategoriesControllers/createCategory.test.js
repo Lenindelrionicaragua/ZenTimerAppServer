@@ -42,6 +42,11 @@ describe("Create a new habit-category (test route)", () => {
       .send({ user: { email: testUser.email, password: testUser.password } });
 
     cookie = loginResponse.headers["set-cookie"];
+
+    // delete the default categories
+    await request
+      .delete("/api/habit-categories/delete-all-categories")
+      .set("Cookie", cookie);
   });
 
   it("should create a new category if it does not exist", async () => {
