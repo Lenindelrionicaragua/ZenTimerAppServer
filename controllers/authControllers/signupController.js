@@ -84,7 +84,7 @@ export const signup = async (req, res) => {
       });
     }
 
-    await sendVerificationEmail(newUser, res);
+    await sendVerificationEmail(newUser);
     logInfo(`User created successfully: ${newUser.email}`);
 
     return res
