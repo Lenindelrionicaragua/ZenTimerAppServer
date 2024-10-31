@@ -104,10 +104,10 @@ export const validateUser = (
 
   if (requireDateOfBirth && (!userObject.dateOfBirth || !isValidDateOfBirth)) {
     errorList.push(
-      "Date Of Birth is a required field with valid format (MM/DD/YYYY)"
+      "Date Of Birth is a required field with valid format (e.g., 'Tue Feb 01 2022')"
     );
     logInfo(
-      "User create Validation failed: Date Of Birth is required field with valid format (MM/DD/YYYY)"
+      "User create Validation failed: Date Of Birth is required field with valid format (e.g., 'Tue Feb 01 2022')"
     );
   }
 

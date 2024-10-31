@@ -19,63 +19,85 @@ export const signInWithGoogleController = async (req, res) => {
 
   const client = clients[platform];
   if (!client) {
-    logError("Invalid platform specified");
-    return res.status(400).json({ error: "Invalid platform" });
+    logError(`Invalid platform specified: ${platform}`);
+    return res.status(400).json({ error: `Invalid platform: ${platform}` });
   }
 
-  let isNewUser = false;
+  // Special handling for web platform
+  if (platform === "Web") {
+    if (!token) {
+      try {
+        const { email, name, picture } = req.body;
+        let user = await User.findOne({ email });
 
-  // Special handling for web platform in development/testing
-  if (platform === "Web" && !token) {
-    try {
-      const { email, name, picture } = req.body;
-      let user = await User.findOne({ email });
+        if (!user) {
+          const password = await bcrypt.hash("defaultPassword", 10);
+          user = new User({ name, email, picture, password });
+          await user.save();
+          await sendWelcomeEmail(user);
+          logInfo(`New Web user created: ${user.email}`);
+        }
 
-      if (!user) {
-        const password = await bcrypt.hash("defaultPassword", 10);
-        user = new User({ name, email, picture, password });
-        await user.save();
-        isNewUser = true;
+        const jwtToken = jwt.sign(
+          { userId: user._id },
+          process.env.JWT_SECRET,
+          {
+            expiresIn: "72h",
+          }
+        );
+        res.cookie("session", jwtToken, { httpOnly: true });
 
-        await sendWelcomeEmail(user);
-        logInfo(`New Web user created: ${user.email}`);
-      }
-
-      const jwtToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-        expiresIn: "72h",
-      });
-      res.cookie("session", jwtToken, { httpOnly: true });
-
-      if (isNewUser) {
         try {
           await autoCreateDefaultCategories(user._id);
         } catch (categoryError) {
           logError(
             `Failed to create categories for new user: ${categoryError.message}`
           );
-          return res.status(201).json({
-            success: true,
-            message:
-              "User signed in, but default categories could not be created.",
-            token: jwtToken,
-          });
         }
-      }
 
-      return res.status(200).json({
-        success: true,
-        message: "User signed in successfully",
-        token: jwtToken,
-      });
-    } catch (error) {
-      logError("Error during Web sign-in process: " + error.message);
-      return res
-        .status(500)
-        .json({ error: "Error signing in with Google for Web" });
+        const responseData = {
+          success: true,
+          msg: "User signed in successfully",
+          token: jwtToken,
+          user: {
+            name: user.name,
+            email: user.email,
+            picture: user.picture,
+          },
+        };
+        return res.status(200).json(responseData);
+      } catch (error) {
+        logError("Error during Web sign-in process: " + error.message);
+        return res
+          .status(500)
+          .json({ error: "Error signing in with Google for Web" });
+      }
+    } else {
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findById(decoded.userId);
+        if (!user) {
+          return res.status(404).json({ error: "User not found" });
+        }
+
+        const responseData = {
+          success: true,
+          msg: "User is already signed in",
+          user: {
+            name: user.name,
+            email: user.email,
+            picture: user.picture,
+          },
+        };
+        logInfo(`SignIn response: ${JSON.stringify(responseData)}`);
+        return res.status(200).json(responseData);
+      } catch (error) {
+        logError("Error verifying token for Web sign-in: " + error.message);
+        return res.status(401).json({ error: "Invalid token" });
+      }
     }
   }
 
-  // Handling for mobile platforms (iOS, Android, Expo)
   if (!token) {
     logError("Google idToken missing for mobile platform");
     return res.status(400).json({ error: "idToken from Google is missing." });
@@ -91,12 +113,9 @@ export const signInWithGoogleController = async (req, res) => {
     let user = await User.findOne({ email });
 
     try {
-      user = await User.findOne({ email });
-
       if (!user) {
         user = new User({ name, email, picture });
         await user.save();
-        isNewUser = true;
         await sendWelcomeEmail(user);
       }
     } catch (userError) {
@@ -107,27 +126,26 @@ export const signInWithGoogleController = async (req, res) => {
     const jwtToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: "72h",
     });
+
     res.cookie("session", jwtToken, { httpOnly: true });
 
-    if (isNewUser) {
-      try {
-        await autoCreateDefaultCategories(user._id);
-      } catch (categoryError) {
-        logError(`Failed to create categories: ${categoryError.message}`);
-        return res.status(201).json({
-          success: true,
-          message:
-            "User signed in, but default categories could not be created.",
-          token: jwtToken,
-        });
-      }
+    try {
+      await autoCreateDefaultCategories(user._id);
+    } catch (categoryError) {
+      logError(`Failed to create categories: ${categoryError.message}`);
     }
 
-    return res.status(200).json({
+    const responseData = {
       success: true,
-      message: "User signed in successfully",
+      msg: "User signed in successfully",
       token: jwtToken,
-    });
+      user: {
+        name: user.name,
+        email: user.email,
+        picture: user.picture,
+      },
+    };
+    return res.status(200).json(responseData);
   } catch (error) {
     logError("Sign-in error: " + error.message);
     return res.status(500).json({ error: "Error during sign-in process" });

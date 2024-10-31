@@ -9,6 +9,7 @@ import User from "../../models/userModels.js";
 import HabitCategory from "../../models/habitCategory.js";
 import { addUserToMockDB } from "../../__testUtils__/userMocks.js";
 import { OAuth2Client } from "google-auth-library";
+import { logInfo } from "../../util/logging.js";
 
 const request = supertest(app);
 
@@ -29,17 +30,28 @@ afterAll(async () => {
 
 describe("signInWithGoogleController", () => {
   test("Should sign in successfully and create a new user for the Web platform", async () => {
-    const response = await request.post("/api/auth/sign-in-with-google").send({
+    const userData = {
       name: "John Doe",
       email: "john@example.com",
       picture: "http://example.com/john.jpg",
       platform: "Web",
-    });
+    };
+
+    const response = await request
+      .post("/api/auth/sign-in-with-google")
+      .send(userData);
+
+    const responseData = response.body;
+    logInfo(`SignIn response: ${JSON.stringify(responseData)}`);
 
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
-    expect(response.body.message).toBe("User signed in successfully");
+    expect(response.body.msg).toBe("User signed in successfully");
     expect(response.body.token).toBeDefined();
+
+    expect(response.body.user.name).toBe(userData.name);
+    expect(response.body.user.email).toBe(userData.email);
+    expect(response.body.user.picture).toBe(userData.picture);
 
     const user = await User.findOne({ email: "john@example.com" });
     expect(user).toBeDefined();
@@ -54,7 +66,7 @@ describe("signInWithGoogleController", () => {
       .send({ token: "dummyToken", platform: "InvalidPlatform" });
 
     expect(response.status).toBe(400);
-    expect(response.body.error).toBe("Invalid platform");
+    expect(response.body.error).toBe("Invalid platform: InvalidPlatform");
   });
 
   test("Should fail if the token is missing for mobile platforms", async () => {
@@ -83,7 +95,7 @@ describe("signInWithGoogleController", () => {
     // Verify that the response is successful and a token is returned.
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
-    expect(response.body.message).toBe("User signed in successfully");
+    expect(response.body.msg).toBe("User signed in successfully");
     expect(response.body.token).toBeDefined();
 
     // Confirm that the user has been created in the database with the expected details.
