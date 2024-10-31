@@ -84,6 +84,7 @@ export const signup = async (req, res) => {
       });
     }
 
+    // send only new user
     await sendVerificationEmail(newUser);
     logInfo(`User created successfully: ${newUser.email}`);
 
