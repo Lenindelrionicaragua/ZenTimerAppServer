@@ -17,16 +17,22 @@ const clients = {
 export const signInWithGoogleController = async (req, res) => {
   const { token, platform } = req.body;
 
+  // if (!token || !platform) {
+  //   logError("Platform or token missing in request. Platform: " + platform);
+  //   return res.status(400).json({ error: "Platform or token missing" });
+  // }
+
   const client = clients[platform];
   if (!client) {
-    logError("Invalid platform specified");
-    return res.status(400).json({ error: "Invalid platform" });
+    logError(`Invalid platform specified: ${platform}`);
+    return res.status(400).json({ error: `Invalid platform: ${platform}` });
   }
 
   let isNewUser = false;
 
   // Special handling for web platform in development/testing
   if (platform === "Web" && !token) {
+    // Handle sign in without a token for web in testing
     try {
       const { email, name, picture } = req.body;
       let user = await User.findOne({ email });
@@ -56,7 +62,7 @@ export const signInWithGoogleController = async (req, res) => {
           return res.status(201).json({
             success: true,
             message:
-              "User signed in, but default categories could not be created.",
+              "User signed in successfully, but default categories could not be created.",
             token: jwtToken,
           });
         }
@@ -91,8 +97,6 @@ export const signInWithGoogleController = async (req, res) => {
     let user = await User.findOne({ email });
 
     try {
-      user = await User.findOne({ email });
-
       if (!user) {
         user = new User({ name, email, picture });
         await user.save();
@@ -107,6 +111,7 @@ export const signInWithGoogleController = async (req, res) => {
     const jwtToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: "72h",
     });
+
     res.cookie("session", jwtToken, { httpOnly: true });
 
     if (isNewUser) {
@@ -127,6 +132,11 @@ export const signInWithGoogleController = async (req, res) => {
       success: true,
       message: "User signed in successfully",
       token: jwtToken,
+      user: {
+        name: user.name,
+        email: user.email,
+        picture: user.picture,
+      },
     });
   } catch (error) {
     logError("Sign-in error: " + error.message);

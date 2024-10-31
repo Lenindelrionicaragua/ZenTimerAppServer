@@ -54,7 +54,7 @@ describe("signInWithGoogleController", () => {
       .send({ token: "dummyToken", platform: "InvalidPlatform" });
 
     expect(response.status).toBe(400);
-    expect(response.body.error).toBe("Invalid platform");
+    expect(response.body.error).toBe("Invalid platform: InvalidPlatform");
   });
 
   test("Should fail if the token is missing for mobile platforms", async () => {
