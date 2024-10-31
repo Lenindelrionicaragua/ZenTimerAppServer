@@ -72,6 +72,11 @@ export const signInWithGoogleController = async (req, res) => {
         success: true,
         message: "User signed in successfully",
         token: jwtToken,
+        user: {
+          name: user.name,
+          email: user.email,
+          picture: user.picture,
+        },
       });
     } catch (error) {
       logError("Error during Web sign-in process: " + error.message);
