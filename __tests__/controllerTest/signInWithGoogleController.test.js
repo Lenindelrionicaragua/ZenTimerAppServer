@@ -46,7 +46,7 @@ describe("signInWithGoogleController", () => {
 
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
-    expect(response.body.message).toBe("User signed in successfully");
+    expect(response.body.msg).toBe("User signed in successfully");
     expect(response.body.token).toBeDefined();
 
     expect(response.body.user.name).toBe(userData.name);
@@ -95,7 +95,7 @@ describe("signInWithGoogleController", () => {
     // Verify that the response is successful and a token is returned.
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
-    expect(response.body.message).toBe("User signed in successfully");
+    expect(response.body.msg).toBe("User signed in successfully");
     expect(response.body.token).toBeDefined();
 
     // Confirm that the user has been created in the database with the expected details.

@@ -57,7 +57,7 @@ export const signInWithGoogleController = async (req, res) => {
 
         const responseData = {
           success: true,
-          message: "User signed in successfully",
+          msg: "User signed in successfully",
           token: jwtToken,
           user: {
             name: user.name,
@@ -82,7 +82,7 @@ export const signInWithGoogleController = async (req, res) => {
 
         const responseData = {
           success: true,
-          message: "User is already signed in",
+          msg: "User is already signed in",
           user: {
             name: user.name,
             email: user.email,
@@ -137,7 +137,7 @@ export const signInWithGoogleController = async (req, res) => {
 
     const responseData = {
       success: true,
-      message: "User signed in successfully",
+      msg: "User signed in successfully",
       token: jwtToken,
       user: {
         name: user.name,
