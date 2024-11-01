@@ -351,6 +351,27 @@ describe("signupController", () => {
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe("User already exists");
   });
+
+  test("Should handle errors thrown during email sending", async () => {
+    sendVerificationEmail.mockImplementationOnce(() => {
+      throw new Error("Unexpected error while sending email");
+    });
+
+    const newUser = {
+      name: "Ana Laura",
+      email: "ana@email.com",
+      password: "Password1234!",
+      dateOfBirth: "Tue Feb 01 2022",
+    };
+
+    const response = await request
+      .post("/api/auth/sign-up/")
+      .send({ user: newUser });
+
+    expect(response.status).toBe(500);
+    expect(response.body.success).toBe(false);
+    expect(response.body.msg).toBe("Unable to create user, try again later");
+  });
 });
 
 // Bug: If the request takes longer than 10 seconds to complete, the request is not canceled. This can lead to performance issues and potential memory leaks due to unresolved promises and timers not being properly cleaned up. Consider revisiting the implementation to ensure that requests are properly canceled after the specified timeout period.

@@ -13,7 +13,7 @@ const resolvePath = (relativePath) => {
 // Function to send a welcome email
 export const sendWelcomeEmail = async (user) => {
   const { _id, email } = user;
-  const uniqueString = uuidv4() + _id; // Generar una cadena única
+  const uniqueString = uuidv4() + _id; // Generate a unique string using uuid and user ID
 
   const welcomeTemplatePath = resolvePath(
     "/Users/leninortizreyes/Desktop/ZenTimerAppServer/templates/emailWelcomeTemplate.html"
@@ -24,7 +24,10 @@ export const sendWelcomeEmail = async (user) => {
     welcomeEmailTemplate = fs.readFileSync(welcomeTemplatePath, "utf-8");
   } catch (error) {
     logError(`Error reading welcome email template: ${error.message}`);
-    return { success: false, message: "Error reading template" }; // Retornar un objeto de error
+    return {
+      status: "FAILED",
+      message: "Internal server error",
+    };
   }
 
   const mailOptions = {
@@ -34,21 +37,34 @@ export const sendWelcomeEmail = async (user) => {
     html: welcomeEmailTemplate,
   };
 
+  const saltRounds = 10;
   try {
-    const hashedUniqueString = await bcrypt.hash(uniqueString, 10);
+    const hashedUniqueString = await bcrypt.hash(uniqueString, saltRounds);
     const newVerification = new UserVerification({
       userId: _id,
       uniqueString: hashedUniqueString,
       createdAt: Date.now(),
-      expiresAt: Date.now() + 21600000, // 6 horas
+      expiresAt: Date.now() + 21600000, // 6 hours
     });
 
-    await newVerification.save(); // Guardar el registro de verificación
-    await transporter.sendMail(mailOptions); // Enviar el correo electrónico
+    await newVerification.save(); // Save the verification record
+
+    await transporter.sendMail(mailOptions);
     logInfo("Welcome email sent successfully");
-    return { success: true }; // Retornar un objeto de éxito
+
+    return {
+      status: "PENDING",
+      message: "Welcome email sent",
+      data: {
+        userId: _id,
+        email,
+      },
+    };
   } catch (error) {
-    logError(`Error sending welcome email: ${error.message}`);
-    return { success: false, message: "Failed to send welcome email" }; // Retornar un objeto de error
+    logError(`Welcome email failed: ${error.message}`);
+    return {
+      status: "FAILED",
+      message: "Welcome email failed",
+    };
   }
 };

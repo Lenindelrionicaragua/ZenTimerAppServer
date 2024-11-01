@@ -88,7 +88,7 @@ describe("signInWithGoogleController", () => {
     expect(response.status).toBe(201);
     expect(response.body.success).toBe(true);
     expect(response.body.msg).toBe(
-      "User signed in, but default categories could not be created. In mobile Platform"
+      "User signed in, but default categories could not be created. In mobile Platform."
     );
   });
 });

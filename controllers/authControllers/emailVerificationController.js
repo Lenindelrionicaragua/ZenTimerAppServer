@@ -21,42 +21,34 @@ const resolvePath = (relativePath) => {
 export const sendVerificationEmail = async (user) => {
   const { _id, email } = user;
   const uniqueString = uuidv4() + _id;
-  const templatePath = resolvePath("/path/to/emailTemplate.html");
-
-  let emailTemplate;
-  try {
-    emailTemplate = fs.readFileSync(templatePath, "utf-8");
-  } catch (error) {
-    logError(`Error reading email template: ${error.message}`);
-    return false; // Error reading template
-  }
-
-  const verifyUrl = `${currentUrl}/api/auth/verify/${_id}/${uniqueString}`;
-  emailTemplate = emailTemplate.replace("{{VERIFY_URL}}", verifyUrl);
-
-  const mailOptions = {
-    from: process.env.AUTH_EMAIL,
-    to: email,
-    subject: "Verify your Email",
-    html: emailTemplate,
-  };
 
   try {
+    const emailTemplate = fs.readFileSync(templatePath, "utf-8");
+    const verifyUrl = `${currentUrl}/api/auth/verify/${_id}/${uniqueString}`;
+    const populatedTemplate = emailTemplate.replace(
+      "{{VERIFY_URL}}",
+      verifyUrl
+    );
+
     const hashedUniqueString = await bcrypt.hash(uniqueString, 10);
-    const newVerification = new UserVerification({
+    await new UserVerification({
       userId: _id,
       uniqueString: hashedUniqueString,
       createdAt: Date.now(),
-      expiresAt: Date.now() + 21600000, // 6 hours
+      expiresAt: Date.now() + 21600000, // 6 horas
+    }).save();
+
+    await transporter.sendMail({
+      from: process.env.AUTH_EMAIL,
+      to: email,
+      subject: "Verify your Email",
+      html: populatedTemplate,
     });
 
-    await newVerification.save();
-    await transporter.sendMail(mailOptions);
     logInfo("Verification email sent successfully");
-    return true;
   } catch (error) {
-    logError(`Error sending verification email: ${error.message}`);
-    return false;
+    logError(`Failed to send verification email: ${error.message}`);
+    throw new Error("Verification email failed");
   }
 };
 
