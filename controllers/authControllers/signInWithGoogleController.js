@@ -64,6 +64,10 @@ export const signInWithGoogleController = async (req, res) => {
           logError(
             `Failed to create categories for new user: ${categoryError.message}`
           );
+          return res.status(201).json({
+            success: true,
+            msg: "User signed in, but default categories could not be created.",
+          });
         }
 
         const responseData = {
@@ -142,11 +146,18 @@ export const signInWithGoogleController = async (req, res) => {
       res.cookie("session", jwtToken, { httpOnly: true });
 
       // Auto-create default categories for the user
-      await autoCreateDefaultCategories(user._id);
-
+      try {
+        await autoCreateDefaultCategories(user._id);
+      } catch (categoryError) {
+        logError(`Failed to create categories: ${categoryError.message}`);
+        return res.status(201).json({
+          success: true,
+          msg: "User signed in, but default categories could not be created. In mobile Platform.",
+        });
+      }
       const responseData = {
         success: true,
-        msg: "User created and signed in successfully",
+        msg: "User created and signed in successfully. In mobil platform.",
         token: jwtToken,
         user: {
           name: user.name,
@@ -164,7 +175,7 @@ export const signInWithGoogleController = async (req, res) => {
 
       const responseData = {
         success: true,
-        msg: "User signed in successfully",
+        msg: "User created and signed in successfully. In mobil platform.",
         token: jwtToken,
         user: {
           name: user.name,

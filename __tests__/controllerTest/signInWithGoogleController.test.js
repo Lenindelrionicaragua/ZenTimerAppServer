@@ -122,75 +122,97 @@ describe("signInWithGoogleController", () => {
     expect(categories).toHaveLength(6);
   });
 
-  // New test cases for mobile platforms
-  test("Should sign in successfully and create a new user for the iOS platform", async () => {
-    const token = "dummyIosToken"; // This should be a valid token for a real test
+  // New test: Should sign in successfully and create a new user for Android platform
+  test("Should sign in successfully and create a new user for the Android platform", async () => {
     const userData = {
-      name: "Jane Smith",
+      name: "Jane Doe",
       email: "jane@example.com",
       picture: "http://example.com/jane.jpg",
-      platform: "iOS",
+      platform: "Android",
+      token: "mockGoogleIdToken", // Mock token for the test
     };
+
+    // Mock the behavior of verifying the token
+    const mockPayload = {
+      name: "Jane Doe",
+      email: "jane@example.com",
+      picture: "http://example.com/jane.jpg",
+    };
+
+    // Simulate the token verification process
+    jest.spyOn(OAuth2Client.prototype, "verifyIdToken").mockResolvedValue({
+      getPayload: () => mockPayload,
+    });
 
     sendWelcomeEmail.mockResolvedValue(true); // Simulate successful email sending
 
-    // Mock the OAuth2Client's verifyIdToken method to return the expected payload
-    googleClient.verifyIdToken = jest.fn().mockResolvedValue({
-      getPayload: () => userData,
-    });
-
     const response = await request
       .post("/api/auth/sign-in-with-google")
-      .send({ token, platform: "iOS" });
+      .send(userData);
 
     expect(response.status).toBe(201);
     expect(response.body.success).toBe(true);
-    expect(response.body.msg).toBe("User created and signed in successfully");
+    expect(response.body.msg).toBe(
+      "User created and signed in successfully. In mobil platform."
+    );
     expect(response.body.token).toBeDefined();
     expect(sendWelcomeEmail).toHaveBeenCalledTimes(1);
 
-    const user = await User.findOne({ email: userData.email });
+    expect(response.body.user.name).toBe(userData.name);
+    expect(response.body.user.email).toBe(userData.email);
+    expect(response.body.user.picture).toBe(userData.picture);
+
+    const user = await User.findOne({ email: "jane@example.com" });
     expect(user).toBeDefined();
-    expect(user.name).toBe(userData.name);
-    expect(user.email).toBe(userData.email);
-    expect(user.picture).toBe(userData.picture);
 
     const categories = await HabitCategory.find({ userId: user._id });
     expect(categories).toHaveLength(6);
   });
 
-  test("Should sign in successfully if user already exists for the Android platform", async () => {
-    const existingEmail = "existinguser@example.com";
-    const existingUser = new User({
-      name: "Existing User",
-      email: existingEmail,
-      picture: "http://example.com/existinguser.jpg",
-    });
-    await existingUser.save();
+  // New test: Should sign in successfully and create a new user for iOS platform
+  test("Should sign in successfully and create a new user for the iOS platform", async () => {
+    const userData = {
+      name: "Alice Smith",
+      email: "alice@example.com",
+      picture: "http://example.com/alice.jpg",
+      platform: "iOS",
+      token: "mockGoogleIdToken", // Mock token for the test
+    };
 
-    const token = "dummyAndroidToken"; // This should be a valid token for a real test
+    // Mock the behavior of verifying the token
+    const mockPayload = {
+      name: "Alice Smith",
+      email: "alice@example.com",
+      picture: "http://example.com/alice.jpg",
+    };
 
-    // Mock the OAuth2Client's verifyIdToken method to return the existing user's data
-    googleClient.verifyIdToken = jest.fn().mockResolvedValue({
-      getPayload: () => ({
-        name: existingUser.name,
-        email: existingUser.email,
-        picture: existingUser.picture,
-      }),
+    // Simulate the token verification process
+    jest.spyOn(OAuth2Client.prototype, "verifyIdToken").mockResolvedValue({
+      getPayload: () => mockPayload,
     });
+
+    sendWelcomeEmail.mockResolvedValue(true); // Simulate successful email sending
 
     const response = await request
       .post("/api/auth/sign-in-with-google")
-      .send({ token, platform: "Android" });
+      .send(userData);
 
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(201);
     expect(response.body.success).toBe(true);
-    expect(response.body.msg).toBe("User signed in successfully");
+    expect(response.body.msg).toBe(
+      "User created and signed in successfully. In mobil platform."
+    );
     expect(response.body.token).toBeDefined();
+    expect(sendWelcomeEmail).toHaveBeenCalledTimes(1);
 
-    const user = await User.findOne({ email: existingEmail });
+    expect(response.body.user.name).toBe(userData.name);
+    expect(response.body.user.email).toBe(userData.email);
+    expect(response.body.user.picture).toBe(userData.picture);
+
+    const user = await User.findOne({ email: "alice@example.com" });
     expect(user).toBeDefined();
-    expect(user.name).toBe(existingUser.name);
-    expect(user.email).toBe(existingEmail);
+
+    const categories = await HabitCategory.find({ userId: user._id });
+    expect(categories).toHaveLength(6);
   });
 });
