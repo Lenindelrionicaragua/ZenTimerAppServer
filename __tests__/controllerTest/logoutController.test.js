@@ -5,8 +5,18 @@ import {
   clearMockDatabase,
 } from "../../__testUtils__/dbMock.js";
 import app from "../../app.js";
+import { sendVerificationEmail } from "../../controllers/authControllers/emailVerificationController.js";
 
 const request = supertest(app);
+
+jest.mock(
+  "../../controllers/authControllers/emailVerificationController.js",
+  () => ({
+    sendVerificationEmail: jest.fn(),
+    resendVerificationLink: jest.fn(),
+    verifyEmail: jest.fn(),
+  })
+);
 
 beforeAll(async () => {
   await connectToMockDB();
@@ -28,6 +38,8 @@ describe("logoutController", () => {
       password: "Password1234!",
       dateOfBirth: "Tue Feb 01 2022",
     };
+
+    sendVerificationEmail.mockResolvedValue(true);
 
     const signUpResponse = await request
       .post("/api/auth/sign-up/")

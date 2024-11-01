@@ -33,6 +33,98 @@ afterAll(async () => {
 });
 
 describe("signupController", () => {
+  test("Should pass if the request contains all required fields and successfully creates a user", async () => {
+    const newUser = {
+      name: "Ana Laura",
+      email: "ana@email.com",
+      password: "Password1234!",
+      dateOfBirth: "Tue Feb 01 2022",
+    };
+
+    sendVerificationEmail.mockResolvedValue(true); // Simulate successful email sending
+
+    const response = await request
+      .post("/api/auth/sign-up/")
+      .send({ user: newUser });
+
+    expect(response.status).toBe(201);
+    expect(response.body.success).toBe(true);
+    expect(response.body.msg).toBe("User created successfully");
+    expect(sendVerificationEmail).toHaveBeenCalledTimes(1);
+  });
+
+  test("Should pass if user creation succeeds but email sending fails", async () => {
+    const newUser = {
+      name: "Ana Laura",
+      email: "ana@email.com",
+      password: "Password1234!",
+      dateOfBirth: "Tue Feb 01 2022",
+    };
+
+    sendVerificationEmail.mockResolvedValue(false); // Simulate email sending failure
+
+    const response = await request
+      .post("/api/auth/sign-up/")
+      .send({ user: newUser });
+
+    expect(response.status).toBe(201);
+    expect(response.body.success).toBe(true);
+    expect(response.body.msg).toBe(
+      "User created successfully, but failed to send verification email."
+    );
+    expect(sendVerificationEmail).toHaveBeenCalledTimes(1);
+  });
+
+  test("Should create default categories when a user signs up successfully", async () => {
+    const newUser = {
+      name: "Test User",
+      email: "testuser@example.com",
+      password: "Test1234!",
+      dateOfBirth: "Tue Feb 01 1990",
+    };
+
+    // Sign up the test user
+    const signupResponse = await request
+      .post("/api/auth/sign-up")
+      .send({ user: newUser });
+
+    expect(signupResponse.status).toBe(201);
+    expect(signupResponse.body.success).toBe(true);
+    expect(signupResponse.body.msg).toContain("User created successfully");
+
+    // Log in to get a session cookie for authenticated requests
+    const loginResponse = await request
+      .post("/api/auth/log-in")
+      .send({ user: { email: newUser.email, password: newUser.password } });
+
+    const cookie = loginResponse.headers["set-cookie"];
+
+    // Get categories auto-created for the user
+    const categoriesResponse = await request
+      .get("/api/habit-categories")
+      .set("Cookie", cookie);
+
+    expect(categoriesResponse.status).toBe(200);
+    expect(categoriesResponse.body.success).toBe(true);
+    expect(categoriesResponse.body.categories.length).toBe(6);
+
+    // Check the default categories
+    const defaultCategoryNames = [
+      "Work",
+      "Family time",
+      "Exercise",
+      "Screen-free",
+      "Rest",
+      "Study",
+    ];
+    categoriesResponse.body.categories.forEach((category) => {
+      expect(defaultCategoryNames).toContain(category.name);
+      expect(category).toHaveProperty("id");
+      expect(category).toHaveProperty("createdAt");
+      expect(category).toHaveProperty("dailyGoal");
+    });
+  });
+
   test("Should fail if the request body contains an empty user object", async () => {
     const user = {};
 
@@ -258,98 +350,6 @@ describe("signupController", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe("User already exists");
-  });
-
-  test("Should pass if the request contains all required fields and successfully creates a user", async () => {
-    const newUser = {
-      name: "Ana Laura",
-      email: "ana@email.com",
-      password: "Password1234!",
-      dateOfBirth: "Tue Feb 01 2022",
-    };
-
-    sendVerificationEmail.mockResolvedValue(true); // Simulate successful email sending
-
-    const response = await request
-      .post("/api/auth/sign-up/")
-      .send({ user: newUser });
-
-    expect(response.status).toBe(201);
-    expect(response.body.success).toBe(true);
-    expect(response.body.msg).toBe("User created successfully");
-    expect(sendVerificationEmail).toHaveBeenCalledTimes(1);
-  });
-
-  test("Should pass if user creation succeeds but email sending fails", async () => {
-    const newUser = {
-      name: "Ana Laura",
-      email: "ana@email.com",
-      password: "Password1234!",
-      dateOfBirth: "Tue Feb 01 2022",
-    };
-
-    sendVerificationEmail.mockResolvedValue(false); // Simulate email sending failure
-
-    const response = await request
-      .post("/api/auth/sign-up/")
-      .send({ user: newUser });
-
-    expect(response.status).toBe(201);
-    expect(response.body.success).toBe(true);
-    expect(response.body.msg).toBe(
-      "User created successfully, but failed to send verification email."
-    );
-    expect(sendVerificationEmail).toHaveBeenCalledTimes(1);
-  });
-
-  test("Should create default categories when a user signs up successfully", async () => {
-    const newUser = {
-      name: "Test User",
-      email: "testuser@example.com",
-      password: "Test1234!",
-      dateOfBirth: "Tue Feb 01 1990",
-    };
-
-    // Sign up the test user
-    const signupResponse = await request
-      .post("/api/auth/sign-up")
-      .send({ user: newUser });
-
-    expect(signupResponse.status).toBe(201);
-    expect(signupResponse.body.success).toBe(true);
-    expect(signupResponse.body.msg).toContain("User created successfully");
-
-    // Log in to get a session cookie for authenticated requests
-    const loginResponse = await request
-      .post("/api/auth/log-in")
-      .send({ user: { email: newUser.email, password: newUser.password } });
-
-    const cookie = loginResponse.headers["set-cookie"];
-
-    // Get categories auto-created for the user
-    const categoriesResponse = await request
-      .get("/api/habit-categories")
-      .set("Cookie", cookie);
-
-    expect(categoriesResponse.status).toBe(200);
-    expect(categoriesResponse.body.success).toBe(true);
-    expect(categoriesResponse.body.categories.length).toBe(6);
-
-    // Check the default categories
-    const defaultCategoryNames = [
-      "Work",
-      "Family time",
-      "Exercise",
-      "Screen-free",
-      "Rest",
-      "Study",
-    ];
-    categoriesResponse.body.categories.forEach((category) => {
-      expect(defaultCategoryNames).toContain(category.name);
-      expect(category).toHaveProperty("id");
-      expect(category).toHaveProperty("createdAt");
-      expect(category).toHaveProperty("dailyGoal");
-    });
   });
 });
 
