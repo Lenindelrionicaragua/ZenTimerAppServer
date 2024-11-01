@@ -10,8 +10,16 @@ import HabitCategory from "../../models/habitCategory.js";
 import { addUserToMockDB } from "../../__testUtils__/userMocks.js";
 import { OAuth2Client } from "google-auth-library";
 import { logInfo } from "../../util/logging.js";
+import { sendWelcomeEmail } from "../../controllers/authControllers/emailWelcomeController.js";
 
 const request = supertest(app);
+
+jest.mock(
+  "../../controllers/authControllers/emailWelcomeController.js",
+  () => ({
+    sendWelcomeEmail: jest.fn(),
+  })
+);
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID_WEB);
 
@@ -37,6 +45,8 @@ describe("signInWithGoogleController", () => {
       platform: "Web",
     };
 
+    sendWelcomeEmail.mockResolvedValue(true); // Simulate successful email sending
+
     const response = await request
       .post("/api/auth/sign-in-with-google")
       .send(userData);
@@ -48,6 +58,7 @@ describe("signInWithGoogleController", () => {
     expect(response.body.success).toBe(true);
     expect(response.body.msg).toBe("User signed in successfully");
     expect(response.body.token).toBeDefined();
+    expect(sendWelcomeEmail).toHaveBeenCalledTimes(1);
 
     expect(response.body.user.name).toBe(userData.name);
     expect(response.body.user.email).toBe(userData.email);
@@ -84,6 +95,8 @@ describe("signInWithGoogleController", () => {
     let user = await User.findOne({ email: nonExistentEmail });
     expect(user).toBeNull(); // Ensure no user exists with this email.
 
+    sendWelcomeEmail.mockResolvedValue(true); // Simulate successful email sending
+
     // Send a sign-in request for a non-existent user to simulate the creation process.
     const response = await request.post("/api/auth/sign-in-with-google").send({
       name: "New User",
@@ -97,6 +110,7 @@ describe("signInWithGoogleController", () => {
     expect(response.body.success).toBe(true);
     expect(response.body.msg).toBe("User signed in successfully");
     expect(response.body.token).toBeDefined();
+    expect(sendWelcomeEmail).toHaveBeenCalledTimes(1);
 
     // Confirm that the user has been created in the database with the expected details.
     user = await User.findOne({ email: nonExistentEmail });

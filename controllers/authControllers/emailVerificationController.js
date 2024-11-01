@@ -18,7 +18,7 @@ const resolvePath = (relativePath) => {
 };
 
 // Function to send a verification email
-export const sendVerificationEmail = async (req, res) => {
+export const sendVerificationEmail = async (user) => {
   const { _id, email } = user;
   const uniqueString = uuidv4() + _id;
   const templatePath = resolvePath("/path/to/emailTemplate.html");

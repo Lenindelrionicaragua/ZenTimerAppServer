@@ -34,10 +34,15 @@ export const signInWithGoogleController = async (req, res) => {
           const password = await bcrypt.hash("defaultPassword", 10);
           user = new User({ name, email, picture, password });
           await user.save();
-          await sendWelcomeEmail(user);
+
+          sendWelcomeEmail(user).catch((error) => {
+            logError("Error sending welcome email: " + error.message);
+          });
+
           logInfo(`New Web user created: ${user.email}`);
         }
 
+        // Generate JWT token
         const jwtToken = jwt.sign(
           { userId: user._id },
           process.env.JWT_SECRET,
@@ -45,6 +50,7 @@ export const signInWithGoogleController = async (req, res) => {
             expiresIn: "72h",
           }
         );
+        // Set the session cookie
         res.cookie("session", jwtToken, { httpOnly: true });
 
         try {
@@ -98,6 +104,7 @@ export const signInWithGoogleController = async (req, res) => {
     }
   }
 
+  // Handling for mobile platforms (iOS, Android, Expo)
   if (!token) {
     logError("Google idToken missing for mobile platform");
     return res.status(400).json({ error: "idToken from Google is missing." });
@@ -110,23 +117,29 @@ export const signInWithGoogleController = async (req, res) => {
     });
 
     const { name, email, picture } = ticket.getPayload();
+
+    // Check if user already exists
     let user = await User.findOne({ email });
 
     try {
       if (!user) {
         user = new User({ name, email, picture });
         await user.save();
-        await sendWelcomeEmail(user);
+        sendWelcomeEmail(user).catch((error) => {
+          logError("Error sending welcome email: " + error.message);
+        });
       }
     } catch (userError) {
       logError("User creation error: " + userError.message);
       return res.status(500).json({ error: "User creation error" });
     }
 
+    // Generate JWT token
     const jwtToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: "72h",
     });
 
+    // Set the session cookie
     res.cookie("session", jwtToken, { httpOnly: true });
 
     try {
