@@ -84,13 +84,23 @@ export const signup = async (req, res) => {
       });
     }
 
-    // send only new user
-    await sendVerificationEmail(newUser);
+    // Send the verification email
+    const emailSent = await sendVerificationEmail(newUser);
     logInfo(`User created successfully: ${newUser.email}`);
 
-    return res
-      .status(201)
-      .json({ success: true, msg: "User created successfully", user: newUser });
+    if (emailSent) {
+      return res.status(201).json({
+        success: true,
+        msg: "User created successfully",
+        user: newUser,
+      });
+    } else {
+      return res.status(201).json({
+        success: true,
+        msg: "User created successfully, but failed to send verification email.",
+        user: newUser,
+      });
+    }
   } catch (error) {
     logError(error);
     return res

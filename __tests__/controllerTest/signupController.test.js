@@ -6,8 +6,18 @@ import {
 } from "../../__testUtils__/dbMock.js";
 import app from "../../app.js";
 import { addUserToMockDB } from "../../__testUtils__/userMocks.js";
+import { sendVerificationEmail } from "../../controllers/authControllers/emailVerificationController.js";
 
 const request = supertest(app);
+
+jest.mock(
+  "../../controllers/authControllers/emailVerificationController.js",
+  () => ({
+    sendVerificationEmail: jest.fn(),
+    resendVerificationLink: jest.fn(),
+    verifyEmail: jest.fn(),
+  })
+);
 
 beforeAll(async () => {
   await connectToMockDB();
@@ -186,7 +196,7 @@ describe("signupController", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe(
-      "BAD REQUEST: Date Of Birth is a required field with valid format (MM/DD/YYYY)"
+      "BAD REQUEST: Date Of Birth is a required field with valid format (e.g., 'Tue Feb 01 2022')"
     );
   });
 
@@ -258,6 +268,8 @@ describe("signupController", () => {
       dateOfBirth: "Tue Feb 01 2022",
     };
 
+    sendVerificationEmail.mockResolvedValue(true); // Simulate successful email sending
+
     const response = await request
       .post("/api/auth/sign-up/")
       .send({ user: newUser });
@@ -265,6 +277,29 @@ describe("signupController", () => {
     expect(response.status).toBe(201);
     expect(response.body.success).toBe(true);
     expect(response.body.msg).toBe("User created successfully");
+    expect(sendVerificationEmail).toHaveBeenCalledTimes(1);
+  });
+
+  test("Should pass if user creation succeeds but email sending fails", async () => {
+    const newUser = {
+      name: "Ana Laura",
+      email: "ana@email.com",
+      password: "Password1234!",
+      dateOfBirth: "Tue Feb 01 2022",
+    };
+
+    sendVerificationEmail.mockResolvedValue(false); // Simulate email sending failure
+
+    const response = await request
+      .post("/api/auth/sign-up/")
+      .send({ user: newUser });
+
+    expect(response.status).toBe(201);
+    expect(response.body.success).toBe(true);
+    expect(response.body.msg).toBe(
+      "User created successfully, but failed to send verification email."
+    );
+    expect(sendVerificationEmail).toHaveBeenCalledTimes(1);
   });
 
   test("Should create default categories when a user signs up successfully", async () => {
@@ -282,7 +317,7 @@ describe("signupController", () => {
 
     expect(signupResponse.status).toBe(201);
     expect(signupResponse.body.success).toBe(true);
-    expect(signupResponse.body.msg).toBe("User created successfully");
+    expect(signupResponse.body.msg).toContain("User created successfully");
 
     // Log in to get a session cookie for authenticated requests
     const loginResponse = await request
@@ -300,7 +335,7 @@ describe("signupController", () => {
     expect(categoriesResponse.body.success).toBe(true);
     expect(categoriesResponse.body.categories.length).toBe(6);
 
-    // Check de default categories
+    // Check the default categories
     const defaultCategoryNames = [
       "Work",
       "Family time",

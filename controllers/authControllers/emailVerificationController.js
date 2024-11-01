@@ -18,21 +18,17 @@ const resolvePath = (relativePath) => {
 };
 
 // Function to send a verification email
-export const sendVerificationEmail = async (user, res) => {
+export const sendVerificationEmail = async (req, res) => {
   const { _id, email } = user;
-  const uniqueString = uuidv4() + _id; // Generate a unique string using uuid and user ID
+  const uniqueString = uuidv4() + _id;
+  const templatePath = resolvePath("/path/to/emailTemplate.html");
 
-  const templatePath = resolvePath(
-    "/Users/leninortizreyes/Desktop/ZenTimerAppServer/templates/emailTemplate.html"
-  );
   let emailTemplate;
   try {
     emailTemplate = fs.readFileSync(templatePath, "utf-8");
   } catch (error) {
     logError(`Error reading email template: ${error.message}`);
-    if (res) {
-      return res.status(500).json({ message: "Internal server error" });
-    }
+    return false; // Error reading template
   }
 
   const verifyUrl = `${currentUrl}/api/auth/verify/${_id}/${uniqueString}`;
@@ -45,64 +41,23 @@ export const sendVerificationEmail = async (user, res) => {
     html: emailTemplate,
   };
 
-  const saltRounds = 10;
-  bcrypt
-    .hash(uniqueString, saltRounds)
-    .then((hashedUniqueString) => {
-      const newVerification = new UserVerification({
-        userId: _id,
-        uniqueString: hashedUniqueString,
-        createdAt: Date.now(),
-        expiresAt: Date.now() + 21600000, // 6 hours
-      });
-
-      newVerification
-        .save() // Save the verification record
-        .then(() => {
-          transporter
-            .sendMail(mailOptions)
-            .then(() => {
-              logInfo("Verification email sent successfully");
-              if (!res.headersSent) {
-                res.json({
-                  status: "PENDING",
-                  message: "Verification email sent",
-                  data: {
-                    userId: _id,
-                    email,
-                  },
-                });
-              }
-            })
-            .catch((err) => {
-              logError(`Verification email failed: ${err.message}`);
-              if (!res.headersSent) {
-                res.json({
-                  status: "FAILED",
-                  message: "Verification email failed",
-                });
-              }
-            });
-        })
-        .catch((err) => {
-          logError(`Failed to save verification record: ${err.message}`);
-          if (!res.headersSent) {
-            res.json({
-              status: "FAILED",
-              message: "Verification email failed",
-            });
-          }
-        });
-    })
-    .catch((err) => {
-      logError(`Failed to hash unique string: ${err.message}`);
-      if (!res.headersSent) {
-        res.json({
-          status: "FAILED",
-          message: "Failed to hash unique string",
-        });
-      }
+  try {
+    const hashedUniqueString = await bcrypt.hash(uniqueString, 10);
+    const newVerification = new UserVerification({
+      userId: _id,
+      uniqueString: hashedUniqueString,
+      createdAt: Date.now(),
+      expiresAt: Date.now() + 21600000, // 6 hours
     });
+
+    await newVerification.save();
+    await transporter.sendMail(mailOptions);
+    logInfo("Verification email sent successfully");
+    return true;
+  } catch (error) {
+    logError(`Error sending verification email: ${error.message}`);
+    return false;
+  }
 };
 
 // Function to resend the verification link
