@@ -7,6 +7,7 @@ import {
 import app from "../../app.js";
 import { addUserToMockDB } from "../../__testUtils__/userMocks.js";
 import { sendVerificationEmail } from "../../controllers/authControllers/emailVerificationController.js";
+import { logError, logInfo } from "../../util/logging.js";
 
 const request = supertest(app);
 
@@ -18,6 +19,8 @@ jest.mock(
     verifyEmail: jest.fn(),
   })
 );
+
+jest.mock("../../util/logging.js");
 
 beforeAll(async () => {
   await connectToMockDB();
@@ -69,9 +72,7 @@ describe("signupController", () => {
 
     expect(response.status).toBe(201);
     expect(response.body.success).toBe(true);
-    expect(response.body.msg).toBe(
-      "User created successfully, but failed to send verification email."
-    );
+    expect(response.body.msg).toBe("User created successfully");
     expect(sendVerificationEmail).toHaveBeenCalledTimes(1);
   });
 
@@ -133,7 +134,7 @@ describe("signupController", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe(
-      "Name, email, password, and date of birth are required."
+      "BAD REQUEST: Name is a required field., Email is a required field, Email is not in a valid format, Password is a required field, Password must be at least 8 characters long, Password must contain at least one uppercase letter, Password must contain at least one special character., Date Of Birth is a required field., Date Of Birth is a required field with valid format (e.g., 'Tue Feb 01 2022')."
     );
   });
 
@@ -172,7 +173,7 @@ describe("signupController", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe(
-      "BAD REQUEST: Name can only contain letters, numbers, and a single space between words"
+      "BAD REQUEST: Name can only contain letters, numbers, and a single space between words."
     );
   });
 
@@ -187,9 +188,7 @@ describe("signupController", () => {
 
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
-    expect(response.body.msg).toBe(
-      "Name, email, password, and date of birth are required."
-    );
+    expect(response.body.msg).toBe("BAD REQUEST: Name is a required field.");
   });
 
   test("Should fail if the request does not contain a valid email", async () => {
@@ -221,7 +220,7 @@ describe("signupController", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe(
-      "Name, email, password, and date of birth are required."
+      "BAD REQUEST: Email is not in a valid format, Date Of Birth is a required field., Date Of Birth is a required field with valid format (e.g., 'Tue Feb 01 2022')."
     );
   });
 
@@ -238,7 +237,7 @@ describe("signupController", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe(
-      "BAD REQUEST: Password must contain at least one uppercase letter, Password must contain at least one special character"
+      "BAD REQUEST: Password must contain at least one uppercase letter, Password must contain at least one special character."
     );
   });
 
@@ -254,7 +253,7 @@ describe("signupController", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe(
-      "Name, email, password, and date of birth are required."
+      "BAD REQUEST: Password is a required field, Password must be at least 8 characters long, Password must contain at least one uppercase letter, Password must contain at least one special character."
     );
   });
 
@@ -271,7 +270,7 @@ describe("signupController", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe(
-      "BAD REQUEST: Password must be at least 8 characters long, Password must contain at least one uppercase letter, Password must contain at least one special character"
+      "BAD REQUEST: Password must be at least 8 characters long, Password must contain at least one uppercase letter, Password must contain at least one special character."
     );
   });
 
@@ -288,7 +287,7 @@ describe("signupController", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe(
-      "BAD REQUEST: Date Of Birth is a required field with valid format (e.g., 'Tue Feb 01 2022')"
+      "BAD REQUEST: Date Of Birth is a required field with valid format (e.g., 'Tue Feb 01 2022')."
     );
   });
 
@@ -304,7 +303,7 @@ describe("signupController", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe(
-      "Name, email, password, and date of birth are required."
+      "BAD REQUEST: Date Of Birth is a required field., Date Of Birth is a required field with valid format (e.g., 'Tue Feb 01 2022')."
     );
   });
 
@@ -352,11 +351,7 @@ describe("signupController", () => {
     expect(response.body.msg).toBe("User already exists");
   });
 
-  test("Should handle errors thrown during email sending", async () => {
-    sendVerificationEmail.mockImplementationOnce(() => {
-      throw new Error("Unexpected error while sending email");
-    });
-
+  test("Should pass if user creation succeeds but email sending fails", async () => {
     const newUser = {
       name: "Ana Laura",
       email: "ana@email.com",
@@ -364,13 +359,23 @@ describe("signupController", () => {
       dateOfBirth: "Tue Feb 01 2022",
     };
 
+    sendVerificationEmail.mockImplementationOnce(() => {
+      throw new Error("Unexpected error while sending email");
+    });
+
     const response = await request
       .post("/api/auth/sign-up/")
       .send({ user: newUser });
 
-    expect(response.status).toBe(500);
-    expect(response.body.success).toBe(false);
-    expect(response.body.msg).toBe("Unable to create user, try again later");
+    expect(response.status).toBe(201); // o 200
+    expect(response.body.success).toBe(true);
+    expect(response.body.msg).toBe("User created successfully");
+
+    expect(sendVerificationEmail).toHaveBeenCalledTimes(1);
+
+    expect(logError).toHaveBeenCalledWith(
+      "Error sending verification email: Unexpected error while sending email"
+    );
   });
 });
 

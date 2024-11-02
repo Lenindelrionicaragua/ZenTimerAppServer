@@ -32,29 +32,15 @@ export const signup = async (req, res) => {
       .json({ success: false, msg: `Invalid request: ${invalidFieldsError}` });
   }
 
+  const errorList = validateUser(req.body.user, true);
+  if (errorList.length > 0) {
+    return res
+      .status(400)
+      .json({ success: false, msg: validationErrorMessage(errorList) });
+  }
+
   try {
-    const { name, email, password, dateOfBirth, ...additionalFields } =
-      req.body.user;
-    const errors = [];
-
-    if (!name || !email || !password || !dateOfBirth) {
-      errors.push("Name, email, password, and date of birth are required.");
-    }
-
-    if (Object.keys(additionalFields).length > 0) {
-      errors.push("Invalid fields present in the request.");
-    }
-
-    if (errors.length > 0) {
-      return res.status(400).json({ success: false, msg: errors.join(" ") });
-    }
-
-    const errorList = validateUser(req.body.user, true);
-    if (errorList.length > 0) {
-      return res
-        .status(400)
-        .json({ success: false, msg: validationErrorMessage(errorList) });
-    }
+    const { email } = req.body.user;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -85,24 +71,21 @@ export const signup = async (req, res) => {
     }
 
     // Send the verification email
-    const emailSent = await sendVerificationEmail(newUser);
-    logInfo(`User created successfully: ${newUser.email}`);
-
-    if (emailSent) {
-      return res.status(201).json({
-        success: true,
-        msg: "User created successfully",
-        user: newUser,
-      });
-    } else {
-      return res.status(201).json({
-        success: true,
-        msg: "User created successfully, but failed to send verification email.",
-        user: newUser,
-      });
+    try {
+      await sendVerificationEmail(newUser);
+      logInfo(`Verification email sent for user: ${newUser.email}`);
+    } catch (error) {
+      logError("Error sending verification email: " + error.message);
     }
+
+    logInfo(`User created successfully: ${newUser.email}`);
+    return res.status(201).json({
+      success: true,
+      msg: "User created successfully",
+      user: newUser,
+    });
   } catch (error) {
-    logError(error);
+    logError("Error in signup process: " + error.message);
     return res
       .status(500)
       .json({ success: false, msg: "Unable to create user, try again later" });
