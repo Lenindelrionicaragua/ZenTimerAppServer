@@ -88,13 +88,15 @@ export const resendVerificationLink = async (req, res) => {
     const emailSent = await sendVerificationEmail({ _id: userId, email });
 
     if (!emailSent) {
+      const errorMsg = "Failed to send verification email.";
+      logError(errorMsg);
       return res.status(500).json({
         success: false,
-        error: "Failed to send verification email.",
+        error: errorMsg,
       });
     }
 
-    logInfo("Verification link resent");
+    logInfo("Verification link resent successfully.");
     return res.status(200).json({
       success: true,
       msg: "Verification link resent successfully.",
