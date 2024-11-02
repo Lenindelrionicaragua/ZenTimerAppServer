@@ -29,8 +29,8 @@ export const validateUser = (
   }
 
   if ((requireName && userObject.name == null) || userObject.name == "") {
-    errorList.push("Name is a required field");
-    logInfo("user Create Validation failed: Name is required field");
+    errorList.push("Name is a required field.");
+    logInfo("user Create Validation failed: Name is required field.");
   }
 
   if (
@@ -38,16 +38,16 @@ export const validateUser = (
     !/^(?:[a-zA-Z0-9]+(?:\s+[a-zA-Z0-9]+)*)?$/.test(userObject.name)
   ) {
     errorList.push(
-      "Name can only contain letters, numbers, and a single space between words"
+      "Name can only contain letters, numbers, and a single space between words."
     );
     logInfo(
-      "User create Validation failed: Name can only contain letters, numbers, and a single space between words"
+      "User create Validation failed: Name can only contain letters, numbers, and a single space between words."
     );
   }
 
   if ((requireEmail && userObject.email == null) || userObject.email == "") {
     errorList.push("Email is a required field");
-    logInfo("User create Validation failed: Email is required field");
+    logInfo("User create Validation failed: Email is required field.");
   }
 
   if (
@@ -55,7 +55,7 @@ export const validateUser = (
     !/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(userObject.email)
   ) {
     errorList.push("Email is not in a valid format");
-    logInfo("User create Validation failed: Email is not in a valid format");
+    logInfo("User create Validation failed: Email is not in a valid format.");
   }
 
   if (
@@ -63,7 +63,7 @@ export const validateUser = (
     (userObject.password == null || userObject.password === "")
   ) {
     errorList.push("Password is a required field");
-    logInfo("User create Validation failed: Password is required field");
+    logInfo("User create Validation failed: Password is required field.");
   }
 
   if (
@@ -72,21 +72,21 @@ export const validateUser = (
   ) {
     errorList.push("Password must be at least 8 characters long");
     logInfo(
-      "User create Validation failed: Password must be at least 8 characters long"
+      "User create Validation failed: Password must be at least 8 characters long."
     );
   }
 
   if (requirePassword && !/[A-Z]/.test(userObject.password)) {
     errorList.push("Password must contain at least one uppercase letter");
     logInfo(
-      "User create Validation failed: Password must contain at least one uppercase letter"
+      "User create Validation failed: Password must contain at least one uppercase letter."
     );
   }
 
   if (requirePassword && !/[^A-Za-z0-9]/.test(userObject.password)) {
-    errorList.push("Password must contain at least one special character");
+    errorList.push("Password must contain at least one special character.");
     logInfo(
-      "User create Validation failed: Password must contain at least one special character"
+      "User create Validation failed: Password must contain at least one special character."
     );
   }
 
@@ -94,8 +94,8 @@ export const validateUser = (
     (requireDateOfBirth && userObject.dateOfBirth == null) ||
     userObject.dateOfBirth == ""
   ) {
-    errorList.push("Date Of Birth is a required field");
-    logInfo("User create Validation failed: Date Of Birth is required field");
+    errorList.push("Date Of Birth is a required field.");
+    logInfo("User create Validation failed: Date Of Birth is required field.");
   }
 
   const isValidDateOfBirth = /^[A-Z][a-z]{2} [A-Z][a-z]{2} \d{2} \d{4}$/.test(
@@ -104,10 +104,10 @@ export const validateUser = (
 
   if (requireDateOfBirth && (!userObject.dateOfBirth || !isValidDateOfBirth)) {
     errorList.push(
-      "Date Of Birth is a required field with valid format (e.g., 'Tue Feb 01 2022')"
+      "Date Of Birth is a required field with valid format (e.g., 'Tue Feb 01 2022')."
     );
     logInfo(
-      "User create Validation failed: Date Of Birth is required field with valid format (e.g., 'Tue Feb 01 2022')"
+      "User create Validation failed: Date Of Birth is required field with valid format (e.g., 'Tue Feb 01 2022')."
     );
   }
 

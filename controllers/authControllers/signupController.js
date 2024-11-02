@@ -32,29 +32,15 @@ export const signup = async (req, res) => {
       .json({ success: false, msg: `Invalid request: ${invalidFieldsError}` });
   }
 
+  const errorList = validateUser(req.body.user, true);
+  if (errorList.length > 0) {
+    return res
+      .status(400)
+      .json({ success: false, msg: validationErrorMessage(errorList) });
+  }
+
   try {
-    const { name, email, password, dateOfBirth, ...additionalFields } =
-      req.body.user;
-    const errors = [];
-
-    if (!name || !email || !password || !dateOfBirth) {
-      errors.push("Name, email, password, and date of birth are required.");
-    }
-
-    if (Object.keys(additionalFields).length > 0) {
-      errors.push("Invalid fields present in the request.");
-    }
-
-    if (errors.length > 0) {
-      return res.status(400).json({ success: false, msg: errors.join(" ") });
-    }
-
-    const errorList = validateUser(req.body.user, true);
-    if (errorList.length > 0) {
-      return res
-        .status(400)
-        .json({ success: false, msg: validationErrorMessage(errorList) });
-    }
+    const { email } = req.body.user;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
