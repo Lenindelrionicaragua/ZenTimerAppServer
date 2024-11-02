@@ -7,6 +7,7 @@ import {
 import app from "../../app.js";
 import { addUserToMockDB } from "../../__testUtils__/userMocks.js";
 import { sendVerificationEmail } from "../../controllers/authControllers/emailVerificationController.js";
+import { logError, logInfo } from "../../util/logging.js";
 
 const request = supertest(app);
 
@@ -18,6 +19,8 @@ jest.mock(
     verifyEmail: jest.fn(),
   })
 );
+
+jest.mock("../../util/logging.js");
 
 beforeAll(async () => {
   await connectToMockDB();
@@ -69,9 +72,7 @@ describe("signupController", () => {
 
     expect(response.status).toBe(201);
     expect(response.body.success).toBe(true);
-    expect(response.body.msg).toBe(
-      "User created successfully, but failed to send verification email."
-    );
+    expect(response.body.msg).toBe("User created successfully");
     expect(sendVerificationEmail).toHaveBeenCalledTimes(1);
   });
 
@@ -350,11 +351,7 @@ describe("signupController", () => {
     expect(response.body.msg).toBe("User already exists");
   });
 
-  test("Should handle errors thrown during email sending", async () => {
-    sendVerificationEmail.mockImplementationOnce(() => {
-      throw new Error("Unexpected error while sending email");
-    });
-
+  test("Should pass if user creation succeeds but email sending fails", async () => {
     const newUser = {
       name: "Ana Laura",
       email: "ana@email.com",
@@ -362,13 +359,23 @@ describe("signupController", () => {
       dateOfBirth: "Tue Feb 01 2022",
     };
 
+    sendVerificationEmail.mockImplementationOnce(() => {
+      throw new Error("Unexpected error while sending email");
+    });
+
     const response = await request
       .post("/api/auth/sign-up/")
       .send({ user: newUser });
 
-    expect(response.status).toBe(500);
-    expect(response.body.success).toBe(false);
-    expect(response.body.msg).toBe("Unable to create user, try again later");
+    expect(response.status).toBe(201); // o 200
+    expect(response.body.success).toBe(true);
+    expect(response.body.msg).toBe("User created successfully");
+
+    expect(sendVerificationEmail).toHaveBeenCalledTimes(1);
+
+    expect(logError).toHaveBeenCalledWith(
+      "Error sending verification email: Unexpected error while sending email"
+    );
   });
 });
 

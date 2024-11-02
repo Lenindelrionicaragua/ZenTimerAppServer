@@ -9,8 +9,12 @@ import User from "../../models/userModels.js";
 import { logError, logInfo } from "../../util/logging.js";
 
 // Define __dirname for ESM
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// const __filename = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(__filename);
+
+const resolvePath = (relativePath) => {
+  return path.resolve(process.cwd(), relativePath);
+};
 
 // Setting server URL based on the environment
 const development = "http://localhost:3000";
@@ -24,10 +28,7 @@ export const sendVerificationEmail = async (user, res) => {
   const uniqueString = uuidv4() + _id; // Generate a unique string using uuid and user ID
 
   // Read the HTML template
-  const templatePath = path.join(
-    __dirname,
-    "../../templates/emailTemplate.html"
-  );
+  const templatePath = resolvePath("templates/emailTemplate.html");
   let emailTemplate;
 
   try {
@@ -139,9 +140,7 @@ export const verifyEmail = (req, res) => {
                     console.log(
                       "User verification status updated successfully"
                     ); // Log success message
-                    res.sendFile(
-                      path.join(__dirname, "../../views/verified.html")
-                    );
+                    res.sendFile(resolvePath("views/verified.html"));
                   })
                   .catch((error) => {
                     logError(error);
