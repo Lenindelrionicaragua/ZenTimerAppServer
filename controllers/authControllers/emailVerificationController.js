@@ -70,21 +70,40 @@ export const sendVerificationEmail = async (user, res) => {
 
 // Function to resend the verification link
 export const resendVerificationLink = async (req, res) => {
+  logInfo("Request Body:", req.body);
   try {
-    let { userId, email } = req.body;
+    let { email, userId } = req.body;
 
     if (!userId || !email) {
-      throw Error("Empty user details are not allowed");
-    } else {
-      await UserVerification.deleteMany({ userId });
-      sendVerificationEmail({ _id: userId, email }, res);
-      logInfo("Verification link resent"); // Log the info that the verification link has been resent
+      const errorMsg = "Empty user details are not allowed";
+      logError(errorMsg);
+      return res.status(400).json({
+        success: false,
+        error: errorMsg,
+      });
     }
+
+    await UserVerification.deleteMany({ userId });
+
+    const emailSent = await sendVerificationEmail({ _id: userId, email });
+
+    if (!emailSent) {
+      return res.status(500).json({
+        success: false,
+        error: "Failed to send verification email.",
+      });
+    }
+
+    logInfo("Verification link resent");
+    return res.status(200).json({
+      success: true,
+      msg: "Verification link resent successfully.",
+    });
   } catch (error) {
     logError(error);
-    res.json({
-      status: "FAILED",
-      message: `Verification Link Resend Error. ${error.message}`,
+    return res.status(500).json({
+      success: false,
+      error: `Verification Link Resend Error: ${error.message}`,
     });
   }
 };
