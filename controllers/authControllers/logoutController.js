@@ -2,6 +2,7 @@ import { logInfo, logError } from "../../util/logging.js";
 
 export const logout = (req, res) => {
   try {
+    console.log("Current cookies:", req.cookies);
     res.clearCookie("session");
     logInfo("User successfully logged out");
 

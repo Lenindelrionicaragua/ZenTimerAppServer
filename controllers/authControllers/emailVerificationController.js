@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
+// import { fileURLToPath } from "url";
 import transporter from "../../config/emailConfig.js";
 import UserVerification from "../../models/userVerification.js";
 import User from "../../models/userModels.js";
