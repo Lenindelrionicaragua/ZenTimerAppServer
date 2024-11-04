@@ -67,6 +67,7 @@ export const login = async (req, res) => {
             id: userFound._id,
             email: userFound.email,
             name: userFound.name,
+            loginTrue: true,
           },
         });
       } else {
