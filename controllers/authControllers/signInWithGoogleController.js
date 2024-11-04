@@ -101,6 +101,19 @@ export const signInWithGoogleController = async (req, res) => {
           return res.status(404).json({ error: "User not found" });
         }
 
+        const newJwtToken = jwt.sign(
+          { userId: user._id },
+          process.env.JWT_SECRET,
+          { expiresIn: "72h" }
+        );
+
+        res.cookie("session", newJwtToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          maxAge: 86400000,
+        });
+
         const responseData = {
           success: true,
           msg: "User is already signed in",
@@ -181,7 +194,12 @@ export const signInWithGoogleController = async (req, res) => {
       const jwtToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
         expiresIn: "72h",
       });
-      res.cookie("session", jwtToken, { httpOnly: true });
+      res.cookie("session", jwtToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 86400000,
+      });
 
       const responseData = {
         success: true,
