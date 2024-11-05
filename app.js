@@ -16,6 +16,8 @@ const app = express();
 // Tell express to use the json middleware
 app.use(express.json());
 
+app.use(cookieParser());
+
 const allowedOrigins = [
   "http://localhost:8081",
   "http://192.168.178.182:3000",
@@ -36,8 +38,6 @@ app.use(
     },
   })
 );
-
-app.use(cookieParser());
 
 /****** Attach routes ******/
 /**
