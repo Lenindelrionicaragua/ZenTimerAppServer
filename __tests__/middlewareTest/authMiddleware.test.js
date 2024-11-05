@@ -25,6 +25,7 @@ afterAll(async () => {
 describe("requireAuth Middleware Tests", () => {
   let testUser;
   let cookie;
+  let validToken;
 
   beforeEach(async () => {
     testUser = {
@@ -43,6 +44,7 @@ describe("requireAuth Middleware Tests", () => {
       .send({ user: { email: testUser.email, password: testUser.password } });
 
     cookie = loginResponse.headers["set-cookie"];
+    validToken = loginResponse.body.token;
   });
 
   it("should return 401 if session cookie is missing", async () => {
@@ -84,6 +86,41 @@ describe("requireAuth Middleware Tests", () => {
     const response = await request
       .get("/api/habit-categories")
       .set("Cookie", cookie);
+
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
+    expect(response.body).toHaveProperty("categories");
+    expect(Array.isArray(response.body.categories)).toBe(true);
+  });
+
+  it("should return 401 if both session cookie and Authorization header are missing", async () => {
+    const response = await request
+      .get("/api/habit-categories")
+      .unset("Authorization")
+      .set("Cookie", "");
+
+    expect(response.status).toBe(401);
+    expect(response.body.success).toBe(false);
+    expect(response.body.msg).toBe("BAD REQUEST: Authentication required.");
+  });
+
+  it("should use Authorization header token if session cookie is missing", async () => {
+    const response = await request
+      .get("/api/habit-categories")
+      .unset("Cookie")
+      .set("Authorization", `Bearer ${validToken}`);
+
+    expect(response.status).toBe(200);
+    expect(response.body.success).toBe(true);
+    expect(response.body).toHaveProperty("categories");
+    expect(Array.isArray(response.body.categories)).toBe(true);
+  });
+
+  it("should prioritize session cookie over Authorization header if both are present", async () => {
+    const response = await request
+      .get("/api/habit-categories")
+      .set("Cookie", cookie)
+      .set("Authorization", `Bearer ${validToken}`);
 
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
