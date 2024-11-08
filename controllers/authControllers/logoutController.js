@@ -25,19 +25,22 @@ export const logout = (req, res) => {
     // Clear cookies for mobile users
     if (req.cookies.session) {
       res.clearCookie("session", { httpOnly: true, secure: true });
-      res.clearCookie("zenTimerToken", { httpOnly: true, secure: true }); // Add other relevant cookies
+      res.clearCookie("zenTimerToken", { httpOnly: true, secure: true });
     }
 
-    // Log out action for web users using token (if applicable)
     if (req.headers["authorization"]) {
       // Here you could implement any logic related to invalidating the token if necessary
       // For example: invalidateToken(req.headers['authorization']);
-      console.log("User is logged out via token");
+      logInfo("User is logged out via token");
     }
 
-    logInfo(`User with ID ${req.user.id} successfully logged out.`);
+    // Log the user logout
+    logInfo(`User with ID ${req.userId} successfully logged out.`);
 
-    res.status(204).send(); // No content response
+    res.status(200).json({
+      success: true,
+      message: "User successfully logged out",
+    });
   } catch (error) {
     logError("Logout error: ", error);
     res.status(500).json({
