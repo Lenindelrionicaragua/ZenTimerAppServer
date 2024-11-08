@@ -4,14 +4,14 @@ export const logout = (req, res) => {
   try {
     // Check if cookies exist and log them, otherwise log the token if available
     if (Object.keys(req.cookies).length > 0) {
-      console.log("Current cookies:", req.cookies);
+      logInfo("Current cookies:", req.cookies);
     } else if (req.headers["authorization"]) {
-      console.log(
+      logInfo(
         "No cookies found, but found token:",
         req.headers["authorization"]
       );
     } else {
-      console.log("No cookies or token found.");
+      logInfo("No cookies or token found.");
     }
 
     // Check for active session (either cookie or token)
