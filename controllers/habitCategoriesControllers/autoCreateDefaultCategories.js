@@ -6,12 +6,16 @@ export const autoCreateCategoriesController = async (req, res) => {
     const userId = req.userId;
 
     if (!userId) {
-      return res.status(400).json({ message: "User ID is required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "User ID is required." });
     }
 
     await autoCreateDefaultCategories(userId);
 
-    return res.status(200).json({ message: "Categories created successfully" });
+    return res
+      .status(200)
+      .json({ success: true, message: "Categories created successfully." });
   } catch (error) {
     logError("Error in autoCreateCategoriesController:", error);
     return res.status(500).json({ message: "Internal server error" });
