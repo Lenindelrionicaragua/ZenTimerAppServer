@@ -1,6 +1,6 @@
 import express from "express";
 import { createCategory } from "../controllers/habitCategoriesControllers/createCategory.js";
-import { autoCreateCategoriesController } from "../controllers/habitCategoriesControllers/autoCreateDefaultCategories.js";
+import { autoCreateDefaultCategoriesController } from "../controllers/habitCategoriesControllers/autoCreateDefaultCategoriesController.js";
 import { updateCategoryName } from "../controllers/habitCategoriesControllers/updateCategoryName.js";
 import { deleteCategory } from "../controllers/habitCategoriesControllers/deleteCategory.js";
 import { getTimeMetricsByDateRange } from "../controllers/habitCategoriesControllers/getTimeMetricsByDateRange.js";
@@ -16,7 +16,7 @@ habitCategoriesRouter.post("/create", createCategory);
 habitCategoriesRouter.patch("/:categoryId/name", updateCategoryName);
 habitCategoriesRouter.post(
   "/auto-create-categories",
-  autoCreateCategoriesController
+  autoCreateDefaultCategoriesController
 );
 
 habitCategoriesRouter.delete("/delete-all-categories", deleteAllCategories);

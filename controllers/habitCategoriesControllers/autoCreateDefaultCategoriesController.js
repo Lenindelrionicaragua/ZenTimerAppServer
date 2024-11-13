@@ -1,7 +1,7 @@
-import { autoCreateDefaultCategories } from "../../util/autoCreateDefaultCategories";
-import { logError } from "../../util/logging";
+import { autoCreateDefaultCategories } from "../../util/autoCreateDefaultCategories.js";
+import { logError } from "../../util/logging.js";
 
-export const autoCreateCategoriesController = async (req, res) => {
+export const autoCreateDefaultCategoriesController = async (req, res) => {
   try {
     const userId = req.userId;
 

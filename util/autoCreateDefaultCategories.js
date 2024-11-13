@@ -1,4 +1,3 @@
-// /util/autoCreateDefaultCategories.js
 import HabitCategory, { validateCategory } from "../models/habitCategory.js";
 import { logError, logInfo } from "../util/logging.js";
 import validationErrorMessage from "../util/validationErrorMessage.js";
