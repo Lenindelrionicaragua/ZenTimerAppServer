@@ -6,7 +6,7 @@ export const requireAuth = (req, res, next) => {
   const session = req.cookies.session;
   const authHeader = req.headers.authorization;
 
-  logInfo("Verifying token in session cookie or Authorization header...");
+  // logInfo("Verifying token in session cookie or Authorization header...");
 
   // Helper function to verify the token and authenticate the user
   const verifyToken = (token) => {

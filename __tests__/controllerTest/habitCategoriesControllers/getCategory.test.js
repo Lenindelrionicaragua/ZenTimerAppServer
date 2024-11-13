@@ -73,5 +73,8 @@ describe("getCategory", () => {
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
     expect(response.body.categories).toEqual([]);
+    expect(response.body.msg).toBe(
+      "No categories found for this user, but the request was successful."
+    );
   });
 });

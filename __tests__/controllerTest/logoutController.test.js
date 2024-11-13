@@ -31,35 +31,102 @@ afterAll(async () => {
 });
 
 describe("logoutController", () => {
-  test("Should pass if the session cookie is cleared after logout", async () => {
-    const newUser = {
-      name: "Marlon torres",
-      email: "marlontorres@email.com",
-      password: "Password1234!",
-      dateOfBirth: "Tue Feb 01 2022",
+  let testUser;
+  let cookie;
+  let token;
+
+  beforeEach(async () => {
+    testUser = {
+      name: "Test User",
+      email: "testuser@example.com",
+      password: "Test1234!",
+      dateOfBirth: "Tue Feb 01 1990",
     };
 
     sendVerificationEmail.mockResolvedValue(true);
 
-    const signUpResponse = await request
-      .post("/api/auth/sign-up/")
-      .send({ user: newUser });
+    // User sign-up
+    await request.post("/api/auth/sign-up").send({ user: testUser });
 
-    expect(signUpResponse.status).toBe(201);
-    expect(signUpResponse.body.success).toBe(true);
-    expect(signUpResponse.body.msg).toBe("User created successfully");
+    // User login, getting cookie and token
+    const loginResponse = await request
+      .post("/api/auth/log-in")
+      .send({ user: { email: testUser.email, password: testUser.password } });
 
-    const logoutResponse = await request.post("/api/auth/log-out/").send();
+    cookie = loginResponse.headers["set-cookie"];
+    token = loginResponse.body.token;
+  });
+
+  test("Should pass if the session cookie is cleared after logout", async () => {
+    const logoutResponse = await request
+      .post("/api/user/log-out")
+      .set("Cookie", cookie);
 
     expect(logoutResponse.status).toBe(200);
     expect(logoutResponse.body.success).toBe(true);
     expect(logoutResponse.body.message).toBe("User successfully logged out");
 
+    // Check that the session cookie is cleared correctly
     const cookies = logoutResponse.headers["set-cookie"];
     expect(cookies).toEqual(
       expect.arrayContaining([
-        "session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT",
+        expect.stringContaining(
+          "session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT"
+        ),
+        expect.stringContaining(
+          "zenTimerToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT"
+        ),
       ])
+    );
+  });
+
+  test("Should fail if no valid session cookie is provided", async () => {
+    const logoutResponse = await request.post("/api/user/log-out");
+
+    expect(logoutResponse.status).toBe(401); // 401 Unauthorized
+    expect(logoutResponse.body.success).toBe(false);
+    expect(logoutResponse.body.msg).toBe(
+      "BAD REQUEST: Authentication required."
+    );
+  });
+
+  test("Should pass if a valid token is provided in Authorization header even if there is not cookie-sesion", async () => {
+    const logoutResponse = await request
+      .post("/api/user/log-out")
+      .set("Authorization", `Bearer ${token}`);
+    // .set("Cookie", cookie);
+
+    expect(logoutResponse.status).toBe(200);
+    expect(logoutResponse.body.success).toBe(true);
+    expect(logoutResponse.body.message).toBe("User successfully logged out");
+  });
+
+  test("Cookies should be cleared after logout", async () => {
+    const logoutResponse = await request
+      .post("/api/user/log-out")
+      .set("Cookie", cookie);
+
+    const cookies = logoutResponse.headers["set-cookie"];
+
+    expect(cookies).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining(
+          "session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT"
+        ),
+        expect.stringContaining(
+          "zenTimerToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT"
+        ),
+      ])
+    );
+  });
+
+  test("Should not allow logout without being logged in", async () => {
+    const logoutResponse = await request.post("/api/user/log-out");
+
+    expect(logoutResponse.status).toBe(401);
+    expect(logoutResponse.body.success).toBe(false);
+    expect(logoutResponse.body.msg).toBe(
+      "BAD REQUEST: Authentication required."
     );
   });
 });
