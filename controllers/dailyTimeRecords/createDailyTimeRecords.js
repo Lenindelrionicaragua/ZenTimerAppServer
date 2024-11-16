@@ -76,6 +76,6 @@ export const createDailyTimeRecords = async (req, res) => {
     logError("Error creating or updating daily record: ", error);
     return res
       .status(500)
-      .json({ success: false, message: "Error saving record.", error });
+      .json({ success: false, msg: "Error saving record.", error });
   }
 };
