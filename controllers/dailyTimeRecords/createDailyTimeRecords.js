@@ -1,7 +1,6 @@
 import DailyTimeRecord from "../../models/dailyTimeRecord.js";
 import { validateDailyRecords } from "../../models/dailyTimeRecord.js";
 import { logError, logInfo } from "../../util/logging.js";
-import { calculateCategoryPercentages } from "../../util/calculations.js";
 
 export const createDailyTimeRecords = async (req, res) => {
   const { minutesUpdate, date } = req.body;
@@ -34,10 +33,12 @@ export const createDailyTimeRecords = async (req, res) => {
     });
 
     if (existingRecord) {
-      existingRecord.totalDailyMinutes += minutesUpdate; // Add minutes to existing record
+      existingRecord.totalDailyMinutes += minutesUpdate;
       await existingRecord.save();
 
-      return res.status(200).json({ success: true, record: existingRecord });
+      return res
+        .status(200)
+        .json({ success: true, msg: "Daily record updated successfully." });
     }
 
     // If no existing record, create a new one
@@ -50,7 +51,11 @@ export const createDailyTimeRecords = async (req, res) => {
 
     await newRecord.save();
 
-    return res.status(201).json({ success: true, record: newRecord });
+    logInfo(`newRecord: ${newRecord}`);
+
+    return res
+      .status(201)
+      .json({ success: true, msg: "Daily record created successfully." });
   } catch (error) {
     logError("Error creating or updating daily record: ", error);
     return res
