@@ -60,11 +60,8 @@ export const validateDailyRecords = (recordObject) => {
   }
 
   // Validate 'categoryId': must be a valid ObjectId (MongoDB's unique identifier)
-  if (
-    recordObject.categoryId &&
-    !mongoose.Types.ObjectId.isValid(recordObject.categoryId)
-  ) {
-    errorList.push("categoryId must be a valid ObjectId.");
+  if (recordObject.categoryId && recordObject.categoryId.length !== 24) {
+    errorList.push("categoryId must be a valid 24-character string.");
   }
 
   // Validate 'userId': must be a valid ObjectId (MongoDB's unique identifier)
