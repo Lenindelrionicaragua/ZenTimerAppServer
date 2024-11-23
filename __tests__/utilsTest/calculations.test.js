@@ -41,9 +41,9 @@ describe("calculatePercentages", () => {
     // Work: (120 / 360) * 100 = 33.33
     // Exercise: (60 / 360) * 100 = 16.67
     // Study: (180 / 360) * 100 = 50.00
-    expect(percentages[0].percentage).toBe("33.33");
-    expect(percentages[1].percentage).toBe("16.67");
-    expect(percentages[2].percentage).toBe("50.00");
+    expect(percentages[0].percentage).toBe(33.33);
+    expect(percentages[1].percentage).toBe(16.67);
+    expect(percentages[2].percentage).toBe(50.0);
   });
 
   it("should handle single category percentages correctly", () => {
@@ -54,7 +54,7 @@ describe("calculatePercentages", () => {
     );
 
     // Since there's only one category, its percentage should be 100%
-    expect(percentages[0].percentage).toBe("100.00");
+    expect(percentages[0].percentage).toBe(100.0);
   });
 
   it("should return 0% if totalMinutes is 0", () => {

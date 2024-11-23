@@ -1,4 +1,3 @@
-// Import the function to be tested
 import { addPercentagePerDayToRecords } from "../../util/dataTransformations";
 
 describe("addPercentagePerDayToRecords", () => {
