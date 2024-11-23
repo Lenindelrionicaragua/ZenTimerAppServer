@@ -368,7 +368,7 @@ describe("getMonthlyTimeMetrics", () => {
     response.body.categoryData.forEach((category) => {
       expect(category.name).toBe("NewCategory1");
       expect(category.totalMinutes).toBe(90);
-      expect(category.percentage).toBe("100.00");
+      expect(category.percentage).toBe(100.0);
     });
   });
 
