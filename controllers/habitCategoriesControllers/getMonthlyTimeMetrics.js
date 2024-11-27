@@ -100,6 +100,7 @@ export const getMonthlyTimeMetrics = async (req, res) => {
 
         return {
           name: category.name,
+          dailyGoal: category.dailyGoal,
           totalMinutes: totalCategoryMinutes,
           records: simplifiedRecords,
         };
