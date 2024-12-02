@@ -21,7 +21,7 @@ const habitCategorySchema = new mongoose.Schema({
   },
   dailyGoal: {
     type: Number,
-    default: 0,
+    default: 55,
   },
 });
 
