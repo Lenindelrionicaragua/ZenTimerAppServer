@@ -57,7 +57,6 @@ describe("getCategory", () => {
     response.body.categories.forEach((category) => {
       expect(category).toHaveProperty("id");
       expect(category).toHaveProperty("name");
-      expect(category).toHaveProperty("createdAt");
       expect(category).toHaveProperty("dailyGoal");
     });
   });

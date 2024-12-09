@@ -18,8 +18,6 @@ export const getCategory = async (req, res) => {
     const categoryData = userCategories.map((category) => ({
       id: category._id,
       name: category.name,
-      createdBy: userId,
-      createdAt: category.createdAt,
       dailyGoal: category.dailyGoal || 0,
     }));
 
