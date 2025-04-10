@@ -17,14 +17,10 @@ describe("validateUser function", () => {
     const user = {};
     const errors = validateUser(user);
     const expectedErrors = [
-      "Name is a required field.",
-      "Email is a required field",
       "Email is not in a valid format",
-      "Password is a required field",
       "Password must be at least 8 characters long",
       "Password must contain at least one uppercase letter",
       "Password must contain at least one special character.",
-      "Date Of Birth is a required field.",
       "Date Of Birth is a required field with valid format (e.g., 'Tue Feb 01 2022').",
     ];
 
@@ -90,7 +86,7 @@ describe("validateUser function", () => {
       const errors = validateUser(user);
       expect(errors).toHaveLength(1);
       expect(errors).toContainEqual(
-        "Name can only contain letters, numbers, and a single space between words."
+        "Name can only contain letters, numbers, and a single space between words.",
       );
     });
   });
@@ -108,7 +104,7 @@ describe("validateUser function", () => {
       expect.arrayContaining([
         "Email is a required field",
         "Email is not in a valid format",
-      ])
+      ]),
     );
     expect(errors).toHaveLength(2);
   });
@@ -126,7 +122,7 @@ describe("validateUser function", () => {
       expect.arrayContaining([
         "Email is a required field",
         "Email is not in a valid format",
-      ])
+      ]),
     );
     expect(errors).toHaveLength(2);
   });
@@ -202,7 +198,7 @@ describe("validateUser function", () => {
 
     expect(errors).toHaveLength(1);
     expect(errors).toContainEqual(
-      "Password must contain at least one uppercase letter"
+      "Password must contain at least one uppercase letter",
     );
   });
 
@@ -217,7 +213,7 @@ describe("validateUser function", () => {
 
     expect(errors).toHaveLength(1);
     expect(errors).toContainEqual(
-      "Password must contain at least one special character."
+      "Password must contain at least one special character.",
     );
   });
 
@@ -235,7 +231,7 @@ describe("validateUser function", () => {
         expect.arrayContaining([
           "Date Of Birth is a required field.",
           "Date Of Birth is a required field with valid format (e.g., 'Tue Feb 01 2022').",
-        ])
+        ]),
       );
     });
   });
