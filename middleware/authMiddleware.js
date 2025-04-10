@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { logInfo, logError } from "../util/logging.js";
+import { logError } from "../util/logging.js";
 
 export const requireAuth = (req, res, next) => {
   // Retrieve the session cookie and Authorization header from the request
