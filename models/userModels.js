@@ -17,7 +17,7 @@ export const validateUser = (
   requirePassword = true,
   requireName = true,
   requireEmail = true,
-  requireDateOfBirth = true
+  requireDateOfBirth = true,
 ) => {
   const errorList = [];
   const allowedKeys = ["name", "email", "password", "dateOfBirth"];
@@ -28,7 +28,7 @@ export const validateUser = (
     errorList.push(validatedKeysMessage);
   }
 
-  if ((requireName && userObject.name == null) || userObject.name == "") {
+  if ((requireName && userObject.name === null) || userObject.name === "") {
     errorList.push("Name is a required field.");
     logInfo("user Create Validation failed: Name is required field.");
   }
@@ -38,14 +38,14 @@ export const validateUser = (
     !/^(?:[a-zA-Z0-9]+(?:\s+[a-zA-Z0-9]+)*)?$/.test(userObject.name)
   ) {
     errorList.push(
-      "Name can only contain letters, numbers, and a single space between words."
+      "Name can only contain letters, numbers, and a single space between words.",
     );
     logInfo(
-      "User create Validation failed: Name can only contain letters, numbers, and a single space between words."
+      "User create Validation failed: Name can only contain letters, numbers, and a single space between words.",
     );
   }
 
-  if ((requireEmail && userObject.email == null) || userObject.email == "") {
+  if ((requireEmail && userObject.email === null) || userObject.email === "") {
     errorList.push("Email is a required field");
     logInfo("User create Validation failed: Email is required field.");
   }
@@ -60,7 +60,7 @@ export const validateUser = (
 
   if (
     requirePassword &&
-    (userObject.password == null || userObject.password === "")
+    (userObject.password === null || userObject.password === "")
   ) {
     errorList.push("Password is a required field");
     logInfo("User create Validation failed: Password is required field.");
@@ -72,42 +72,42 @@ export const validateUser = (
   ) {
     errorList.push("Password must be at least 8 characters long");
     logInfo(
-      "User create Validation failed: Password must be at least 8 characters long."
+      "User create Validation failed: Password must be at least 8 characters long.",
     );
   }
 
   if (requirePassword && !/[A-Z]/.test(userObject.password)) {
     errorList.push("Password must contain at least one uppercase letter");
     logInfo(
-      "User create Validation failed: Password must contain at least one uppercase letter."
+      "User create Validation failed: Password must contain at least one uppercase letter.",
     );
   }
 
   if (requirePassword && !/[^A-Za-z0-9]/.test(userObject.password)) {
     errorList.push("Password must contain at least one special character.");
     logInfo(
-      "User create Validation failed: Password must contain at least one special character."
+      "User create Validation failed: Password must contain at least one special character.",
     );
   }
 
   if (
-    (requireDateOfBirth && userObject.dateOfBirth == null) ||
-    userObject.dateOfBirth == ""
+    (requireDateOfBirth && userObject.dateOfBirth === null) ||
+    userObject.dateOfBirth === ""
   ) {
     errorList.push("Date Of Birth is a required field.");
     logInfo("User create Validation failed: Date Of Birth is required field.");
   }
 
   const isValidDateOfBirth = /^[A-Z][a-z]{2} [A-Z][a-z]{2} \d{2} \d{4}$/.test(
-    userObject.dateOfBirth
+    userObject.dateOfBirth,
   );
 
   if (requireDateOfBirth && (!userObject.dateOfBirth || !isValidDateOfBirth)) {
     errorList.push(
-      "Date Of Birth is a required field with valid format (e.g., 'Tue Feb 01 2022')."
+      "Date Of Birth is a required field with valid format (e.g., 'Tue Feb 01 2022').",
     );
     logInfo(
-      "User create Validation failed: Date Of Birth is required field with valid format (e.g., 'Tue Feb 01 2022')."
+      "User create Validation failed: Date Of Birth is required field with valid format (e.g., 'Tue Feb 01 2022').",
     );
   }
 
@@ -122,7 +122,7 @@ userSchema.pre("save", async function (next) {
       this.password = await bcrypt.hash(this.password, salt);
       // Log to verify that the password is hashed successfully
       logInfo(
-        `Password hashed successfully for user: ${this.email}. Hash: ${this.password}`
+        `Password hashed successfully for user: ${this.email}. Hash: ${this.password}`,
       );
       next();
     } catch (error) {
