@@ -46,7 +46,7 @@ describe("deleteAllCategories Endpoint Tests", () => {
       .send({ user: { email: testUser.email, password: testUser.password } });
 
     cookie = loginResponse.headers["set-cookie"];
-
+    const userId = loginResponse.body.user.id;
     // Fetch categories and select the first three for testing
     const getCategoryResponse = await request
       .get("/api/habit-categories")
@@ -78,7 +78,7 @@ describe("deleteAllCategories Endpoint Tests", () => {
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
     expect(response.body.msg).toBe(
-      "The category and all its associated records have been deleted."
+      "The category and all its associated records have been deleted.",
     );
     expect(response.body.category).toBeUndefined();
   });
@@ -93,7 +93,7 @@ describe("deleteAllCategories Endpoint Tests", () => {
     expect(response.status).toBe(404);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe(
-      "The category you are trying to delete does not exist."
+      "The category you are trying to delete does not exist.",
     );
     expect(response.body.category).toBeUndefined();
   });
@@ -108,7 +108,7 @@ describe("deleteAllCategories Endpoint Tests", () => {
     expect(response.status).toBe(500);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe(
-      "An error occurred while deleting the category."
+      "An error occurred while deleting the category.",
     );
     expect(response.body.category).toBeUndefined();
   });
@@ -123,7 +123,7 @@ describe("deleteAllCategories Endpoint Tests", () => {
     expect(response.status).toBe(500);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe(
-      "An error occurred while deleting the category."
+      "An error occurred while deleting the category.",
     );
     expect(response.body.category).toBeUndefined();
   });
@@ -164,7 +164,7 @@ describe("deleteAllCategories Endpoint Tests", () => {
     expect(response.status).toBe(200); // Successful deletion
     expect(response.body.success).toBe(true);
     expect(response.body.msg).toBe(
-      "The category and all its associated records have been deleted."
+      "The category and all its associated records have been deleted.",
     );
 
     // Check that the category no longer exists
@@ -190,7 +190,7 @@ describe("deleteAllCategories Endpoint Tests", () => {
     expect(secondDeletionResponse.status).toBe(404);
     expect(secondDeletionResponse.body.success).toBe(false);
     expect(secondDeletionResponse.body.msg).toBe(
-      "The category you are trying to delete does not exist."
+      "The category you are trying to delete does not exist.",
     );
   });
 
@@ -204,7 +204,7 @@ describe("deleteAllCategories Endpoint Tests", () => {
     expect(response.status).toBe(500);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe(
-      "An error occurred while deleting the category."
+      "An error occurred while deleting the category.",
     ); // mongoose response
   });
 });

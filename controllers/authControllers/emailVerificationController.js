@@ -23,7 +23,7 @@ const currentUrl =
   process.env.NODE_ENV === "production" ? production : development;
 
 // Function to send a verification email
-export const sendVerificationEmail = async (user, res) => {
+export const sendVerificationEmail = async (user) => {
   const { _id, email } = user;
   const uniqueString = uuidv4() + _id; // Generate a unique string using uuid and user ID
 
@@ -72,7 +72,7 @@ export const sendVerificationEmail = async (user, res) => {
 export const resendVerificationLink = async (req, res) => {
   logInfo("Request Body:", req.body);
   try {
-    let { email, userId } = req.body;
+    const { email, userId } = req.body;
 
     if (!userId || !email) {
       const errorMsg = "Empty user details are not allowed";
@@ -112,95 +112,94 @@ export const resendVerificationLink = async (req, res) => {
 
 // Function to verify the email
 export const verifyEmail = (req, res) => {
-  console.log("verifyEmail function called"); // Log to indicate function is called
-  let { userId, uniqueString } = req.params;
-  console.log(`Params - userId: ${userId}, uniqueString: ${uniqueString}`); // Log the received params
+  logInfo("verifyEmail function called"); // Log to indicate function is called
+  const { userId, uniqueString } = req.params;
+  logInfo(`Params - userId: ${userId}, uniqueString: ${uniqueString}`); // Log the received params
 
   UserVerification.findOne({ userId }) // Find the verification record
     .then((result) => {
       if (result) {
-        console.log("UserVerification record found:", result); // Log the found verification record
+        logInfo("UserVerification record found:", result); // Log the found verification record
         const { expiresAt, uniqueString: hashedUniqueString } = result;
 
         if (expiresAt < Date.now()) {
           // If the link has expired
-          console.log("Verification link has expired"); // Log if the link is expired
+          logInfo("Verification link has expired"); // Log if the link is expired
           UserVerification.deleteOne({ userId }) // Delete the expired verification record
             .then(() => {
               User.deleteOne({ _id: userId }) // Delete the user
                 .then(() => {
-                  let message = "Link has expired. Please sign up again";
-                  console.log(message); // Log the message
+                  const message = "Link has expired. Please sign up again";
+                  logInfo(message); // Log the message
                   res.redirect(`/user/verified?error=true&message=${message}`);
                 })
                 .catch((error) => {
                   logError(error);
-                  let message =
+                  const message =
                     "Clearing user with expired unique string failed.";
-                  console.log(message, error); // Log the error message
+                  logInfo(message, error); // Log the error message
                   res.redirect(`/user/verified?error=true&message=${message}`);
                 });
             })
             .catch((error) => {
               logError(error);
-              let message = "Clearing expired user verification record failed.";
-              console.log(message, error); // Log the error message
+              const message =
+                "Clearing expired user verification record failed.";
+              logInfo(message, error); // Log the error message
               res.redirect(`/user/verified?error=true&message=${message}`);
             });
         } else {
           // If the link is still valid
-          console.log("Verification link is still valid"); // Log if the link is still valid
+          logInfo("Verification link is still valid"); // Log if the link is still valid
           bcrypt
             .compare(uniqueString, hashedUniqueString) // Compare the unique strings
             .then((match) => {
               if (match) {
                 // If they match
-                console.log("Unique strings match"); // Log if the strings match
+                logInfo("Unique strings match"); // Log if the strings match
                 User.updateOne({ _id: userId }, { verified: true }) // Update the user's verified status
                   .then(() => {
-                    console.log(
-                      "User verification status updated successfully"
-                    ); // Log success message
+                    logInfo("User verification status updated successfully"); // Log success message
                     res.sendFile(resolvePath("views/verified.html"));
                   })
                   .catch((error) => {
                     logError(error);
-                    let message =
+                    const message =
                       "An error occurred while finalizing successful verification.";
-                    console.log(message, error); // Log the error message
+                    logInfo(message, error); // Log the error message
                     res.redirect(
-                      `/user/verified?error=true&message=${message}`
+                      `/user/verified?error=true&message=${message}`,
                     );
                   });
               } else {
                 // If the unique strings do not match
-                let message =
+                const message =
                   "Invalid verification details passed. Check your inbox.";
-                console.log(message); // Log the message
+                logInfo(message); // Log the message
                 res.redirect(`/user/verified?error=true&message=${message}`);
               }
             })
             .catch((error) => {
               logError(error);
-              let message =
+              const message =
                 "An error occurred while updating user record to show verified.";
-              console.log(message, error); // Log the error message
+              logInfo(message, error); // Log the error message
               res.redirect(`/user/verified?error=true&message=${message}`);
             });
         }
       } else {
         // If no verification record is found
-        let message =
+        const message =
           "Account record doesn't exist or has been verified already. Please sign up or log in.";
-        console.log(message); // Log the message
+        logInfo(message); // Log the message
         res.redirect(`/user/verified?error=true&message=${message}`);
       }
     })
     .catch((error) => {
       logError(error);
-      let message =
+      const message =
         "An error occurred while checking for existing user verification record";
-      console.log(message, error); // Log the error message
+      logInfo(message, error); // Log the error message
       res.redirect(`/user/verified?error=true&message=${message}`);
     });
 };
