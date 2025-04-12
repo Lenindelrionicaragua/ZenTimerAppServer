@@ -17,7 +17,7 @@ import {
 
 export const getWeeklyTimeMetrics = async (req, res) => {
   const userId = req.userId;
-  let { month, year, categoryId } = req.query;
+  const { month, year, categoryId } = req.query;
 
   if (!month || !year) {
     return res.status(400).json({
@@ -96,7 +96,7 @@ export const getWeeklyTimeMetrics = async (req, res) => {
         // Calculate total minutes for the category
         const totalCategoryMinutes = categoryRecords.reduce(
           (total, record) => total + (record.totalDailyMinutes || 0),
-          0
+          0,
         );
 
         return {
@@ -104,7 +104,7 @@ export const getWeeklyTimeMetrics = async (req, res) => {
           totalMinutes: totalCategoryMinutes,
           records: simplifiedRecords,
         };
-      })
+      }),
     );
 
     // Calculate total minutes across all categories
@@ -114,17 +114,12 @@ export const getWeeklyTimeMetrics = async (req, res) => {
     const allRecords = categoryData.flatMap((cat) => cat.records);
     const totalDailyMinutes = calculateDailyMinutes(allRecords);
 
-    const recordsWithPercentage = addPercentagePerDayToRecords(
-      allRecords,
-      totalDailyMinutes
-    );
-
     const categoryDataWithPercentages = categoryData.map((category) => {
       return {
         ...category,
         records: addPercentagePerDayToRecords(
           category.records,
-          totalDailyMinutes
+          totalDailyMinutes,
         ), // Add percentages to each category's records
       };
     });
@@ -137,7 +132,7 @@ export const getWeeklyTimeMetrics = async (req, res) => {
     // Add percentage data to each category
     const categoryStats = calculateCategoryPercentages(
       categoryDataWithPercentages,
-      totalMinutes
+      totalMinutes,
     );
 
     // Log the response data for debugging
@@ -152,8 +147,8 @@ export const getWeeklyTimeMetrics = async (req, res) => {
           categoryData: categoryStats,
         },
         null,
-        2
-      )}`
+        2,
+      )}`,
     );
 
     // Return the response
