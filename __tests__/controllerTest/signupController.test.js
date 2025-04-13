@@ -7,7 +7,6 @@ import {
 import app from "../../app.js";
 import { addUserToMockDB } from "../../__testUtils__/userMocks.js";
 import { sendVerificationEmail } from "../../controllers/authControllers/emailVerificationController.js";
-import { logError, logInfo } from "../../util/logging.js";
 
 const request = supertest(app);
 
@@ -17,7 +16,7 @@ jest.mock(
     sendVerificationEmail: jest.fn(),
     resendVerificationLink: jest.fn(),
     verifyEmail: jest.fn(),
-  })
+  }),
 );
 
 jest.mock("../../util/logging.js");
@@ -134,7 +133,7 @@ describe("signupController", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe(
-      "BAD REQUEST: Name is a required field., Email is a required field, Email is not in a valid format, Password is a required field, Password must be at least 8 characters long, Password must contain at least one uppercase letter, Password must contain at least one special character., Date Of Birth is a required field., Date Of Birth is a required field with valid format (e.g., 'Tue Feb 01 2022')."
+      "BAD REQUEST: Name is a required field., Email is a required field, Email is not in a valid format, Password is a required field, Password must be at least 8 characters long, Password must contain at least one uppercase letter, Password must contain at least one special character., Date Of Birth is a required field., Date Of Birth is a required field with valid format (e.g., 'Tue Feb 01 2022').",
     );
   });
 
@@ -146,7 +145,7 @@ describe("signupController", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe(
-      "Invalid request: You need to provide a valid 'user' object. Received: null"
+      "Invalid request: You need to provide a valid 'user' object. Received: null",
     );
   });
 
@@ -156,7 +155,7 @@ describe("signupController", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe(
-      "Invalid request: You need to provide a valid 'user' object. Received: undefined"
+      "Invalid request: You need to provide a valid 'user' object. Received: undefined",
     );
   });
 
@@ -173,7 +172,7 @@ describe("signupController", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe(
-      "BAD REQUEST: Name can only contain letters, numbers, and a single space between words."
+      "BAD REQUEST: Name can only contain letters, numbers, and a single space between words.",
     );
   });
 
@@ -204,7 +203,7 @@ describe("signupController", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe(
-      "BAD REQUEST: Email is not in a valid format"
+      "BAD REQUEST: Email is not in a valid format",
     );
   });
 
@@ -220,7 +219,7 @@ describe("signupController", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe(
-      "BAD REQUEST: Email is not in a valid format, Date Of Birth is a required field., Date Of Birth is a required field with valid format (e.g., 'Tue Feb 01 2022')."
+      "BAD REQUEST: Email is not in a valid format, Date Of Birth is a required field., Date Of Birth is a required field with valid format (e.g., 'Tue Feb 01 2022').",
     );
   });
 
@@ -237,7 +236,7 @@ describe("signupController", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe(
-      "BAD REQUEST: Password must contain at least one uppercase letter, Password must contain at least one special character."
+      "BAD REQUEST: Password must contain at least one uppercase letter, Password must contain at least one special character.",
     );
   });
 
@@ -253,7 +252,7 @@ describe("signupController", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe(
-      "BAD REQUEST: Password is a required field, Password must be at least 8 characters long, Password must contain at least one uppercase letter, Password must contain at least one special character."
+      "BAD REQUEST: Password is a required field, Password must be at least 8 characters long, Password must contain at least one uppercase letter, Password must contain at least one special character.",
     );
   });
 
@@ -270,7 +269,7 @@ describe("signupController", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe(
-      "BAD REQUEST: Password must be at least 8 characters long, Password must contain at least one uppercase letter, Password must contain at least one special character."
+      "BAD REQUEST: Password must be at least 8 characters long, Password must contain at least one uppercase letter, Password must contain at least one special character.",
     );
   });
 
@@ -287,7 +286,7 @@ describe("signupController", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe(
-      "BAD REQUEST: Date Of Birth is a required field with valid format (e.g., 'Tue Feb 01 2022')."
+      "BAD REQUEST: Date Of Birth is a required field with valid format (e.g., 'Tue Feb 01 2022').",
     );
   });
 
@@ -303,7 +302,7 @@ describe("signupController", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe(
-      "BAD REQUEST: Date Of Birth is a required field., Date Of Birth is a required field with valid format (e.g., 'Tue Feb 01 2022')."
+      "BAD REQUEST: Date Of Birth is a required field., Date Of Birth is a required field with valid format (e.g., 'Tue Feb 01 2022').",
     );
   });
 
@@ -321,7 +320,7 @@ describe("signupController", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe(
-      "Invalid request: the following properties are not allowed to be set: fakeInvalidField"
+      "Invalid request: the following properties are not allowed to be set: fakeInvalidField",
     );
   });
 
@@ -374,7 +373,7 @@ describe("signupController", () => {
     expect(sendVerificationEmail).toHaveBeenCalledTimes(1);
 
     expect(logError).toHaveBeenCalledWith(
-      "Error sending verification email: Unexpected error while sending email"
+      "Error sending verification email: Unexpected error while sending email",
     );
   });
 });

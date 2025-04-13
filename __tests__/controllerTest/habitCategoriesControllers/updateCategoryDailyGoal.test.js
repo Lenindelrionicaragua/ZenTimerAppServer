@@ -24,7 +24,6 @@ describe("Update Daily Goal Tests", () => {
   let testUser;
   let cookie;
   let categoryId;
-  let invalidCategoryId;
 
   beforeEach(async () => {
     testUser = {
@@ -94,7 +93,7 @@ describe("Update Daily Goal Tests", () => {
     expect(response.status).toBe(400); // Bad Request
     expect(response.body.success).toBe(false);
     expect(response.body.message).toContain(
-      "BAD REQUEST: Daily goal must be an integer."
+      "BAD REQUEST: Daily goal must be an integer.",
     );
   });
 
@@ -135,7 +134,7 @@ describe("Update Daily Goal Tests", () => {
     expect(response.status).toBe(403); // Forbidden
     expect(response.body.success).toBe(false);
     expect(response.body.message).toContain(
-      "Forbidden: You are not authorized to update this category."
+      "Forbidden: You are not authorized to update this category.",
     );
   });
 
@@ -181,7 +180,7 @@ describe("Update Daily Goal Tests", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.message).toContain(
-      "Daily goal must be at least 15 minutes."
+      "Daily goal must be at least 15 minutes.",
     );
   });
 
@@ -194,7 +193,7 @@ describe("Update Daily Goal Tests", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.message).toContain(
-      "Daily goal cannot exceed 1440 minutes (24 hours)."
+      "Daily goal cannot exceed 1440 minutes (24 hours).",
     );
   });
 
@@ -244,7 +243,7 @@ describe("Update Daily Goal Tests", () => {
 
   it("should return 400 if the category ID is in an invalid format", async () => {
     const response = await request
-      .patch(`/api/habit-categories/invalid-id/update-daily-goal`)
+      .patch("/api/habit-categories/invalid-id/update-daily-goal")
       .set("Cookie", cookie)
       .send({ dailyGoal: 30 });
 
