@@ -5,7 +5,6 @@ import {
   clearMockDatabase,
 } from "../../../__testUtils__/dbMock.js";
 import app from "../../../app.js";
-import { logInfo } from "../../../util/logging.js";
 
 const request = supertest(app);
 
@@ -87,7 +86,7 @@ describe("Create a new habit-category (test route)", () => {
     expect(response.body.message).toBe("Category created successfully.");
     expect(response.body.category.name).toBe(newCategory.habitCategory.name);
     expect(response.body.category.dailyGoal).toBe(
-      newCategory.habitCategory.dailyGoal
+      newCategory.habitCategory.dailyGoal,
     ); // Check that dailyGoal is correctly set
   });
 
@@ -107,7 +106,7 @@ describe("Create a new habit-category (test route)", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toContain(
-      "BAD REQUEST: Daily goal cannot exceed 1440 minutes (24 hours)."
+      "BAD REQUEST: Daily goal cannot exceed 1440 minutes (24 hours).",
     ); // Adjust based on your validation logic
   });
 
@@ -127,7 +126,7 @@ describe("Create a new habit-category (test route)", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toContain(
-      "BAD REQUEST: Daily goal must be at least 15 minutes."
+      "BAD REQUEST: Daily goal must be at least 15 minutes.",
     ); // Adjust based on your validation logic
   });
 
@@ -147,7 +146,7 @@ describe("Create a new habit-category (test route)", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toContain(
-      "BAD REQUEST: Daily goal must be at least 15 minutes."
+      "BAD REQUEST: Daily goal must be at least 15 minutes.",
     ); // Adjust based on your validation logic
   });
 
@@ -167,7 +166,7 @@ describe("Create a new habit-category (test route)", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toContain(
-      "BAD REQUEST: the following properties are not allowed to be set: extraField"
+      "BAD REQUEST: the following properties are not allowed to be set: extraField",
     );
   });
 
@@ -186,7 +185,7 @@ describe("Create a new habit-category (test route)", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toContain(
-      "BAD REQUEST: Category name must contain only letters, numbers, spaces, hyphens, or exclamation marks, and have a maximum length of 15 characters."
+      "BAD REQUEST: Category name must contain only letters, numbers, spaces, hyphens, or exclamation marks, and have a maximum length of 15 characters.",
     );
   });
 
@@ -245,7 +244,7 @@ describe("Create a new habit-category (test route)", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toContain(
-      "BAD REQUEST: Invalid 'createdAt' date provided."
+      "BAD REQUEST: Invalid 'createdAt' date provided.",
     );
   });
 

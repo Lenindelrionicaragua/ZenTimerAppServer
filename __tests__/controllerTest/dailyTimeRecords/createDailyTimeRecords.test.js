@@ -51,6 +51,7 @@ describe("deleteAllCategories Endpoint Tests", () => {
       .send({ user: { email: testUser.email, password: testUser.password } });
 
     cookie = loginResponse.headers["set-cookie"];
+    const userId = loginResponse.body.user.id;
 
     // Fetch categories
     const getCategoryResponse = await request
@@ -66,53 +67,39 @@ describe("deleteAllCategories Endpoint Tests", () => {
       categoryId6,
     ] = getCategoryResponse.body.categories.map((c) => c.id);
 
-    createdBy = getCategoryResponse.body.categories[0].createdBy;
-
-    // logInfo({
-    //   categoryId1,
-    //   categoryId2,
-    //   categoryId3,
-    //   categoryId4,
-    //   categoryId5,
-    //   categoryId6,
-    // });
-
-    // logInfo(createdBy);
-
-    // Create daily records associated with the category
     const dailyTimeRecords = [
       {
-        userId: createdBy,
+        userId: userId,
         categoryId: categoryId1,
         totalDailyMinutes: 60,
         date: "2023-10-01",
       },
       {
-        userId: createdBy,
+        userId: userId,
         categoryId: categoryId2,
         totalDailyMinutes: 30,
         date: "2023-10-02",
       },
       {
-        userId: createdBy,
+        userId: userId,
         categoryId: categoryId3,
         totalDailyMinutes: 30,
         date: "2023-10-02",
       },
       {
-        userId: createdBy,
+        userId: userId,
         categoryId: categoryId4,
         totalDailyMinutes: 30,
         date: "2023-10-02",
       },
       {
-        userId: createdBy,
+        userId: userId,
         categoryId: categoryId5,
         totalDailyMinutes: 30,
         date: "2023-10-02",
       },
       {
-        userId: createdBy,
+        userId: userId,
         categoryId: categoryId6,
         totalDailyMinutes: 30,
         date: "2023-10-02",
@@ -152,7 +139,7 @@ describe("deleteAllCategories Endpoint Tests", () => {
 
     expect(response.status).toBe(400); // Bad request due to invalid format
     expect(response.body.errors).toContain(
-      "Date must be in a valid ISO format."
+      "Date must be in a valid ISO format.",
     );
   });
 
@@ -199,7 +186,7 @@ describe("deleteAllCategories Endpoint Tests", () => {
 
     expect(response.status).toBe(400); // Bad request due to invalid categoryId
     expect(response.body.errors).toContain(
-      "categoryId must be a valid 24-character string."
+      "categoryId must be a valid 24-character string.",
     );
   });
 
@@ -218,7 +205,7 @@ describe("deleteAllCategories Endpoint Tests", () => {
 
     expect(response.status).toBe(400); // Bad request due to null categoryId
     expect(response.body.errors).toContain(
-      "categoryId must be a valid 24-character string."
+      "categoryId must be a valid 24-character string.",
     );
   });
 
@@ -385,7 +372,7 @@ describe("Daily Record Creation Tests", () => {
 
     expect(response.status).toBe(400); // Bad Request
     expect(response.body.errors).toContain(
-      "Date must be in a valid ISO format."
+      "Date must be in a valid ISO format.",
     );
   });
 });
