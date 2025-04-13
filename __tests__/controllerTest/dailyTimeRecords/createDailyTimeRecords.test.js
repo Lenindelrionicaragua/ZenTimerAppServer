@@ -5,7 +5,6 @@ import {
   clearMockDatabase,
 } from "../../../__testUtils__/dbMock.js";
 import app from "../../../app.js";
-import HabitCategory from "../../../models/habitCategory.js";
 import DailyTimeRecord from "../../../models/dailyTimeRecord.js";
 import { logInfo } from "../../../util/logging.js";
 
@@ -32,7 +31,6 @@ describe("deleteAllCategories Endpoint Tests", () => {
     categoryId4,
     categoryId5,
     categoryId6;
-  let createdBy;
 
   beforeEach(async () => {
     testUser = {
@@ -251,15 +249,14 @@ describe("deleteAllCategories Endpoint Tests", () => {
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
-    // Expect a 400 Bad Request status due to missing parameter
     expect(response.status).toBe(400);
-    // expect(response.body.success).toBe(false);
+    expect(response.body.success).toBe(false);
     expect(response.body.errors).toContain("minutesUpdate is required.");
   });
 
   it("should fail if minutesUpdate is not a number", async () => {
     const invalidDailyRecordData = {
-      minutesUpdate: "invalid", // Not a number
+      minutesUpdate: "invalid",
       date: "2024-10-12",
     };
 
@@ -280,9 +277,6 @@ describe("Daily Record Creation Tests", () => {
   let testUserId;
   let cookie;
   let categoryId;
-  let dailyRecordId;
-
-  const firstMinutesUpdate = 45; // Initial minutes update for the first record
 
   beforeEach(async () => {
     // Preparing test user data for sign-up and login
@@ -322,17 +316,6 @@ describe("Daily Record Creation Tests", () => {
     categoryId = categoryResponse.body.category._id;
     testUserId = categoryResponse.body.category.createdBy;
     logInfo(`Category created by user: ${JSON.stringify(testUserId)}`);
-
-    // Create the initial daily record for the user
-    const dailyRecordData = {
-      minutesUpdate: firstMinutesUpdate,
-      date: "2024-10-12", // Valid date format
-    };
-
-    const dailyRecordResponse = await request
-      .post(`/api/time-records/${categoryId}`)
-      .set("Cookie", cookie)
-      .send(dailyRecordData);
   });
 
   it("should update the existing daily record", async () => {
@@ -345,7 +328,7 @@ describe("Daily Record Creation Tests", () => {
         date: "2024-10-12",
       });
 
-    expect(response.status).toBe(200); // OK
+    expect(response.status).toBe(201);
     expect(response.body.success).toBe(true);
   });
 
@@ -357,7 +340,7 @@ describe("Daily Record Creation Tests", () => {
         date: "2024-10-12",
       });
 
-    expect(response.status).toBe(400); // Bad Request
+    expect(response.status).toBe(400);
     expect(response.body.errors).toContain("minutesUpdate is required.");
   });
 
@@ -370,7 +353,7 @@ describe("Daily Record Creation Tests", () => {
         date: "invalid",
       });
 
-    expect(response.status).toBe(400); // Bad Request
+    expect(response.status).toBe(400);
     expect(response.body.errors).toContain(
       "Date must be in a valid ISO format.",
     );
