@@ -24,7 +24,7 @@ module.exports = defineConfig([
       "prefer-const": "error",
       "no-var": "error",
       semi: ["error", "always"],
-      quotes: ["error", "double"],
+      quotes: ["error", "double", { allowTemplateLiterals: true }],
     },
   },
   {
