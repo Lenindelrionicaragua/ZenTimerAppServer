@@ -13,7 +13,7 @@ export const signup = async (req, res) => {
     return res.status(400).json({
       success: false,
       msg: `Invalid request: You need to provide a valid 'user' object. Received: ${JSON.stringify(
-        req.body.user
+        req.body.user,
       )}`,
     });
   }
@@ -24,7 +24,7 @@ export const signup = async (req, res) => {
 
   const invalidFieldsError = validateAllowedFields(
     req.body.user,
-    allowedFields
+    allowedFields,
   );
   if (invalidFieldsError) {
     return res

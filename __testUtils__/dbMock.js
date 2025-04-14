@@ -11,10 +11,11 @@ let mongoMemServer;
  * Connecting to the Database
  */
 export const connectToMockDB = async () => {
-  if (mongoMemServer !== null) {
-    // Prevent us from overwriting the database when tests are running!
+  if (mongoMemServer !== null && mongoMemServer !== undefined) {
     throw Error(
-      `Error in testing, mongoMemServer should not be set when calling connectToMockDB. mongoMemServer should be null or undefined, but received: ${mongoMemServer.toString()}`,
+      `Error in testing, mongoMemServer should not be set when calling connectToMockDB. mongoMemServer should be null or undefined, but received: ${String(
+        mongoMemServer,
+      )}`,
     );
   }
 
