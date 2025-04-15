@@ -4,6 +4,13 @@ import { logInfo } from "../util/logging.js";
 
 // Define the habit category schema
 const habitCategorySchema = new mongoose.Schema({
+  categoryId: {
+    // Agregar el campo categoryId
+    type: mongoose.Schema.Types.ObjectId,
+    unique: true, // Asegurando que categoryId sea único
+    required: true,
+    default: () => new mongoose.Types.ObjectId(), // Generar automáticamente si no se proporciona
+  },
   name: {
     type: String,
     required: true,
@@ -22,6 +29,8 @@ const habitCategorySchema = new mongoose.Schema({
   dailyGoal: {
     type: Number,
     default: 55,
+    min: [15, "Daily goal must be at least 15 minutes."],
+    max: [1440, "Daily goal cannot exceed 1440 minutes (24 hours)."],
   },
 });
 
@@ -29,10 +38,10 @@ const habitCategorySchema = new mongoose.Schema({
 export const validateCategory = (categoryObject, requireName = true) => {
   const errorList = [];
   const allowedKeys = [
+    "categoryId", // Asegúrate de que categoryId esté en la lista de campos permitidos
     "name",
     "createdBy",
     "createdAt",
-    "categoryId",
     "dailyGoal",
   ];
 
@@ -57,6 +66,14 @@ export const validateCategory = (categoryObject, requireName = true) => {
     }
   }
 
+  // Validate 'categoryId' as an ObjectId (if exists)
+  if (
+    categoryObject.categoryId &&
+    !mongoose.Types.ObjectId.isValid(categoryObject.categoryId)
+  ) {
+    errorList.push("Invalid 'categoryId' provided.");
+  }
+
   // Validate 'createdBy' as an ObjectId
   if (
     categoryObject.createdBy &&
@@ -68,14 +85,6 @@ export const validateCategory = (categoryObject, requireName = true) => {
   // Validate 'createdAt' as a valid date (if exists)
   if (categoryObject.createdAt && isNaN(Date.parse(categoryObject.createdAt))) {
     errorList.push("Invalid 'createdAt' date provided.");
-  }
-
-  // Validate 'categoryId' as an ObjectId
-  if (
-    categoryObject.categoryId &&
-    !mongoose.Types.ObjectId.isValid(categoryObject.categoryId)
-  ) {
-    errorList.push("Invalid 'categoryId' provided.");
   }
 
   // Validate 'dailyGoal' range

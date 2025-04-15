@@ -7,7 +7,7 @@ import {
 import app from "../../app.js";
 import { addUserToMockDB } from "../../__testUtils__/userMocks.js";
 import { sendVerificationEmail } from "../../controllers/authControllers/emailVerificationController.js";
-import { logError, logInfo } from "../../util/logging.js";
+import { logError } from "../../util/logging.js";
 
 const request = supertest(app);
 
