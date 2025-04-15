@@ -10,7 +10,7 @@ export const createCategory = async (req, res) => {
     return res.status(400).json({
       success: false,
       msg: `Invalid request: You need to provide a valid 'habitCategory' object. Received: ${JSON.stringify(
-        habitCategory
+        habitCategory,
       )}`,
     });
   }
@@ -57,12 +57,17 @@ export const createCategory = async (req, res) => {
     // Set dailyGoal, defaulting to 0 if not provided
     const dailyGoal = habitCategory.dailyGoal || 0;
 
+    // Generate a unique categoryId
+    const categoryId =
+      habitCategory.categoryId || new mongoose.Types.ObjectId();
+
     // Create new habit category
     const newCategory = new HabitCategory({
       name: habitCategory.name,
       createdBy: userId,
       createdAt: finalCreatedAt,
       dailyGoal: dailyGoal,
+      categoryId: categoryId,
     });
 
     // Save the new category
