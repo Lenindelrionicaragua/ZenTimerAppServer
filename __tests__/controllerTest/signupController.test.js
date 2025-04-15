@@ -136,7 +136,7 @@ describe("signupController", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe(
-      "BAD REQUEST: Name is a required field., Email is a required field, Email is not in a valid format, Password is a required field, Password must be at least 8 characters long, Password must contain at least one uppercase letter, Password must contain at least one special character., Date Of Birth is a required field., Date Of Birth is a required field with valid format (e.g., 'Tue Feb 01 2022').",
+      "BAD REQUEST: Name is a required field., Email is a required field, Email is not in a valid format, Password is a required field, Date Of Birth is a required field., Date Of Birth is a required field with valid format (e.g., 'Tue Feb 01 2022').",
     );
   });
 

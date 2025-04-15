@@ -74,21 +74,20 @@ export const validateUser = (
     }
   }
 
-  if (
-    (requireDateOfBirth && userObject.dateOfBirth === null) ||
-    userObject.dateOfBirth === ""
-  ) {
-    errorList.push("Date Of Birth is a required field.");
-  }
+  if (requireDateOfBirth) {
+    const dob = userObject?.dateOfBirth;
 
-  const isValidDateOfBirth = /^[A-Z][a-z]{2} [A-Z][a-z]{2} \d{2} \d{4}$/.test(
-    userObject.dateOfBirth,
-  );
-
-  if (requireDateOfBirth && (!userObject.dateOfBirth || !isValidDateOfBirth)) {
-    errorList.push(
-      "Date Of Birth is a required field with valid format (e.g., 'Tue Feb 01 2022').",
-    );
+    if (!dob || dob.trim() === "") {
+      errorList.push("Date Of Birth is a required field.");
+    } else {
+      const isValidDateOfBirth =
+        /^[A-Z][a-z]{2} [A-Z][a-z]{2} \d{2} \d{4}$/.test(dob);
+      if (!isValidDateOfBirth) {
+        errorList.push(
+          "Date Of Birth must be in valid format (e.g., 'Tue Feb 01 2022').",
+        );
+      }
+    }
   }
 
   return errorList;
