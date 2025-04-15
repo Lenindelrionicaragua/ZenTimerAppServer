@@ -58,7 +58,6 @@ describe("Update Daily Goal Tests", () => {
       .send(newCategory);
 
     categoryId = categoryResponse.body.category._id;
-    invalidCategoryId = "invalidCategoryId";
   });
 
   it("should successfully update dailyGoal for a valid category", async () => {

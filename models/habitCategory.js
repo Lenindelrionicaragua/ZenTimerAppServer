@@ -39,7 +39,7 @@ export const validateCategory = (categoryObject, requireName = true) => {
   // Validate allowed fields
   const validatedKeysMessage = validateAllowedFields(
     categoryObject,
-    allowedKeys
+    allowedKeys,
   );
   if (validatedKeysMessage.length > 0) {
     errorList.push(validatedKeysMessage);
@@ -52,7 +52,7 @@ export const validateCategory = (categoryObject, requireName = true) => {
       errorList.push("Category name is required.");
     } else if (!/^[a-zA-Z0-9\s\-\!]{1,15}$/.test(categoryObject.name)) {
       errorList.push(
-        "Category name must contain only letters, numbers, spaces, hyphens, or exclamation marks, and have a maximum length of 15 characters."
+        "Category name must contain only letters, numbers, spaces, hyphens, or exclamation marks, and have a maximum length of 15 characters.",
       );
     }
   }
@@ -96,7 +96,7 @@ export const validateCategory = (categoryObject, requireName = true) => {
   if (errorList.length > 0) {
     logInfo("Category validation failed: " + errorList.join(", "));
   } else {
-    // logInfo("Category validation passed without errors.");
+    logInfo("Category validation passed without errors.");
   }
 
   return errorList;
