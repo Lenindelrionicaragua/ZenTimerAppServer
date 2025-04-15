@@ -45,7 +45,7 @@ export const validateUser = (
     );
   }
 
-  if ((requireEmail && userObject.email === null) || userObject.email === "") {
+  if (!userObject?.email || (requireEmail && userObject.email.trim() === "")) {
     errorList.push("Email is a required field");
   }
 
