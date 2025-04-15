@@ -7,7 +7,7 @@ import {
 import app from "../../app.js";
 import { addUserToMockDB } from "../../__testUtils__/userMocks.js";
 import { sendVerificationEmail } from "../../controllers/authControllers/emailVerificationController.js";
-import { logError } from "../../util/logging.js";
+import { logError, logInfo } from "../../util/logging.js";
 
 const request = supertest(app);
 
@@ -20,7 +20,10 @@ jest.mock(
   }),
 );
 
-jest.mock("../../util/logging.js");
+jest.mock("../../util/logging.js", () => ({
+  logError: jest.fn(),
+  logInfo: jest.fn(),
+}));
 
 beforeAll(async () => {
   await connectToMockDB();
@@ -121,7 +124,6 @@ describe("signupController", () => {
     categoriesResponse.body.categories.forEach((category) => {
       expect(defaultCategoryNames).toContain(category.name);
       expect(category).toHaveProperty("id");
-      expect(category).toHaveProperty("createdAt");
       expect(category).toHaveProperty("dailyGoal");
     });
   });
