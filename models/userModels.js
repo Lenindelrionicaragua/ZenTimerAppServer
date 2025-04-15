@@ -56,26 +56,22 @@ export const validateUser = (
     errorList.push("Email is not in a valid format");
   }
 
-  if (
-    requirePassword &&
-    (userObject.password === null || userObject.password === "")
-  ) {
-    errorList.push("Password is a required field");
-  }
+  if (requirePassword) {
+    const password = userObject?.password;
 
-  if (
-    requirePassword &&
-    (!userObject.password || userObject.password.length < 8)
-  ) {
-    errorList.push("Password must be at least 8 characters long");
-  }
-
-  if (requirePassword && !/[A-Z]/.test(userObject.password)) {
-    errorList.push("Password must contain at least one uppercase letter");
-  }
-
-  if (requirePassword && !/[^A-Za-z0-9]/.test(userObject.password)) {
-    errorList.push("Password must contain at least one special character.");
+    if (!password || password.trim() === "") {
+      errorList.push("Password is a required field");
+    } else {
+      if (password.length < 8) {
+        errorList.push("Password must be at least 8 characters long");
+      }
+      if (!/[A-Z]/.test(password)) {
+        errorList.push("Password must contain at least one uppercase letter");
+      }
+      if (!/[^A-Za-z0-9]/.test(password)) {
+        errorList.push("Password must contain at least one special character.");
+      }
+    }
   }
 
   if (
