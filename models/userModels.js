@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import validateAllowedFields from "../util/validateAllowedFields.js";
 import { logInfo } from "../util/logging.js";
+import validator from "validator";
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true, trim: true },
@@ -28,32 +29,28 @@ export const validateUser = (
     errorList.push(validatedKeysMessage);
   }
 
-  if (
-    !userObject ||
-    !userObject.name ||
-    (requireName && userObject.name.trim() === "")
-  ) {
-    errorList.push("Name is a required field.");
+  if (requireName) {
+    const name = userObject?.name;
+
+    if (!name || name.trim() === "") {
+      errorList.push("Name is a required field.");
+    } else if (!validator.isAlphanumeric(name, "en-US", { ignore: " " })) {
+      errorList.push(
+        "Name can only contain letters, numbers, and a single space between words.",
+      );
+    } else if (/\s{2,}/.test(name) || /^\s|\s$/.test(name)) {
+      errorList.push("Name cannot have multiple spaces or spaces at the ends.");
+    }
   }
 
-  if (
-    requireName &&
-    !/^(?:[a-zA-Z0-9]+(?:\s+[a-zA-Z0-9]+)*)?$/.test(userObject.name)
-  ) {
-    errorList.push(
-      "Name can only contain letters, numbers, and a single space between words.",
-    );
-  }
+  if (requireEmail) {
+    const email = userObject?.email;
 
-  if (!userObject?.email || (requireEmail && userObject.email.trim() === "")) {
-    errorList.push("Email is a required field");
-  }
-
-  if (
-    requireEmail &&
-    !/^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(userObject.email)
-  ) {
-    errorList.push("Email is not in a valid format");
+    if (!email || email.trim() === "") {
+      errorList.push("Email is a required field");
+    } else if (!validator.isEmail(email)) {
+      errorList.push("Email is not in a valid format");
+    }
   }
 
   if (requirePassword) {

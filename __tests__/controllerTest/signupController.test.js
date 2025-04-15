@@ -136,7 +136,7 @@ describe("signupController", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe(
-      "BAD REQUEST: Name is a required field., Email is a required field, Email is not in a valid format, Password is a required field, Date Of Birth is a required field., Date Of Birth is a required field with valid format (e.g., 'Tue Feb 01 2022').",
+      "BAD REQUEST: Name is a required field., Email is a required field, Password is a required field, Date Of Birth is a required field.",
     );
   });
 
@@ -210,7 +210,7 @@ describe("signupController", () => {
     );
   });
 
-  test("Should fail if the request does not contain a email field", async () => {
+  test("Should fail if the request does not contain a valid email field", async () => {
     const user = {
       name: "Mary Jane",
       email: "mary.com",
@@ -222,7 +222,7 @@ describe("signupController", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe(
-      "BAD REQUEST: Email is not in a valid format, Date Of Birth is a required field., Date Of Birth is a required field with valid format (e.g., 'Tue Feb 01 2022').",
+      "BAD REQUEST: Email is not in a valid format, Date Of Birth is a required field.",
     );
   });
 
@@ -254,9 +254,7 @@ describe("signupController", () => {
 
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
-    expect(response.body.msg).toBe(
-      "BAD REQUEST: Password is a required field, Password must be at least 8 characters long, Password must contain at least one uppercase letter, Password must contain at least one special character.",
-    );
+    expect(response.body.msg).toBe("BAD REQUEST: Password is a required field");
   });
 
   test("Should fail if the request does not contain a valid password", async () => {
@@ -289,7 +287,7 @@ describe("signupController", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe(
-      "BAD REQUEST: Date Of Birth is a required field with valid format (e.g., 'Tue Feb 01 2022').",
+      "BAD REQUEST: Date Of Birth must be in valid format (e.g., 'Tue Feb 01 2022').",
     );
   });
 
@@ -305,7 +303,7 @@ describe("signupController", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe(
-      "BAD REQUEST: Date Of Birth is a required field., Date Of Birth is a required field with valid format (e.g., 'Tue Feb 01 2022').",
+      "BAD REQUEST: Date Of Birth is a required field.",
     );
   });
 
