@@ -31,14 +31,14 @@ export const validateDailyRecords = (recordObject) => {
 
   const validatedKeysMessage = validateAllowedFields(
     recordObject,
-    allowedFields
+    allowedFields,
   );
 
   if (validatedKeysMessage.length > 0) {
     errorList.push(validatedKeysMessage);
     logInfo(
       "Validation failed for allowed fields in daily record: ",
-      validatedKeysMessage
+      validatedKeysMessage,
     );
   }
 
@@ -55,13 +55,16 @@ export const validateDailyRecords = (recordObject) => {
     recordObject.minutesUpdate > 1440
   ) {
     errorList.push(
-      "minutesUpdate must be between 0 and 1440 (24 hours in minutes)."
+      "minutesUpdate must be between 0 and 1440 (24 hours in minutes).",
     );
   }
 
   // Validate 'categoryId': must be a valid ObjectId (MongoDB's unique identifier)
-  if (recordObject.categoryId && recordObject.categoryId.length !== 24) {
-    errorList.push("categoryId must be a valid 24-character string.");
+  if (
+    recordObject.categoryId &&
+    !mongoose.Types.ObjectId.isValid(recordObject.categoryId)
+  ) {
+    errorList.push("categoryId must be a valid ObjectId.");
   }
 
   // Validate 'userId': must be a valid ObjectId (MongoDB's unique identifier)
@@ -88,6 +91,6 @@ export const validateDailyRecords = (recordObject) => {
 
 const DailyTimeRecord = mongoose.model(
   "DailyTimeRecord",
-  dailyTimeRecordSchema
+  dailyTimeRecordSchema,
 );
 export default DailyTimeRecord;
