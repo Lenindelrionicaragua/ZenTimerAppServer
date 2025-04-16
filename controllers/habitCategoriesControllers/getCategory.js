@@ -19,9 +19,10 @@ export const getCategory = async (req, res) => {
       id: category._id,
       name: category.name,
       dailyGoal: category.dailyGoal || 0,
+      createdAt: category.createdAt,
+      createdBy: category.createdBy,
     }));
 
-    // Log the entire response data structure for debugging
     logInfo(
       `Response data: ${JSON.stringify(
         {
@@ -29,8 +30,8 @@ export const getCategory = async (req, res) => {
           categories: categoryData,
         },
         null,
-        2
-      )}`
+        2,
+      )}`,
     );
 
     return res.status(200).json({

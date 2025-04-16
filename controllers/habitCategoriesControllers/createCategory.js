@@ -15,7 +15,6 @@ export const createCategory = async (req, res) => {
     });
   }
 
-  // Validating all fields in the habitCategory object using validateCategory
   const errorList = validateCategory(habitCategory, true);
   if (errorList.length > 0) {
     return res.status(400).json({
@@ -25,7 +24,6 @@ export const createCategory = async (req, res) => {
   }
 
   try {
-    // Check if category with the same name exists for the user
     const existingCategory = await HabitCategory.findOne({
       name: habitCategory.name,
       createdBy: userId,
@@ -38,12 +36,10 @@ export const createCategory = async (req, res) => {
       });
     }
 
-    // Check the number of existing categories for the user
     const existingCategoriesCount = await HabitCategory.countDocuments({
       createdBy: userId,
     });
 
-    // Limit to 6 categories
     if (existingCategoriesCount >= 6) {
       return res.status(400).json({
         success: false,
@@ -51,17 +47,13 @@ export const createCategory = async (req, res) => {
       });
     }
 
-    // Set createdAt if not provided
     const finalCreatedAt = habitCategory.createdAt || Date.now();
 
-    // Set dailyGoal, defaulting to 0 if not provided
     const dailyGoal = habitCategory.dailyGoal || 0;
 
-    // Generate a unique categoryId
     const categoryId =
       habitCategory.categoryId || new mongoose.Types.ObjectId();
 
-    // Create new habit category
     const newCategory = new HabitCategory({
       name: habitCategory.name,
       createdBy: userId,
@@ -70,7 +62,6 @@ export const createCategory = async (req, res) => {
       categoryId: categoryId,
     });
 
-    // Save the new category
     await newCategory.save();
 
     res.status(201).json({
