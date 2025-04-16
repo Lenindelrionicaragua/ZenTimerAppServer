@@ -22,7 +22,6 @@ export const validateUser = (
 ) => {
   const errorList = [];
   const allowedKeys = ["name", "email", "password", "dateOfBirth"];
-
   const validatedKeysMessage = validateAllowedFields(userObject, allowedKeys);
 
   if (validatedKeysMessage.length > 0) {
@@ -31,31 +30,35 @@ export const validateUser = (
 
   if (requireName) {
     const name = userObject?.name;
-
     if (!name || name.trim() === "") {
       errorList.push("Name is a required field.");
-    } else if (!validator.isAlphanumeric(name, "en-US", { ignore: " " })) {
-      errorList.push(
-        "Name can only contain letters, numbers, and a single space between words.",
-      );
-    } else if (/\s{2,}/.test(name) || /^\s|\s$/.test(name)) {
-      errorList.push("Name cannot have multiple spaces or spaces at the ends.");
+    } else {
+      if (!validator.isAlphanumeric(name, "en-US", { ignore: " " })) {
+        errorList.push(
+          "Name can only contain letters, numbers, and a single space between words.",
+        );
+      }
+      if (/\s{2,}/.test(name) || /^\s|\s$/.test(name)) {
+        errorList.push(
+          "Name cannot have multiple spaces or spaces at the ends.",
+        );
+      }
     }
   }
 
   if (requireEmail) {
     const email = userObject?.email;
-
     if (!email || email.trim() === "") {
       errorList.push("Email is a required field");
-    } else if (!validator.isEmail(email)) {
-      errorList.push("Email is not in a valid format");
+    } else {
+      if (!validator.isEmail(email)) {
+        errorList.push("Email is not in a valid format");
+      }
     }
   }
 
   if (requirePassword) {
     const password = userObject?.password;
-
     if (!password || password.trim() === "") {
       errorList.push("Password is a required field");
     } else {
@@ -73,7 +76,6 @@ export const validateUser = (
 
   if (requireDateOfBirth) {
     const dob = userObject?.dateOfBirth;
-
     if (!dob || dob.trim() === "") {
       errorList.push("Date Of Birth is a required field.");
     } else {
