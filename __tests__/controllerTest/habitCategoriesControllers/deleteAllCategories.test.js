@@ -112,7 +112,6 @@ describe("deleteAllCategories Endpoint Tests", () => {
   });
 
   it("should delete all categories for the user using deleteAllCategories", async () => {
-    // Send delete request to remove all categories
     const deleteResponse = await request
       .delete("/api/habit-categories/delete-all-categories")
       .set("Cookie", cookie);

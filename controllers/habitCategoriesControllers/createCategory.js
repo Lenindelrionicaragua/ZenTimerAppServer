@@ -51,15 +51,11 @@ export const createCategory = async (req, res) => {
 
     const dailyGoal = habitCategory.dailyGoal || 0;
 
-    const categoryId =
-      habitCategory.categoryId || new mongoose.Types.ObjectId();
-
     const newCategory = new HabitCategory({
       name: habitCategory.name,
       createdBy: userId,
       createdAt: finalCreatedAt,
       dailyGoal: dailyGoal,
-      categoryId: categoryId,
     });
 
     await newCategory.save();
