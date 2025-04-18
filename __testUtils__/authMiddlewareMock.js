@@ -37,6 +37,6 @@ export const requireAuthMock = (req, res, next) => {
   }
 
   const successMessage = `User authenticated successfully. User ID: ${validUserId.data.userId}`;
-  // logInfo(successMessage);
+  logInfo(successMessage);
   next();
 };

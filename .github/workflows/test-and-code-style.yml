@@ -1,0 +1,56 @@
+name: CI - Tests and Code Style
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
+
+jobs:
+  test-vitest:
+    runs-on: ubuntu-22.04
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    env:
+      NODE_ENV: ${{ secrets.NODE_ENV }}
+      PORT: ${{ secrets.PORT }}
+      MONGODB_URI: ${{ secrets.MONGODB_URI }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      AUTH_EMAIL: ${{ secrets.AUTH_EMAIL }}
+      AUTH_PASSWORD: ${{ secrets.AUTH_PASSWORD }}
+      GOOGLE_CLIENT_ID_WEB: ${{ secrets.GOOGLE_CLIENT_ID_WEB }}
+      GOOGLE_CLIENT_ID_IOS: ${{ secrets.GOOGLE_CLIENT_ID_IOS }}
+      GOOGLE_CLIENT_ID_ANDROID: ${{ secrets.GOOGLE_CLIENT_ID_ANDROID }}
+      GOOGLE_CLIENT_ID_EXPO: ${{ secrets.GOOGLE_CLIENT_ID_EXPO }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Application
+        run: |
+          if [ -f "package.json" ] && [ -f "webpack.config.js" ]; then
+            npm run build
+          else
+            echo "No build step required. Skipping..."
+          fi
+
+      - name: Clean MongoDB lock
+        run: rm -rf ~/.cache/mongodb-binaries/*.lock
+
+      - name: Run Tests
+        run: npm run test -- --no-watch
+
+      - name: Run Code Style Checks
+        run: npm run code-style-check
