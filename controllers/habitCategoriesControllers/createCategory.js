@@ -1,6 +1,7 @@
 import HabitCategory, { validateCategory } from "../../models/habitCategory.js";
 import validationErrorMessage from "../../util/validationErrorMessage.js";
-import { logError, logInfo } from "../../util/logging.js";
+import { logError } from "../../util/logging.js";
+// import { logInfo } from "../../util/logging.js";
 
 export const createCategory = async (req, res) => {
   const { habitCategory } = req.body;
@@ -65,7 +66,7 @@ export const createCategory = async (req, res) => {
       message: "Category created successfully.",
       category: newCategory,
     });
-    logInfo(`New Category created: ${JSON.stringify(newCategory)}`);
+    // logInfo(`New Category created: ${JSON.stringify(newCategory)}`);
   } catch (error) {
     logError("Error creating category:", error);
     res.status(500).json({

@@ -184,7 +184,7 @@ describe("deleteAllCategories Endpoint Tests", () => {
 
     expect(response.status).toBe(400); // Bad request due to invalid categoryId
     expect(response.body.errors).toContain(
-      "categoryId must be a valid 24-character string.",
+      "categoryId must be a valid ObjectId.",
     );
   });
 
@@ -203,7 +203,7 @@ describe("deleteAllCategories Endpoint Tests", () => {
 
     expect(response.status).toBe(400); // Bad request due to null categoryId
     expect(response.body.errors).toContain(
-      "categoryId must be a valid 24-character string.",
+      "categoryId must be a valid ObjectId.",
     );
   });
 

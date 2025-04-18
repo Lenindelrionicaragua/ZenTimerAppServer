@@ -59,7 +59,6 @@ export const validateDailyRecords = (recordObject) => {
     );
   }
 
-  // Validate 'categoryId': must be a valid ObjectId (MongoDB's unique identifier)
   if (
     recordObject.categoryId &&
     !mongoose.Types.ObjectId.isValid(recordObject.categoryId)
@@ -67,7 +66,6 @@ export const validateDailyRecords = (recordObject) => {
     errorList.push("categoryId must be a valid ObjectId.");
   }
 
-  // Validate 'userId': must be a valid ObjectId (MongoDB's unique identifier)
   if (
     recordObject.userId &&
     !mongoose.Types.ObjectId.isValid(recordObject.userId)
@@ -75,7 +73,6 @@ export const validateDailyRecords = (recordObject) => {
     errorList.push("userId must be a valid ObjectId.");
   }
 
-  // If 'date' is provided, check if it's valid
   if (recordObject.date && isNaN(Date.parse(recordObject.date))) {
     errorList.push("Date must be in a valid ISO format.");
   }

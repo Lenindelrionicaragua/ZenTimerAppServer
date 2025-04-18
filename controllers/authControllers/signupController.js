@@ -78,7 +78,7 @@ export const signup = async (req, res) => {
       logError("Error sending verification email: " + error.message);
     }
 
-    logInfo(`User created successfully: ${newUser.email}`);
+    // logInfo(`User created successfully: ${newUser.email}`);
     return res.status(201).json({
       success: true,
       msg: "User created successfully",

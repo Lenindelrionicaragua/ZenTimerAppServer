@@ -1,8 +1,7 @@
 import mongoose from "mongoose";
 import validateAllowedFields from "../util/validateAllowedFields.js";
-import { logInfo } from "../util/logging.js";
+import { logInfo, logError } from "../util/logging.js";
 
-// Define the habit category schema
 const habitCategorySchema = new mongoose.Schema({
   name: {
     type: String,
@@ -25,7 +24,6 @@ const habitCategorySchema = new mongoose.Schema({
   },
 });
 
-// Validation function for the category
 export const validateCategory = (categoryObject, requireName = true) => {
   const errorList = [];
   const allowedKeys = [
@@ -36,14 +34,13 @@ export const validateCategory = (categoryObject, requireName = true) => {
     "dailyGoal",
   ];
 
-  // Validate allowed fields
   const validatedKeysMessage = validateAllowedFields(
     categoryObject,
     allowedKeys,
   );
   if (validatedKeysMessage.length > 0) {
     errorList.push(validatedKeysMessage);
-    logInfo("Validation failed for allowed fields: ", validatedKeysMessage);
+    // logInfo("Validation failed for allowed fields: ", validatedKeysMessage);
   }
 
   // Validate 'name' field
@@ -57,7 +54,6 @@ export const validateCategory = (categoryObject, requireName = true) => {
     }
   }
 
-  // Validate 'createdBy' as an ObjectId
   if (
     categoryObject.createdBy &&
     !mongoose.Types.ObjectId.isValid(categoryObject.createdBy)
@@ -65,12 +61,10 @@ export const validateCategory = (categoryObject, requireName = true) => {
     errorList.push("Invalid 'createdBy' ObjectId.");
   }
 
-  // Validate 'createdAt' as a valid date (if exists)
   if (categoryObject.createdAt && isNaN(Date.parse(categoryObject.createdAt))) {
     errorList.push("Invalid 'createdAt' date provided.");
   }
 
-  // Validate 'categoryId' as an ObjectId
   if (
     categoryObject.categoryId &&
     !mongoose.Types.ObjectId.isValid(categoryObject.categoryId)
@@ -78,7 +72,6 @@ export const validateCategory = (categoryObject, requireName = true) => {
     errorList.push("Invalid 'categoryId' provided.");
   }
 
-  // Validate 'dailyGoal' range
   if (categoryObject.dailyGoal !== undefined) {
     if (
       typeof categoryObject.dailyGoal !== "number" ||
@@ -92,9 +85,8 @@ export const validateCategory = (categoryObject, requireName = true) => {
     }
   }
 
-  // Log validation results
   if (errorList.length > 0) {
-    logInfo("Category validation failed: " + errorList.join(", "));
+    logError("Category validation failed: " + errorList.join(", "));
   } else {
     logInfo("Category validation passed without errors.");
   }

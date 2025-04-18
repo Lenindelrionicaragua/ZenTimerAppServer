@@ -1,6 +1,7 @@
 import DailyTimeRecord from "../../models/dailyTimeRecord.js";
 import { validateDailyRecords } from "../../models/dailyTimeRecord.js";
-import { logError, logInfo } from "../../util/logging.js";
+import { logError } from "../../util/logging.js";
+// import { logInfo } from "../../util/logging.js";
 
 export const createDailyTimeRecords = async (req, res) => {
   const { minutesUpdate, date } = req.body;
@@ -16,11 +17,11 @@ export const createDailyTimeRecords = async (req, res) => {
   });
 
   if (errorList.length > 0) {
-    logInfo(
-      `Validation failed for user ${userId} and category ${categoryId}. Errors: ${JSON.stringify(
-        errorList
-      )}`
-    );
+    // logInfo(
+    //   `Validation failed for user ${userId} and category ${categoryId}. Errors: ${JSON.stringify(
+    //     errorList
+    //   )}`
+    // );
     return res.status(400).json({ success: false, errors: errorList });
   }
 
@@ -51,7 +52,7 @@ export const createDailyTimeRecords = async (req, res) => {
 
     await newRecord.save();
 
-    logInfo(`newRecord: ${newRecord}`);
+    // logInfo(`newRecord: ${newRecord}`);
 
     return res
       .status(201)

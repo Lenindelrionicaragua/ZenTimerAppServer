@@ -122,13 +122,13 @@ beforeAll(async () => {
           .send({
             minutesUpdate: 45,
             date: date,
-          })
-          .then((response) => {
-            logInfo(
-              `Response for category ${categoryId} on ${date}:,
-              ${JSON.stringify(response.body)}`,
-            );
           }),
+        // .then((response) => {
+        //   logInfo(
+        //     `Response for category ${categoryId} on ${date}:,
+        //     ${JSON.stringify(response.body)}`,
+        //   );
+        // }),
       );
     }
   }

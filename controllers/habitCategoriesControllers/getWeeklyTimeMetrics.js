@@ -135,21 +135,20 @@ export const getWeeklyTimeMetrics = async (req, res) => {
       totalMinutes,
     );
 
-    // Log the response data for debugging
-    logInfo(
-      `Response data: ${JSON.stringify(
-        {
-          success: true,
-          totalMinutes: totalMinutes,
-          categoryCount: categoryCount,
-          daysWithRecords: daysWithRecords,
-          totalDailyMinutes: totalDailyMinutes,
-          categoryData: categoryStats,
-        },
-        null,
-        2,
-      )}`,
-    );
+    // logInfo(
+    //   `Response data: ${JSON.stringify(
+    //     {
+    //       success: true,
+    //       totalMinutes: totalMinutes,
+    //       categoryCount: categoryCount,
+    //       daysWithRecords: daysWithRecords,
+    //       totalDailyMinutes: totalDailyMinutes,
+    //       categoryData: categoryStats,
+    //     },
+    //     null,
+    //     2,
+    //   )}`,
+    // );
 
     // Return the response
     return res.status(200).json({
