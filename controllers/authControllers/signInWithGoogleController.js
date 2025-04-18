@@ -2,9 +2,10 @@ import jwt from "jsonwebtoken";
 import { OAuth2Client } from "google-auth-library";
 import bcrypt from "bcrypt";
 import User from "../../models/userModels.js";
-import { logError, logInfo } from "../../util/logging.js";
 import { sendWelcomeEmail } from "./emailWelcomeController.js";
 import { autoCreateDefaultCategories } from "../../util/autoCreateDefaultCategories.js";
+import { logError } from "../../util/logging.js";
+// import { logInfo } from "../../util/logging.js";
 
 // OAuth2 clients for different platforms
 const clients = {
@@ -42,7 +43,7 @@ export const signInWithGoogleController = async (req, res) => {
             logError("Error sending welcome email: " + error.message);
           });
 
-          logInfo(`New Web user created: ${user.email}`);
+          // logInfo(`New Web user created: ${user.email}`);
         }
 
         // Generate JWT token
@@ -51,7 +52,7 @@ export const signInWithGoogleController = async (req, res) => {
           process.env.JWT_SECRET,
           {
             expiresIn: "72h",
-          }
+          },
         );
 
         // Set the session cookie
@@ -67,7 +68,7 @@ export const signInWithGoogleController = async (req, res) => {
           await autoCreateDefaultCategories(user._id);
         } catch (categoryError) {
           logError(
-            `Failed to create categories for new user: ${categoryError.message}`
+            `Failed to create categories for new user: ${categoryError.message}`,
           );
           return res.status(201).json({
             success: true,
@@ -104,7 +105,7 @@ export const signInWithGoogleController = async (req, res) => {
         const newJwtToken = jwt.sign(
           { userId: user._id },
           process.env.JWT_SECRET,
-          { expiresIn: "72h" }
+          { expiresIn: "72h" },
         );
 
         res.cookie("session", newJwtToken, {
@@ -123,7 +124,7 @@ export const signInWithGoogleController = async (req, res) => {
             picture: user.picture,
           },
         };
-        logInfo(`SignIn response: ${JSON.stringify(responseData)}`);
+        // logInfo(`SignIn response: ${JSON.stringify(responseData)}`);
         return res.status(200).json(responseData); // Return 200 for successful sign-in
       } catch (error) {
         logError("Error verifying token for Web sign-in: " + error.message);
@@ -155,7 +156,7 @@ export const signInWithGoogleController = async (req, res) => {
       await user.save();
       await sendWelcomeEmail(user); // Send a welcome email
 
-      logInfo(`New mobile user created: ${user.email}`);
+      // logInfo(`New mobile user created: ${user.email}`);
 
       // Generate JWT token for new user
       const jwtToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {

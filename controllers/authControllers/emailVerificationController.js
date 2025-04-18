@@ -60,7 +60,7 @@ export const sendVerificationEmail = async (user) => {
 
     await newVerification.save(); // Save the verification record
     await transporter.sendMail(mailOptions); // Send the email
-    logInfo("Verification email sent successfully");
+    // logInfo("Verification email sent successfully");
     return { success: true, message: "Verification email sent" };
   } catch (error) {
     logError(`Failed to send verification email: ${error.message}`);
@@ -70,7 +70,7 @@ export const sendVerificationEmail = async (user) => {
 
 // Function to resend the verification link
 export const resendVerificationLink = async (req, res) => {
-  logInfo("Request Body:", req.body);
+  // logInfo("Request Body:", req.body);
   try {
     const { email, userId } = req.body;
 
@@ -96,7 +96,7 @@ export const resendVerificationLink = async (req, res) => {
       });
     }
 
-    logInfo("Verification link resent successfully.");
+    // logInfo("Verification link resent successfully.");
     return res.status(200).json({
       success: true,
       msg: "Verification link resent successfully.",
@@ -112,19 +112,19 @@ export const resendVerificationLink = async (req, res) => {
 
 // Function to verify the email
 export const verifyEmail = (req, res) => {
-  logInfo("verifyEmail function called"); // Log to indicate function is called
+  // logInfo("verifyEmail function called"); // Log to indicate function is called
   const { userId, uniqueString } = req.params;
-  logInfo(`Params - userId: ${userId}, uniqueString: ${uniqueString}`); // Log the received params
+  // logInfo(`Params - userId: ${userId}, uniqueString: ${uniqueString}`); // Log the received params
 
   UserVerification.findOne({ userId }) // Find the verification record
     .then((result) => {
       if (result) {
-        logInfo("UserVerification record found:", result); // Log the found verification record
+        // logInfo("UserVerification record found:", result); // Log the found verification record
         const { expiresAt, uniqueString: hashedUniqueString } = result;
 
         if (expiresAt < Date.now()) {
           // If the link has expired
-          logInfo("Verification link has expired"); // Log if the link is expired
+          // logInfo("Verification link has expired"); // Log if the link is expired
           UserVerification.deleteOne({ userId }) // Delete the expired verification record
             .then(() => {
               User.deleteOne({ _id: userId }) // Delete the user

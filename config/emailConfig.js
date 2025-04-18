@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
-import { logError, logInfo } from "../util/logging.js";
 import dotenv from "dotenv";
+import { logError } from "../util/logging.js";
+// import { logInfo } from "../util/logging.js";
 
 dotenv.config();
 
@@ -17,8 +18,8 @@ transporter.verify((error) => {
   if (error) {
     logError(error);
   } else {
-    logInfo("Ready for messages");
-    logInfo("success");
+    // logInfo("Ready for messages");
+    // logInfo("success");
   }
 });
 
