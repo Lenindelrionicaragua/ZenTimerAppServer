@@ -117,19 +117,19 @@ export const getTimeMetricsByDateRange = async (req, res) => {
     );
 
     // Log the response data for debugging
-    logInfo(
-      `Response data: ${JSON.stringify(
-        {
-          success: true,
-          totalMinutes: totalMinutes,
-          categoryCount: categoryCount,
-          daysWithRecords: daysWithRecords,
-          categoryData: categoryStats,
-        },
-        null,
-        2,
-      )}`,
-    );
+    // logInfo(
+    //   `Response data getTimeMetricsByDateRange: ${JSON.stringify(
+    //     {
+    //       success: true,
+    //       totalMinutes: totalMinutes,
+    //       categoryCount: categoryCount,
+    //       daysWithRecords: daysWithRecords,
+    //       categoryData: categoryStats,
+    //     },
+    //     null,
+    //     2,
+    //   )}`,
+    // );
 
     // Return the response
     return res.status(200).json({

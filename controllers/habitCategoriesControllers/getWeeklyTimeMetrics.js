@@ -136,7 +136,7 @@ export const getWeeklyTimeMetrics = async (req, res) => {
     );
 
     // logInfo(
-    //   `Response data: ${JSON.stringify(
+    //   `Response data getWeeklyTimeMetrics: ${JSON.stringify(
     //     {
     //       success: true,
     //       totalMinutes: totalMinutes,

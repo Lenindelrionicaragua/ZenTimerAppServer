@@ -1,5 +1,6 @@
 import HabitCategory from "../../models/habitCategory.js";
-import { logInfo, logError } from "../../util/logging.js";
+import { logError } from "../../util/logging.js";
+// import { logInfo } from "../../util/logging.js";
 
 export const getCategory = async (req, res) => {
   const userId = req.userId;
@@ -23,16 +24,16 @@ export const getCategory = async (req, res) => {
       createdBy: category.createdBy,
     }));
 
-    logInfo(
-      `Response data: ${JSON.stringify(
-        {
-          success: true,
-          categories: categoryData,
-        },
-        null,
-        2,
-      )}`,
-    );
+    // logInfo(
+    //   `Response data getCategory: ${JSON.stringify(
+    //     {
+    //       success: true,
+    //       categories: categoryData,
+    //     },
+    //     null,
+    //     2,
+    //   )}`,
+    // );
 
     return res.status(200).json({
       success: true,

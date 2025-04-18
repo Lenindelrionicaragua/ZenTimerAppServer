@@ -121,20 +121,20 @@ export const getMonthlyTimeMetrics = async (req, res) => {
       totalMinutes,
     );
 
-    logInfo(
-      `Response data: ${JSON.stringify(
-        {
-          success: true,
-          totalMinutes: totalMinutes,
-          categoryCount: categoryCount,
-          daysWithRecords: daysWithRecords,
-          totalDailyMinutes: totalDailyMinutes,
-          categoryData: categoryStats,
-        },
-        null,
-        2,
-      )}`,
-    );
+    // logInfo(
+    //   `Response data MonthlyTimeMetrics: ${JSON.stringify(
+    //     {
+    //       success: true,
+    //       totalMinutes: totalMinutes,
+    //       categoryCount: categoryCount,
+    //       daysWithRecords: daysWithRecords,
+    //       totalDailyMinutes: totalDailyMinutes,
+    //       categoryData: categoryStats,
+    //     },
+    //     null,
+    //     2,
+    //   )}`,
+    // );
 
     return res.status(200).json({
       success: true,
