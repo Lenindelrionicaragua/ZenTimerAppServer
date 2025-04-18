@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import validateAllowedFields from "../util/validateAllowedFields.js";
-import { logInfo } from "../util/logging.js";
 import validator from "validator";
+import { logError } from "../util/logging.js";
+// import { logInfo } from "../util/logging.js";
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true, trim: true },
@@ -97,17 +98,17 @@ userSchema.pre("save", async function (next) {
     try {
       const salt = await bcrypt.genSalt(10);
       this.password = await bcrypt.hash(this.password, salt);
-      logInfo(
-        `Password hashed successfully for user: ${this.email}. Hash: ${this.password}`,
-      );
+      // logInfo(
+      //   `Password hashed successfully for user: ${this.email}. Hash: ${this.password}`,
+      // );
       next();
     } catch (error) {
-      logInfo(`Error hashing password: ${error}`);
+      logError(`Error hashing password: ${error}`);
       next(error);
     }
   } else {
     next();
-    logInfo("No password modification detected.");
+    // logInfo("No password modification detected.");
   }
 });
 

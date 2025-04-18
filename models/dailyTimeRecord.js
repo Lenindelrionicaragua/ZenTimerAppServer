@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import validateAllowedFields from "../util/validateAllowedFields.js";
-import { logInfo } from "../util/logging.js";
+import { logError } from "../util/logging.js";
+// import { logInfo } from "../util/logging.js";
 
 const dailyTimeRecordSchema = new mongoose.Schema({
   categoryId: {
@@ -36,10 +37,10 @@ export const validateDailyRecords = (recordObject) => {
 
   if (validatedKeysMessage.length > 0) {
     errorList.push(validatedKeysMessage);
-    logInfo(
-      "Validation failed for allowed fields in daily record: ",
-      validatedKeysMessage,
-    );
+    // logInfo(
+    //   "Validation failed for allowed fields in daily record: ",
+    //   validatedKeysMessage,
+    // );
   }
 
   // Validate 'minutesUpdate': required, must be a number, and between 0 and 1440 minutes
@@ -78,7 +79,7 @@ export const validateDailyRecords = (recordObject) => {
   }
 
   if (errorList.length > 0) {
-    logInfo("Daily record validation failed: " + errorList.join(", "));
+    logError("Daily record validation failed: " + errorList.join(", "));
   } else {
     // logInfo("Daily record validation passed without errors.");
   }

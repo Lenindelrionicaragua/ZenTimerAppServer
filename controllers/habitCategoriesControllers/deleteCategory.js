@@ -24,11 +24,9 @@ export const deleteCategory = async (req, res) => {
     });
 
     if (dailyTimeRecord.length > 0) {
-      // Delete all daily records first
       await DailyTimeRecord.deleteMany({ categoryId: categoryId });
     }
 
-    // Now delete the category itself
     await category.remove();
 
     return res.status(200).json({

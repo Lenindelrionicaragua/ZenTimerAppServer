@@ -40,10 +40,8 @@ describe("deleteAllCategories Endpoint Tests", () => {
       dateOfBirth: "Tue Feb 01 1990",
     };
 
-    // Sign up a new user
     await request.post("/api/auth/sign-up").send({ user: testUser });
 
-    // Log in the user
     const loginResponse = await request
       .post("/api/auth/log-in")
       .send({ user: { email: testUser.email, password: testUser.password } });
@@ -51,7 +49,6 @@ describe("deleteAllCategories Endpoint Tests", () => {
     cookie = loginResponse.headers["set-cookie"];
     const userId = loginResponse.body.user.id;
 
-    // Fetch categories
     const getCategoryResponse = await request
       .get("/api/habit-categories")
       .set("Cookie", cookie);
@@ -152,7 +149,7 @@ describe("deleteAllCategories Endpoint Tests", () => {
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
-    expect(response.status).toBe(201); // Bad request due to null date
+    expect(response.status).toBe(201);
   });
 
   it("should pass even if the date is an empty string", async () => {
@@ -166,7 +163,7 @@ describe("deleteAllCategories Endpoint Tests", () => {
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
-    expect(response.status).toBe(201); // Bad request due to empty date
+    expect(response.status).toBe(201);
   });
 
   it("should fail if the categoryId is invalid (non-objectId)", async () => {
@@ -279,7 +276,6 @@ describe("Daily Record Creation Tests", () => {
   let categoryId;
 
   beforeEach(async () => {
-    // Preparing test user data for sign-up and login
     testUser = {
       name: "Test User",
       email: "testuser@example.com",
@@ -287,10 +283,8 @@ describe("Daily Record Creation Tests", () => {
       dateOfBirth: "Tue Feb 01 1990",
     };
 
-    // User sign-up
     await request.post("/api/auth/sign-up").send({ user: testUser });
 
-    // User login
     const loginResponse = await request
       .post("/api/auth/log-in")
       .send({ user: { email: testUser.email, password: testUser.password } });
@@ -301,7 +295,6 @@ describe("Daily Record Creation Tests", () => {
       .delete("/api/habit-categories/delete-all-categories")
       .set("Cookie", cookie);
 
-    // Create a habit category
     const newCategory = {
       habitCategory: {
         name: "NewCategory",

@@ -134,7 +134,7 @@ beforeAll(async () => {
   }
 
   await Promise.all(categoryRecordsPromises);
-}, 10000); // wait to populate de mockDB
+}, 30000); // wait to populate de mockDB
 
 afterAll(async () => {
   await clearMockDatabase();

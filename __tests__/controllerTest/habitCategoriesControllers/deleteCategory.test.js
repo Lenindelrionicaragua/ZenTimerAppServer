@@ -35,10 +35,8 @@ describe("deleteAllCategories Endpoint Tests", () => {
       dateOfBirth: "Tue Feb 01 1990",
     };
 
-    // Sign up a new user
     await request.post("/api/auth/sign-up").send({ user: testUser });
 
-    // Log in the user
     const loginResponse = await request
       .post("/api/auth/log-in")
       .send({ user: { email: testUser.email, password: testUser.password } });
@@ -46,7 +44,6 @@ describe("deleteAllCategories Endpoint Tests", () => {
     cookie = loginResponse.headers["set-cookie"];
     const userId = loginResponse.body.user.id;
 
-    // Fetch categories and select the first three for testing
     const getCategoryResponse = await request
       .get("/api/habit-categories")
       .set("Cookie", cookie);
@@ -64,7 +61,6 @@ describe("deleteAllCategories Endpoint Tests", () => {
       date: `2023-10-0${index + 1}`,
     }));
 
-    // Save daily records
     await DailyTimeRecord.insertMany(dailyTimeRecords);
   });
 

@@ -52,7 +52,7 @@ export const createDailyTimeRecords = async (req, res) => {
 
     await newRecord.save();
 
-    // logInfo(`newRecord: ${newRecord}`);
+    // logInfo(`newRecord in createDailyTimeRecords: ${newRecord}`);
 
     return res
       .status(201)

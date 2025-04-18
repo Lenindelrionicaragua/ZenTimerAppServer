@@ -1,7 +1,8 @@
 import HabitCategory, { validateCategory } from "../models/habitCategory.js";
-import { logError, logInfo } from "../util/logging.js";
 import validationErrorMessage from "../util/validationErrorMessage.js";
 import mongoose from "mongoose";
+import { logError } from "../util/logging.js";
+// import { logInfo } from "../util/logging.js";
 
 export const autoCreateDefaultCategories = async (userId) => {
   const defaultCategories = [
@@ -24,9 +25,9 @@ export const autoCreateDefaultCategories = async (userId) => {
 
     for (const categoryData of defaultCategories) {
       if (existingCategoryNames.includes(categoryData.name)) {
-        logInfo(
-          `Category "${categoryData.name}" already exists for user ${userId}`,
-        );
+        // logInfo(
+        //   `Category "${categoryData.name}" already exists for user ${userId}`,
+        // );
         continue;
       }
 
@@ -40,7 +41,7 @@ export const autoCreateDefaultCategories = async (userId) => {
 
       const errorList = validateCategory(habitCategory);
       if (errorList.length > 0) {
-        logInfo(
+        logError(
           `Validation failed for category ${
             categoryData.name
           }: ${validationErrorMessage(errorList)}`,
@@ -50,9 +51,9 @@ export const autoCreateDefaultCategories = async (userId) => {
 
       const newCategory = new HabitCategory(habitCategory);
       await newCategory.save();
-      logInfo(
-        `Default category "${categoryData.name}" created for user ${userId}`,
-      );
+      // logInfo(
+      //   `Default category "${categoryData.name}" created for user ${userId}`,
+      // );
     }
   } catch (error) {
     logError("Error creating default categories for user " + userId, error);
