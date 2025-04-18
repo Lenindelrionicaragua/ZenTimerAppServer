@@ -7,7 +7,7 @@ on:
     branches: [develop, main]
 
 jobs:
-  test-vitest:
+  test:
     runs-on: ubuntu-22.04
 
     strategy:

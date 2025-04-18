@@ -12,32 +12,47 @@ let mongoMemServer;
  */
 export const connectToMockDB = async () => {
   if (mongoMemServer !== null && mongoMemServer !== undefined) {
-    throw Error(
-      `Error in testing, mongoMemServer should not be set when calling connectToMockDB. mongoMemServer should be null or undefined, but received: ${String(
-        mongoMemServer,
-      )}`,
+    // Prevent overwriting the database when tests are running
+    throw new Error(
+      `Error in testing: mongoMemServer should not be set when calling connectToMockDB. Expected null or undefined, but received: ${mongoMemServer.toString()}`,
     );
   }
+  mongoose.set("strictQuery", false);
+  mongoMemServer = await MongoMemoryServer.create({
+    instance: {
+      dbName: "test-db", // Custom database name
+    },
+    binary: {
+      version: "6.0.13", // Specify MongoDB version
+    },
+    timeoutMS: 60000, // Set a timeout to avoid long waits
+  });
 
-  mongoMemServer = await MongoMemoryServer.create();
   const uri = mongoMemServer.getUri();
 
-  await mongoose.connect(uri);
+  await mongoose.connect(uri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
 };
 
 /**
  * Closing the Database connection
  */
 export const closeMockDatabase = async () => {
-  // Get rid of the database
-  await mongoose.connection.dropDatabase();
-  // close the mongoose connection
-  await mongoose.connection.close();
-  // stop the memory server
-  await mongoMemServer.stop();
-
-  // clean up the variable
-  mongoMemServer = null;
+  try {
+    // Drop the database
+    await mongoose.connection.dropDatabase();
+    // Close the mongoose connection
+    await mongoose.connection.close();
+    // Stop the memory server
+    await mongoMemServer.stop();
+  } catch (error) {
+    console.error("Error while closing the mock database:", error);
+  } finally {
+    // Clean up the variable
+    mongoMemServer = null;
+  }
 };
 
 /**
@@ -47,7 +62,9 @@ export const clearMockDatabase = async () => {
   const collections = mongoose.connection.collections;
 
   for (const key in collections) {
-    const collection = collections[key];
-    await collection.deleteMany({});
+    if (Object.hasOwnProperty.call(collections, key)) {
+      const collection = collections[key];
+      await collection.deleteMany({});
+    }
   }
 };
