@@ -10,7 +10,6 @@ export const updateCategoryDailyGoal = async (req, res) => {
   const createdBy = req.userId;
   const allowedFields = ["dailyGoal"];
 
-  // Validate the category ID
   if (!mongoose.Types.ObjectId.isValid(categoryId)) {
     return res.status(400).json({
       success: false,
@@ -18,7 +17,6 @@ export const updateCategoryDailyGoal = async (req, res) => {
     });
   }
 
-  // Validate that dailyGoal is provided
   if (
     newDailyGoal === undefined ||
     newDailyGoal === null ||
@@ -30,7 +28,6 @@ export const updateCategoryDailyGoal = async (req, res) => {
     });
   }
 
-  // Validate allowed fields
   const invalidFieldsError = validateAllowedFields(req.body, allowedFields);
   if (invalidFieldsError) {
     return res.status(400).json({

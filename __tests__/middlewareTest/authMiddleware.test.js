@@ -6,7 +6,6 @@ import {
   clearMockDatabase,
 } from "../../__testUtils__/dbMock.js";
 import app from "../../app.js";
-import { logInfo, logError } from "../../util/logging.js";
 
 const request = supertest(app);
 

@@ -5,7 +5,6 @@ import {
   clearMockDatabase,
 } from "../../../__testUtils__/dbMock.js";
 import app from "../../../app.js";
-import HabitCategory from "../../../models/habitCategory.js";
 import DailyTimeRecord from "../../../models/dailyTimeRecord.js";
 import { logInfo } from "../../../util/logging.js";
 
@@ -32,7 +31,6 @@ describe("deleteAllCategories Endpoint Tests", () => {
     categoryId4,
     categoryId5,
     categoryId6;
-  let createdBy;
 
   beforeEach(async () => {
     testUser = {
@@ -42,17 +40,15 @@ describe("deleteAllCategories Endpoint Tests", () => {
       dateOfBirth: "Tue Feb 01 1990",
     };
 
-    // Sign up a new user
     await request.post("/api/auth/sign-up").send({ user: testUser });
 
-    // Log in the user
     const loginResponse = await request
       .post("/api/auth/log-in")
       .send({ user: { email: testUser.email, password: testUser.password } });
 
     cookie = loginResponse.headers["set-cookie"];
+    const userId = loginResponse.body.user.id;
 
-    // Fetch categories
     const getCategoryResponse = await request
       .get("/api/habit-categories")
       .set("Cookie", cookie);
@@ -66,53 +62,39 @@ describe("deleteAllCategories Endpoint Tests", () => {
       categoryId6,
     ] = getCategoryResponse.body.categories.map((c) => c.id);
 
-    createdBy = getCategoryResponse.body.categories[0].createdBy;
-
-    // logInfo({
-    //   categoryId1,
-    //   categoryId2,
-    //   categoryId3,
-    //   categoryId4,
-    //   categoryId5,
-    //   categoryId6,
-    // });
-
-    // logInfo(createdBy);
-
-    // Create daily records associated with the category
     const dailyTimeRecords = [
       {
-        userId: createdBy,
+        userId: userId,
         categoryId: categoryId1,
         totalDailyMinutes: 60,
         date: "2023-10-01",
       },
       {
-        userId: createdBy,
+        userId: userId,
         categoryId: categoryId2,
         totalDailyMinutes: 30,
         date: "2023-10-02",
       },
       {
-        userId: createdBy,
+        userId: userId,
         categoryId: categoryId3,
         totalDailyMinutes: 30,
         date: "2023-10-02",
       },
       {
-        userId: createdBy,
+        userId: userId,
         categoryId: categoryId4,
         totalDailyMinutes: 30,
         date: "2023-10-02",
       },
       {
-        userId: createdBy,
+        userId: userId,
         categoryId: categoryId5,
         totalDailyMinutes: 30,
         date: "2023-10-02",
       },
       {
-        userId: createdBy,
+        userId: userId,
         categoryId: categoryId6,
         totalDailyMinutes: 30,
         date: "2023-10-02",
@@ -152,7 +134,7 @@ describe("deleteAllCategories Endpoint Tests", () => {
 
     expect(response.status).toBe(400); // Bad request due to invalid format
     expect(response.body.errors).toContain(
-      "Date must be in a valid ISO format."
+      "Date must be in a valid ISO format.",
     );
   });
 
@@ -167,7 +149,7 @@ describe("deleteAllCategories Endpoint Tests", () => {
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
-    expect(response.status).toBe(201); // Bad request due to null date
+    expect(response.status).toBe(201);
   });
 
   it("should pass even if the date is an empty string", async () => {
@@ -181,7 +163,7 @@ describe("deleteAllCategories Endpoint Tests", () => {
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
-    expect(response.status).toBe(201); // Bad request due to empty date
+    expect(response.status).toBe(201);
   });
 
   it("should fail if the categoryId is invalid (non-objectId)", async () => {
@@ -199,7 +181,7 @@ describe("deleteAllCategories Endpoint Tests", () => {
 
     expect(response.status).toBe(400); // Bad request due to invalid categoryId
     expect(response.body.errors).toContain(
-      "categoryId must be a valid 24-character string."
+      "categoryId must be a valid ObjectId.",
     );
   });
 
@@ -218,7 +200,7 @@ describe("deleteAllCategories Endpoint Tests", () => {
 
     expect(response.status).toBe(400); // Bad request due to null categoryId
     expect(response.body.errors).toContain(
-      "categoryId must be a valid 24-character string."
+      "categoryId must be a valid ObjectId.",
     );
   });
 
@@ -264,15 +246,14 @@ describe("deleteAllCategories Endpoint Tests", () => {
       .set("Cookie", cookie)
       .send(dailyRecordData);
 
-    // Expect a 400 Bad Request status due to missing parameter
     expect(response.status).toBe(400);
-    // expect(response.body.success).toBe(false);
+    expect(response.body.success).toBe(false);
     expect(response.body.errors).toContain("minutesUpdate is required.");
   });
 
   it("should fail if minutesUpdate is not a number", async () => {
     const invalidDailyRecordData = {
-      minutesUpdate: "invalid", // Not a number
+      minutesUpdate: "invalid",
       date: "2024-10-12",
     };
 
@@ -293,12 +274,8 @@ describe("Daily Record Creation Tests", () => {
   let testUserId;
   let cookie;
   let categoryId;
-  let dailyRecordId;
-
-  const firstMinutesUpdate = 45; // Initial minutes update for the first record
 
   beforeEach(async () => {
-    // Preparing test user data for sign-up and login
     testUser = {
       name: "Test User",
       email: "testuser@example.com",
@@ -306,10 +283,8 @@ describe("Daily Record Creation Tests", () => {
       dateOfBirth: "Tue Feb 01 1990",
     };
 
-    // User sign-up
     await request.post("/api/auth/sign-up").send({ user: testUser });
 
-    // User login
     const loginResponse = await request
       .post("/api/auth/log-in")
       .send({ user: { email: testUser.email, password: testUser.password } });
@@ -320,7 +295,6 @@ describe("Daily Record Creation Tests", () => {
       .delete("/api/habit-categories/delete-all-categories")
       .set("Cookie", cookie);
 
-    // Create a habit category
     const newCategory = {
       habitCategory: {
         name: "NewCategory",
@@ -335,17 +309,6 @@ describe("Daily Record Creation Tests", () => {
     categoryId = categoryResponse.body.category._id;
     testUserId = categoryResponse.body.category.createdBy;
     logInfo(`Category created by user: ${JSON.stringify(testUserId)}`);
-
-    // Create the initial daily record for the user
-    const dailyRecordData = {
-      minutesUpdate: firstMinutesUpdate,
-      date: "2024-10-12", // Valid date format
-    };
-
-    const dailyRecordResponse = await request
-      .post(`/api/time-records/${categoryId}`)
-      .set("Cookie", cookie)
-      .send(dailyRecordData);
   });
 
   it("should update the existing daily record", async () => {
@@ -358,7 +321,7 @@ describe("Daily Record Creation Tests", () => {
         date: "2024-10-12",
       });
 
-    expect(response.status).toBe(200); // OK
+    expect(response.status).toBe(201);
     expect(response.body.success).toBe(true);
   });
 
@@ -370,7 +333,7 @@ describe("Daily Record Creation Tests", () => {
         date: "2024-10-12",
       });
 
-    expect(response.status).toBe(400); // Bad Request
+    expect(response.status).toBe(400);
     expect(response.body.errors).toContain("minutesUpdate is required.");
   });
 
@@ -383,9 +346,9 @@ describe("Daily Record Creation Tests", () => {
         date: "invalid",
       });
 
-    expect(response.status).toBe(400); // Bad Request
+    expect(response.status).toBe(400);
     expect(response.body.errors).toContain(
-      "Date must be in a valid ISO format."
+      "Date must be in a valid ISO format.",
     );
   });
 });

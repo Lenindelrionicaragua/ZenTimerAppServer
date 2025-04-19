@@ -9,7 +9,7 @@ import testRouter from "./testRouters.js";
 
 // The environment should set the port
 const port = process.env.PORT;
-if (port == null) {
+if (port === null) {
   // If this fails, make sure you have created a `.env` file in the right place with the PORT set
   logError(new Error("Cannot find a PORT number, did you create a .env file?"));
 }

@@ -16,7 +16,7 @@ import {
 
 export const getMonthlyTimeMetrics = async (req, res) => {
   const userId = req.userId;
-  let { month, year, categoryId } = req.query;
+  const { month, year, categoryId } = req.query;
 
   if (!month || !year) {
     return res.status(400).json({
@@ -27,20 +27,16 @@ export const getMonthlyTimeMetrics = async (req, res) => {
 
   let start, end;
   try {
-    // Call getMonthRange inside try-catch to handle potential errors
     const { startDate, endDate } = getMonthRange(month, year);
 
-    // Convert start and end date strings to Date objects and ensure valid dates
     start = new Date(startDate);
     end = new Date(endDate);
 
-    // Ensure start date is not after end date
     if (start > end) {
       [start, end] = [end, start];
       logInfo("Date range was reversed by the server");
     }
   } catch (error) {
-    // Catch errors from getMonthRange and return a structured error response
     logError(`Error in getMonthRange: ${error.message}`);
     const generalError = validationErrorMessage([error.message]);
 
@@ -89,13 +85,11 @@ export const getMonthlyTimeMetrics = async (req, res) => {
           date: { $gte: start, $lte: end },
         });
 
-        // Map the records to just the date and total minutes
         const simplifiedRecords = mapRecordsToDateAndMinutes(categoryRecords);
 
-        // Calculate total minutes for the category
         const totalCategoryMinutes = categoryRecords.reduce(
           (total, record) => total + (record.totalDailyMinutes || 0),
-          0
+          0,
         );
 
         return {
@@ -104,49 +98,44 @@ export const getMonthlyTimeMetrics = async (req, res) => {
           totalMinutes: totalCategoryMinutes,
           records: simplifiedRecords,
         };
-      })
+      }),
     );
 
     const cleanedCategoryStats = categoryData.map((category) => {
+      // eslint-disable-next-line no-unused-vars
       const { records, ...cleanCategory } = category; // Remove records
       return cleanCategory;
     });
 
-    // Calculate total minutes across all categories
     const totalMinutes = calculateTotalMinutes(categoryData);
 
-    // Combine all records to calculate total daily minutes
     const allRecords = categoryData.flatMap((cat) => cat.records);
     const totalDailyMinutes = calculateDailyMinutes(allRecords);
 
     // Count the number of categories with data
     const categoryCount = countCategoriesWithData(categoryData, start, end);
-    // Count the unique days that have records
     const daysWithRecords = countUniqueDays(categoryData);
 
-    // Add percentage data to each category
     const categoryStats = calculateCategoryPercentages(
       cleanedCategoryStats,
-      totalMinutes
+      totalMinutes,
     );
 
-    // Log the response data for debugging
-    logInfo(
-      `Response data: ${JSON.stringify(
-        {
-          success: true,
-          totalMinutes: totalMinutes,
-          categoryCount: categoryCount,
-          daysWithRecords: daysWithRecords,
-          totalDailyMinutes: totalDailyMinutes,
-          categoryData: categoryStats,
-        },
-        null,
-        2
-      )}`
-    );
+    // logInfo(
+    //   `Response data MonthlyTimeMetrics: ${JSON.stringify(
+    //     {
+    //       success: true,
+    //       totalMinutes: totalMinutes,
+    //       categoryCount: categoryCount,
+    //       daysWithRecords: daysWithRecords,
+    //       totalDailyMinutes: totalDailyMinutes,
+    //       categoryData: categoryStats,
+    //     },
+    //     null,
+    //     2,
+    //   )}`,
+    // );
 
-    // Return the response
     return res.status(200).json({
       success: true,
       totalMinutes: totalMinutes,
@@ -156,7 +145,6 @@ export const getMonthlyTimeMetrics = async (req, res) => {
       categoryData: categoryStats,
     });
   } catch (error) {
-    // Log the error and return a general error response
     logError(`Error fetching category data: ${error.message}`);
     const generalError = validationErrorMessage([error.message]);
 

@@ -7,7 +7,6 @@ import {
 import app from "../../../app.js";
 import HabitCategory from "../../../models/habitCategory.js";
 import DailyTimeRecord from "../../../models/dailyTimeRecord.js";
-import { logInfo } from "../../../util/logging.js";
 
 const request = supertest(app);
 
@@ -68,17 +67,6 @@ describe("deleteAllCategories Endpoint Tests", () => {
 
     createdBy = getCategoryResponse.body.categories[0].createdBy;
 
-    // logInfo({
-    //   categoryId1,
-    //   categoryId2,
-    //   categoryId3,
-    //   categoryId4,
-    //   categoryId5,
-    //   categoryId6,
-    // });
-
-    // logInfo(createdBy);
-
     // Create daily records associated with the category
     const dailyTimeRecords = [
       {
@@ -124,7 +112,6 @@ describe("deleteAllCategories Endpoint Tests", () => {
   });
 
   it("should delete all categories for the user using deleteAllCategories", async () => {
-    // Send delete request to remove all categories
     const deleteResponse = await request
       .delete("/api/habit-categories/delete-all-categories")
       .set("Cookie", cookie);
@@ -132,7 +119,7 @@ describe("deleteAllCategories Endpoint Tests", () => {
     expect(deleteResponse.status).toBe(200);
     expect(deleteResponse.body.success).toBe(true);
     expect(deleteResponse.body.msg).toBe(
-      "All categories and their associated records have been deleted."
+      "All categories and their associated records have been deleted.",
     );
 
     // Verify that all categories have been deleted
@@ -171,7 +158,7 @@ describe("deleteAllCategories Endpoint Tests", () => {
     expect(deleteResponse.status).toBe(500);
     expect(deleteResponse.body.success).toBe(false);
     expect(deleteResponse.body.msg).toBe(
-      "An error occurred while deleting all categories."
+      "An error occurred while deleting all categories.",
     );
   });
 
@@ -183,7 +170,7 @@ describe("deleteAllCategories Endpoint Tests", () => {
     expect(deleteResponse.status).toBe(401);
     expect(deleteResponse.body.success).toBe(false);
     expect(deleteResponse.body.msg).toBe(
-      "BAD REQUEST: Authentication required."
+      "BAD REQUEST: Authentication required.",
     );
   });
 });

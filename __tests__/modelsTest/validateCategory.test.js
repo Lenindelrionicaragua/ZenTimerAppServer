@@ -43,7 +43,7 @@ describe("validateCategory function", () => {
 
     const errors = validateCategory(category);
     expect(errors).toContain(
-      "Daily goal cannot exceed 1440 minutes (24 hours)."
+      "Daily goal cannot exceed 1440 minutes (24 hours).",
     );
   });
 
@@ -120,7 +120,7 @@ describe("validateCategory function", () => {
 
     expect(errors).toHaveLength(1);
     expect(errors).toContain(
-      "Category name must contain only letters, numbers, spaces, hyphens, or exclamation marks, and have a maximum length of 15 characters."
+      "Category name must contain only letters, numbers, spaces, hyphens, or exclamation marks, and have a maximum length of 15 characters.",
     );
   });
 
@@ -134,7 +134,7 @@ describe("validateCategory function", () => {
 
     expect(errors).toHaveLength(1);
     expect(errors).toContain(
-      "Category name must contain only letters, numbers, spaces, hyphens, or exclamation marks, and have a maximum length of 15 characters."
+      "Category name must contain only letters, numbers, spaces, hyphens, or exclamation marks, and have a maximum length of 15 characters.",
     );
   });
 

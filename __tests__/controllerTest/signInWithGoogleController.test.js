@@ -7,7 +7,6 @@ import {
 import app from "../../app.js";
 import User from "../../models/userModels.js";
 import HabitCategory from "../../models/habitCategory.js";
-import { addUserToMockDB } from "../../__testUtils__/userMocks.js";
 import { OAuth2Client } from "google-auth-library";
 import { logInfo } from "../../util/logging.js";
 import { sendWelcomeEmail } from "../../controllers/authControllers/emailWelcomeController.js";
@@ -18,10 +17,8 @@ jest.mock(
   "../../controllers/authControllers/emailWelcomeController.js",
   () => ({
     sendWelcomeEmail: jest.fn(),
-  })
+  }),
 );
-
-const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID_WEB);
 
 beforeAll(async () => {
   await connectToMockDB();
@@ -153,7 +150,7 @@ describe("signInWithGoogleController", () => {
     expect(response.status).toBe(201);
     expect(response.body.success).toBe(true);
     expect(response.body.msg).toBe(
-      "User created and signed in successfully. In mobil platform."
+      "User created and signed in successfully. In mobil platform.",
     );
     expect(response.body.token).toBeDefined();
     expect(sendWelcomeEmail).toHaveBeenCalledTimes(1);
@@ -200,7 +197,7 @@ describe("signInWithGoogleController", () => {
     expect(response.status).toBe(201);
     expect(response.body.success).toBe(true);
     expect(response.body.msg).toBe(
-      "User created and signed in successfully. In mobil platform."
+      "User created and signed in successfully. In mobil platform.",
     );
     expect(response.body.token).toBeDefined();
     expect(sendWelcomeEmail).toHaveBeenCalledTimes(1);

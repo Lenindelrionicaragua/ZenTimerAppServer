@@ -2,7 +2,6 @@ import { validateDailyRecords } from "../../models/dailyTimeRecord";
 import mongoose from "mongoose";
 
 describe("validateDailyRecords", () => {
-  // Category: Required Fields Validation
   describe("Required Fields Validation", () => {
     test("should return an empty array if all required fields are provided correctly", () => {
       const dailyTimeRecord = {
@@ -50,7 +49,7 @@ describe("validateDailyRecords", () => {
       const errors = validateDailyRecords(dailyRecord);
 
       expect(errors).toContain(
-        "minutesUpdate must be between 0 and 1440 (24 hours in minutes)."
+        "minutesUpdate must be between 0 and 1440 (24 hours in minutes).",
       );
     });
 
@@ -60,7 +59,7 @@ describe("validateDailyRecords", () => {
       const errors = validateDailyRecords(dailyRecord);
 
       expect(errors).toContain(
-        "minutesUpdate must be between 0 and 1440 (24 hours in minutes)."
+        "minutesUpdate must be between 0 and 1440 (24 hours in minutes).",
       );
     });
 
@@ -199,7 +198,7 @@ describe("validateDailyRecords", () => {
       const errors = validateDailyRecords(dailyRecord);
 
       expect(errors).toContain(
-        "the following properties are not allowed to be set: extraField"
+        "the following properties are not allowed to be set: extraField",
       );
     });
   });

@@ -1,6 +1,7 @@
 import HabitCategory, { validateCategory } from "../../models/habitCategory.js";
 import validationErrorMessage from "../../util/validationErrorMessage.js";
-import { logError, logInfo } from "../../util/logging.js";
+import { logError } from "../../util/logging.js";
+// import { logInfo } from "../../util/logging.js";
 
 export const createCategory = async (req, res) => {
   const { habitCategory } = req.body;
@@ -10,12 +11,11 @@ export const createCategory = async (req, res) => {
     return res.status(400).json({
       success: false,
       msg: `Invalid request: You need to provide a valid 'habitCategory' object. Received: ${JSON.stringify(
-        habitCategory
+        habitCategory,
       )}`,
     });
   }
 
-  // Validating all fields in the habitCategory object using validateCategory
   const errorList = validateCategory(habitCategory, true);
   if (errorList.length > 0) {
     return res.status(400).json({
@@ -25,7 +25,6 @@ export const createCategory = async (req, res) => {
   }
 
   try {
-    // Check if category with the same name exists for the user
     const existingCategory = await HabitCategory.findOne({
       name: habitCategory.name,
       createdBy: userId,
@@ -38,12 +37,10 @@ export const createCategory = async (req, res) => {
       });
     }
 
-    // Check the number of existing categories for the user
     const existingCategoriesCount = await HabitCategory.countDocuments({
       createdBy: userId,
     });
 
-    // Limit to 6 categories
     if (existingCategoriesCount >= 6) {
       return res.status(400).json({
         success: false,
@@ -51,13 +48,10 @@ export const createCategory = async (req, res) => {
       });
     }
 
-    // Set createdAt if not provided
     const finalCreatedAt = habitCategory.createdAt || Date.now();
 
-    // Set dailyGoal, defaulting to 0 if not provided
     const dailyGoal = habitCategory.dailyGoal || 0;
 
-    // Create new habit category
     const newCategory = new HabitCategory({
       name: habitCategory.name,
       createdBy: userId,
@@ -65,7 +59,6 @@ export const createCategory = async (req, res) => {
       dailyGoal: dailyGoal,
     });
 
-    // Save the new category
     await newCategory.save();
 
     res.status(201).json({
@@ -73,7 +66,7 @@ export const createCategory = async (req, res) => {
       message: "Category created successfully.",
       category: newCategory,
     });
-    logInfo(`New Category created: ${JSON.stringify(newCategory)}`);
+    // logInfo(`New Category created: ${JSON.stringify(newCategory)}`);
   } catch (error) {
     logError("Error creating category:", error);
     res.status(500).json({
