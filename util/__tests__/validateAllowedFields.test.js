@@ -4,7 +4,7 @@ describe("validateAllowedFields", () => {
   it("Returns an empty string if all fields are allowed", () => {
     expect(validateAllowedFields({ foo: "bar" }, ["foo"])).toBe("");
     expect(
-      validateAllowedFields({ foo: "bar" }, ["foo", "some_other_field"])
+      validateAllowedFields({ foo: "bar" }, ["foo", "some_other_field"]),
     ).toBe("");
   });
 
@@ -13,7 +13,7 @@ describe("validateAllowedFields", () => {
 
     const resultForMultipleFields = validateAllowedFields(
       { foo: "bar", other: "something" },
-      ["foo"]
+      ["foo"],
     );
     expect(resultForMultipleFields).toContain("other");
     expect(resultForMultipleFields).not.toContain("foo");

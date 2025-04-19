@@ -16,7 +16,7 @@ export const sendWelcomeEmail = async (user) => {
   const uniqueString = uuidv4() + _id; // Generate a unique string using uuid and user ID
 
   const welcomeTemplatePath = resolvePath(
-    "/Users/leninortizreyes/Desktop/ZenTimerAppServer/templates/emailWelcomeTemplate.html"
+    "/Users/leninortizreyes/Desktop/ZenTimerAppServer/templates/emailWelcomeTemplate.html",
   );
 
   let welcomeEmailTemplate;

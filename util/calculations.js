@@ -1,7 +1,7 @@
 export const calculateTotalMinutes = (categoryStats) => {
   return categoryStats.reduce(
     (sum, category) => sum + (category.totalMinutes || 0),
-    0
+    0,
   );
 };
 
@@ -31,7 +31,7 @@ export const calculateDailyMinutes = (allRecords) => {
 
   // Convert the object to an array and sort it
   const sortedDailyMinutes = Object.entries(dailyMinutes).sort(
-    ([dateA], [dateB]) => new Date(dateA) - new Date(dateB)
+    ([dateA], [dateB]) => new Date(dateA) - new Date(dateB),
   );
 
   // Convert the array back to an object, if necessary

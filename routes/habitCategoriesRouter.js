@@ -16,7 +16,7 @@ habitCategoriesRouter.post("/create", createCategory);
 habitCategoriesRouter.patch("/:categoryId/name", updateCategoryName);
 habitCategoriesRouter.post(
   "/auto-create-categories",
-  autoCreateDefaultCategoriesController
+  autoCreateDefaultCategoriesController,
 );
 
 habitCategoriesRouter.delete("/delete-all-categories", deleteAllCategories);
@@ -24,7 +24,7 @@ habitCategoriesRouter.delete("/:categoryId", deleteCategory);
 
 habitCategoriesRouter.patch(
   "/:categoryId/update-daily-goal",
-  updateCategoryDailyGoal
+  updateCategoryDailyGoal,
 );
 
 habitCategoriesRouter.get("/date-range-metrics", getTimeMetricsByDateRange);

@@ -48,7 +48,7 @@ describe("Signup with Category Creation Failure", () => {
     expect(response.status).toBe(201); // User created successfully
     expect(response.body.success).toBe(true);
     expect(response.body.msg).toContain(
-      "User created successfully, but there was an issue creating default categories"
+      "User created successfully, but there was an issue creating default categories",
     );
     expect(response.body.user).toHaveProperty("_id"); // Check user object has an ID
   });

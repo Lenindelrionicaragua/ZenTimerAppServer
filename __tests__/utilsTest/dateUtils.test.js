@@ -21,19 +21,19 @@ describe("getMonthRange", () => {
 
   test("should throw an error for invalid string month", () => {
     expect(() => getMonthRange("InvalidMonth", 2024)).toThrow(
-      "Invalid month name or format provided"
+      "Invalid month name or format provided",
     );
   });
 
   test("should throw an error for invalid numeric month (e.g., 13)", () => {
     expect(() => getMonthRange(13, 2024)).toThrow(
-      "Invalid month number provided"
+      "Invalid month number provided",
     );
   });
 
   test("should throw an error for negative numeric month", () => {
     expect(() => getMonthRange(-1, 2024)).toThrow(
-      "Invalid month number provided"
+      "Invalid month number provided",
     );
   });
 

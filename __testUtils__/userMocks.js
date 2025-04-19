@@ -6,8 +6,8 @@ export const addUserToMockDB = async (newUser) => {
   if (validationResult.length > 0) {
     throw new Error(
       `Invalid user attempting to be added to the Database. User attempted to be added: ${JSON.stringify(
-        newUser
-      )}. Received errors: ${validationResult.join(", ")}.`
+        newUser,
+      )}. Received errors: ${validationResult.join(", ")}.`,
     );
   }
 
@@ -19,7 +19,7 @@ export const addUserToMockDB = async (newUser) => {
 export const findUserInMockDB = async (email) => {
   if (typeof email !== "string") {
     throw new Error(
-      `Invalid userId given! Should be a string, but received: ${email}`
+      `Invalid userId given! Should be a string, but received: ${email}`,
     );
   }
 
