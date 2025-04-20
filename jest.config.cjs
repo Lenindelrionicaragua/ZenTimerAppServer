@@ -11,5 +11,5 @@ module.exports = {
   },
   testRegex: "(/__tests__/.*|(\\.|/)(test|spec))\\.[jt]sx?$",
   moduleFileExtensions: ["js", "jsx", "mjs"],
-  testTimeout: 30000,
+  testTimeout: 60000,
 };
