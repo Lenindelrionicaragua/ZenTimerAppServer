@@ -65,7 +65,7 @@ describe("signInWithGoogleController", () => {
     const user = await User.findOne({ email: "john@example.com" });
     expect(user).toBeDefined();
 
-    const categories = await HabitCategory.find({ userId: user._id });
+    const categories = await HabitCategory.find({ createdBy: user._id });
     expect(categories).toHaveLength(6);
   });
 
@@ -114,8 +114,7 @@ describe("signInWithGoogleController", () => {
     expect(user).toBeDefined();
     expect(user.name).toBe("New User");
     expect(user.email).toBe(nonExistentEmail);
-
-    const categories = await HabitCategory.find({ userId: user._id });
+    const categories = await HabitCategory.find({ createdBy: user._id });
     expect(categories).toHaveLength(6);
   });
 
@@ -162,7 +161,7 @@ describe("signInWithGoogleController", () => {
     const user = await User.findOne({ email: "jane@example.com" });
     expect(user).toBeDefined();
 
-    const categories = await HabitCategory.find({ userId: user._id });
+    const categories = await HabitCategory.find({ createdBy: user._id });
     expect(categories).toHaveLength(6);
   });
 
@@ -209,7 +208,7 @@ describe("signInWithGoogleController", () => {
     const user = await User.findOne({ email: "alice@example.com" });
     expect(user).toBeDefined();
 
-    const categories = await HabitCategory.find({ userId: user._id });
+    const categories = await HabitCategory.find({ createdBy: user._id });
     expect(categories).toHaveLength(6);
   });
 });

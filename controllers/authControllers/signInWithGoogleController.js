@@ -124,7 +124,7 @@ export const signInWithGoogleController = async (req, res) => {
             picture: user.picture,
           },
         };
-        // logInfo(`SignIn response: ${JSON.stringify(responseData)}`);
+        logInfo(`SignIn response: ${JSON.stringify(responseData)}`);
         return res.status(200).json(responseData); // Return 200 for successful sign-in
       } catch (error) {
         logError("Error verifying token for Web sign-in: " + error.message);
