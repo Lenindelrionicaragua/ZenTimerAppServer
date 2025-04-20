@@ -25,7 +25,6 @@ jobs:
       GOOGLE_CLIENT_ID_IOS: ${{ secrets.GOOGLE_CLIENT_ID_IOS }}
       GOOGLE_CLIENT_ID_ANDROID: ${{ secrets.GOOGLE_CLIENT_ID_ANDROID }}
       GOOGLE_CLIENT_ID_EXPO: ${{ secrets.GOOGLE_CLIENT_ID_EXPO }}
-      MONGOMS_VERSION: 6.0.5
 
     steps:
       - uses: actions/checkout@v3

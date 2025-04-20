@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import { logInfo } from "./src/util/logging";
+import { logInfo } from "./util/logging";
 dotenv.config({ path: ".env.test" });
 
 jest.setTimeout(60000);
