@@ -6,7 +6,6 @@ import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 
 let mongoMemServer;
-
 /**
  * Connecting to the Database
  */
@@ -19,9 +18,13 @@ export const connectToMockDB = async () => {
     );
   }
 
-  mongoMemServer = await MongoMemoryServer.create();
-  const uri = mongoMemServer.getUri();
+  mongoMemServer = await MongoMemoryServer.create({
+    binary: {
+      version: "6.0.5",
+    },
+  });
 
+  const uri = mongoMemServer.getUri();
   await mongoose.connect(uri);
 };
 
