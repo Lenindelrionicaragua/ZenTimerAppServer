@@ -10,7 +10,6 @@ export const updateCategoryName = async (req, res) => {
   const createdBy = req.userId;
   const allowedFields = ["name"];
 
-  // Validating the category ID
   if (!mongoose.Types.ObjectId.isValid(categoryId)) {
     return res.status(400).json({
       success: false,
@@ -18,7 +17,6 @@ export const updateCategoryName = async (req, res) => {
     });
   }
 
-  // Validating allowed fields
   const invalidFieldsError = validateAllowedFields(req.body, allowedFields);
   if (invalidFieldsError) {
     return res.status(400).json({

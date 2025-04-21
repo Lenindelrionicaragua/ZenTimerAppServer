@@ -14,7 +14,7 @@ describe("validationErrorMessage", () => {
   it("Throws an error if the parameter is unexpected", () => {
     expect(() => validationErrorMessage(null)).toThrow();
     expect(() =>
-      validationErrorMessage({ errorList: ["foo", "bar"] })
+      validationErrorMessage({ errorList: ["foo", "bar"] }),
     ).toThrow();
   });
 });

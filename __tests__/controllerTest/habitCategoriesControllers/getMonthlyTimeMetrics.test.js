@@ -5,7 +5,6 @@ import {
   clearMockDatabase,
 } from "../../../__testUtils__/dbMock.js";
 import app from "../../../app.js";
-import { logInfo } from "../../../util/logging.js";
 
 const request = supertest(app);
 
@@ -122,19 +121,13 @@ beforeAll(async () => {
           .send({
             minutesUpdate: 45,
             date: date,
-          })
-          .then((response) => {
-            // logInfo(
-            //   `Response for category ${categoryId} on ${date}:,
-            //   ${JSON.stringify(response.body)}`
-            // );
-          })
+          }),
       );
     }
   }
 
   await Promise.all(categoryRecordsPromises);
-}, 10000); // wait to populate de mockDB
+}, 30000); // wait to populate de mockDB
 
 afterAll(async () => {
   await clearMockDatabase();
@@ -214,7 +207,7 @@ describe("getMonthlyTimeMetrics", () => {
       expect(response.status).toBe(404);
       expect(response.body).toHaveProperty("error");
       expect(response.body.error).toBe(
-        "BAD REQUEST: Invalid month number provided. It should be an integer between 1 and 12."
+        "BAD REQUEST: Invalid month number provided. It should be an integer between 1 and 12.",
       );
     }
   });
@@ -230,7 +223,7 @@ describe("getMonthlyTimeMetrics", () => {
       expect(response.status).toBe(404);
       expect(response.body).toHaveProperty("error");
       expect(response.body.error).toBe(
-        "BAD REQUEST: Invalid month name or format provided"
+        "BAD REQUEST: Invalid month name or format provided",
       );
     }
   });
@@ -243,7 +236,7 @@ describe("getMonthlyTimeMetrics", () => {
     expect(response.status).toBe(404);
     expect(response.body).toHaveProperty("error");
     expect(response.body.error).toBe(
-      "BAD REQUEST: Invalid month name or format provided"
+      "BAD REQUEST: Invalid month name or format provided",
     );
   });
 
@@ -255,7 +248,7 @@ describe("getMonthlyTimeMetrics", () => {
     expect(response.status).toBe(404);
     expect(response.body).toHaveProperty("error");
     expect(response.body.error).toBe(
-      "BAD REQUEST: Invalid month number provided. It should be an integer between 1 and 12."
+      "BAD REQUEST: Invalid month number provided. It should be an integer between 1 and 12.",
     );
   });
 
@@ -267,7 +260,7 @@ describe("getMonthlyTimeMetrics", () => {
     expect(response.status).toBe(404);
     expect(response.body).toHaveProperty("error");
     expect(response.body.error).toBe(
-      "BAD REQUEST: Invalid month number provided. It should be an integer between 1 and 12."
+      "BAD REQUEST: Invalid month number provided. It should be an integer between 1 and 12.",
     );
   });
 
@@ -282,7 +275,7 @@ describe("getMonthlyTimeMetrics", () => {
       expect(response.status).toBe(404);
       expect(response.body).toHaveProperty("error");
       expect(response.body.error).toBe(
-        "BAD REQUEST: Invalid month number provided. It should be an integer between 1 and 12."
+        "BAD REQUEST: Invalid month number provided. It should be an integer between 1 and 12.",
       );
     }
   });
@@ -315,7 +308,7 @@ describe("getMonthlyTimeMetrics", () => {
       expect(response.status).toBe(404); // Bad Request
       expect(response.body).toHaveProperty("error");
       expect(response.body.error).toBe(
-        "BAD REQUEST: Invalid month name or format provided"
+        "BAD REQUEST: Invalid month name or format provided",
       );
     }
   });
@@ -331,7 +324,7 @@ describe("getMonthlyTimeMetrics", () => {
       expect(response.status).toBe(400); // Bad Request
       expect(response.body).toHaveProperty("error");
       expect(response.body.error).toBe(
-        "Both 'month' and 'year' are required in the query parameters."
+        "Both 'month' and 'year' are required in the query parameters.",
       );
     }
   });
@@ -339,7 +332,7 @@ describe("getMonthlyTimeMetrics", () => {
   it("should return one specific category and their entries for May 2023", async () => {
     const response = await request
       .get(
-        `/api/habit-categories/monthly-metrics?month=May&year=2023&categoryId=${categoryId1}`
+        `/api/habit-categories/monthly-metrics?month=May&year=2023&categoryId=${categoryId1}`,
       )
       .set("Cookie", cookie);
 
@@ -376,7 +369,7 @@ describe("getMonthlyTimeMetrics", () => {
   it("should return success with category count = 0 if there are no records in the specified month", async () => {
     const response = await request
       .get(
-        `/api/habit-categories/monthly-metrics?month=May&year=2025&categoryId=${categoryId2}`
+        `/api/habit-categories/monthly-metrics?month=May&year=2025&categoryId=${categoryId2}`,
       )
       .set("Cookie", cookie);
 
@@ -401,7 +394,7 @@ describe("getMonthlyTimeMetrics", () => {
       expect(response.status).toBe(400);
       expect(response.body).toHaveProperty("error");
       expect(response.body.error).toBe(
-        "Both 'month' and 'year' are required in the query parameters."
+        "Both 'month' and 'year' are required in the query parameters.",
       );
     }
   });
@@ -420,7 +413,7 @@ describe("getMonthlyTimeMetrics", () => {
       expect(response.status).toBe(404);
       expect(response.body).toHaveProperty("error");
       expect(response.body.error).toBe(
-        "BAD REQUEST: Invalid month number provided. It should be an integer between 1 and 12."
+        "BAD REQUEST: Invalid month number provided. It should be an integer between 1 and 12.",
       );
     }
   });
@@ -458,7 +451,7 @@ describe("getMonthlyTimeMetrics", () => {
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
     expect(response.body.msg).toBe(
-      "No categories found for this user, but the request was successful."
+      "No categories found for this user, but the request was successful.",
     );
     expect(response.body.categoryCount).toBe(0);
     expect(response.body.categoryData.length).toBe(0);

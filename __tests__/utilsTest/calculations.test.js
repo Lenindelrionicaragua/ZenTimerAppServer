@@ -34,7 +34,7 @@ describe("calculatePercentages", () => {
     const totalMinutes = 360; // Mocked total minutes for this test
     const percentages = calculateCategoryPercentages(
       categoryStatsMock,
-      totalMinutes
+      totalMinutes,
     );
 
     // The expected percentages:
@@ -50,7 +50,7 @@ describe("calculatePercentages", () => {
     const totalMinutes = 120; // Total minutes for one category
     const percentages = calculateCategoryPercentages(
       singleCategoryMock,
-      totalMinutes
+      totalMinutes,
     );
 
     // Since there's only one category, its percentage should be 100%
@@ -61,7 +61,7 @@ describe("calculatePercentages", () => {
     const totalMinutes = 0; // No minutes tracked
     const percentages = calculateCategoryPercentages(
       categoryStatsMock,
-      totalMinutes
+      totalMinutes,
     );
 
     // All percentages should be 0

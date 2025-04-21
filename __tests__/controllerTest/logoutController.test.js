@@ -15,7 +15,7 @@ jest.mock(
     sendVerificationEmail: jest.fn(),
     resendVerificationLink: jest.fn(),
     verifyEmail: jest.fn(),
-  })
+  }),
 );
 
 beforeAll(async () => {
@@ -71,12 +71,12 @@ describe("logoutController", () => {
     expect(cookies).toEqual(
       expect.arrayContaining([
         expect.stringContaining(
-          "session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT"
+          "session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT",
         ),
         expect.stringContaining(
-          "zenTimerToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT"
+          "zenTimerToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT",
         ),
-      ])
+      ]),
     );
   });
 
@@ -86,7 +86,7 @@ describe("logoutController", () => {
     expect(logoutResponse.status).toBe(401); // 401 Unauthorized
     expect(logoutResponse.body.success).toBe(false);
     expect(logoutResponse.body.msg).toBe(
-      "BAD REQUEST: Authentication required."
+      "BAD REQUEST: Authentication required.",
     );
   });
 
@@ -111,12 +111,12 @@ describe("logoutController", () => {
     expect(cookies).toEqual(
       expect.arrayContaining([
         expect.stringContaining(
-          "session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT"
+          "session=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT",
         ),
         expect.stringContaining(
-          "zenTimerToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT"
+          "zenTimerToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT",
         ),
-      ])
+      ]),
     );
   });
 
@@ -126,7 +126,7 @@ describe("logoutController", () => {
     expect(logoutResponse.status).toBe(401);
     expect(logoutResponse.body.success).toBe(false);
     expect(logoutResponse.body.msg).toBe(
-      "BAD REQUEST: Authentication required."
+      "BAD REQUEST: Authentication required.",
     );
   });
 });

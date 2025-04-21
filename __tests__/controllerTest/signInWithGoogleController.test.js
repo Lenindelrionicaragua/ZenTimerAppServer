@@ -7,7 +7,6 @@ import {
 import app from "../../app.js";
 import User from "../../models/userModels.js";
 import HabitCategory from "../../models/habitCategory.js";
-import { addUserToMockDB } from "../../__testUtils__/userMocks.js";
 import { OAuth2Client } from "google-auth-library";
 import { logInfo } from "../../util/logging.js";
 import { sendWelcomeEmail } from "../../controllers/authControllers/emailWelcomeController.js";
@@ -18,10 +17,8 @@ jest.mock(
   "../../controllers/authControllers/emailWelcomeController.js",
   () => ({
     sendWelcomeEmail: jest.fn(),
-  })
+  }),
 );
-
-const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID_WEB);
 
 beforeAll(async () => {
   await connectToMockDB();
@@ -68,7 +65,7 @@ describe("signInWithGoogleController", () => {
     const user = await User.findOne({ email: "john@example.com" });
     expect(user).toBeDefined();
 
-    const categories = await HabitCategory.find({ userId: user._id });
+    const categories = await HabitCategory.find({ createdBy: user._id });
     expect(categories).toHaveLength(6);
   });
 
@@ -117,8 +114,7 @@ describe("signInWithGoogleController", () => {
     expect(user).toBeDefined();
     expect(user.name).toBe("New User");
     expect(user.email).toBe(nonExistentEmail);
-
-    const categories = await HabitCategory.find({ userId: user._id });
+    const categories = await HabitCategory.find({ createdBy: user._id });
     expect(categories).toHaveLength(6);
   });
 
@@ -153,7 +149,7 @@ describe("signInWithGoogleController", () => {
     expect(response.status).toBe(201);
     expect(response.body.success).toBe(true);
     expect(response.body.msg).toBe(
-      "User created and signed in successfully. In mobil platform."
+      "User created and signed in successfully. In mobil platform.",
     );
     expect(response.body.token).toBeDefined();
     expect(sendWelcomeEmail).toHaveBeenCalledTimes(1);
@@ -165,7 +161,7 @@ describe("signInWithGoogleController", () => {
     const user = await User.findOne({ email: "jane@example.com" });
     expect(user).toBeDefined();
 
-    const categories = await HabitCategory.find({ userId: user._id });
+    const categories = await HabitCategory.find({ createdBy: user._id });
     expect(categories).toHaveLength(6);
   });
 
@@ -200,7 +196,7 @@ describe("signInWithGoogleController", () => {
     expect(response.status).toBe(201);
     expect(response.body.success).toBe(true);
     expect(response.body.msg).toBe(
-      "User created and signed in successfully. In mobil platform."
+      "User created and signed in successfully. In mobil platform.",
     );
     expect(response.body.token).toBeDefined();
     expect(sendWelcomeEmail).toHaveBeenCalledTimes(1);
@@ -212,7 +208,7 @@ describe("signInWithGoogleController", () => {
     const user = await User.findOne({ email: "alice@example.com" });
     expect(user).toBeDefined();
 
-    const categories = await HabitCategory.find({ userId: user._id });
+    const categories = await HabitCategory.find({ createdBy: user._id });
     expect(categories).toHaveLength(6);
   });
 });

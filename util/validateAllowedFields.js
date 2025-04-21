@@ -16,7 +16,7 @@ const validateAllowedFields = (object, allowedFields) => {
 
   if (invalidFields.length > 0) {
     return `the following properties are not allowed to be set: ${invalidFields.join(
-      ", "
+      ", ",
     )}`;
   } else {
     return "";

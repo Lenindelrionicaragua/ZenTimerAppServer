@@ -1,9 +1,10 @@
 import HabitCategory, { validateCategory } from "../models/habitCategory.js";
-import { logError, logInfo } from "../util/logging.js";
 import validationErrorMessage from "../util/validationErrorMessage.js";
+import mongoose from "mongoose";
+import { logError } from "../util/logging.js";
+// import { logInfo } from "../util/logging.js";
 
 export const autoCreateDefaultCategories = async (userId) => {
-  // Define default categories
   const defaultCategories = [
     { name: "Work" },
     { name: "Family time" },
@@ -14,47 +15,47 @@ export const autoCreateDefaultCategories = async (userId) => {
   ];
 
   try {
+    const existingCategories = await HabitCategory.find({
+      createdBy: userId,
+    }).collation({ locale: "en", strength: 1 });
+
+    const existingCategoryNames = existingCategories.map(
+      (category) => category.name,
+    );
+
     for (const categoryData of defaultCategories) {
-      // Construct habit category with user ID and creation time
+      if (existingCategoryNames.includes(categoryData.name)) {
+        // logInfo(
+        //   `Category "${categoryData.name}" already exists for user ${userId}`,
+        // );
+        continue;
+      }
+
       const habitCategory = {
         ...categoryData,
         createdBy: userId,
+        createdAt: new Date(),
+        categoryId: new mongoose.Types.ObjectId(),
+        dailyGoal: 60,
       };
 
-      // Validate category data
       const errorList = validateCategory(habitCategory);
       if (errorList.length > 0) {
-        logInfo(
+        logError(
           `Validation failed for category ${
             categoryData.name
-          }: ${validationErrorMessage(errorList)}`
-        );
-        continue; // Skip category if validation fails
-      }
-
-      // Check if category already exists for this user
-      const existingCategory = await HabitCategory.findOne({
-        name: categoryData.name,
-        createdBy: userId,
-      }).collation({ locale: "en", strength: 1 });
-
-      // Skip creation if category exists
-      if (existingCategory) {
-        logInfo(
-          `Category "${categoryData.name}" already exists for user ${userId}`
+          }: ${validationErrorMessage(errorList)}`,
         );
         continue;
       }
 
-      // Create and save the new category
       const newCategory = new HabitCategory(habitCategory);
       await newCategory.save();
-      logInfo(
-        `Default category "${categoryData.name}" created for user ${userId}`
-      );
+      // logInfo(
+      //   `Default category "${categoryData.name}" created for user ${userId}`,
+      // );
     }
   } catch (error) {
-    // Log any error encountered during category creation
-    logError("Error creating default categories:", error);
+    logError("Error creating default categories for user " + userId, error);
   }
 };

@@ -38,7 +38,7 @@ app.use(
         callback(new Error("Not allowed by CORS"));
       }
     },
-  })
+  }),
 );
 
 /****** Attach routes ******/

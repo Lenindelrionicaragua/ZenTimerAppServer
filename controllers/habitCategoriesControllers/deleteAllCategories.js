@@ -1,6 +1,7 @@
 import HabitCategory from "../../models/habitCategory.js";
 import DailyTimeRecord from "../../models/dailyTimeRecord.js";
-import { logError, logInfo } from "../../util/logging.js";
+import { logError } from "../../util/logging.js";
+// import { logInfo } from "../../util/logging.js";
 
 export const deleteAllCategories = async (req, res) => {
   const userId = req.userId;
@@ -14,33 +15,33 @@ export const deleteAllCategories = async (req, res) => {
       });
     }
 
-    logInfo(`Deleting all categories for user ID: ${userId}`);
+    // logInfo("Deleting all categories for user ID: ${userId}");
 
     const categories = await HabitCategory.find({ createdBy: userId });
-    logInfo(`Fetched categories for user ID: ${userId}`);
+    // logInfo(`Fetched categories for user ID: ${userId}`);
 
     if (categories.length === 0) {
-      logInfo(`No categories found for user ID: ${userId}`);
+      // logInfo(`No categories found for user ID: ${userId}`);
       return res.status(404).json({
         success: false,
-        msg: `No categories found for the user.`,
+        msg: "No categories found for the user.",
       });
     }
 
     const categoryIds = categories.map((category) => category._id);
-    logInfo(
-      `Found ${categoryIds.length} categories to delete for user ID: ${userId}`
-    );
+    // logInfo(
+    //   `Found ${categoryIds.length} categories to delete for user ID: ${userId}`,
+    // );
 
     await DailyTimeRecord.deleteMany({ categoryId: { $in: categoryIds } });
-    logInfo(`Associated daily records deleted for categories: ${categoryIds}`);
+    // logInfo(`Associated daily records deleted for categories: ${categoryIds}`);
 
     await HabitCategory.deleteMany({ createdBy: userId });
-    logInfo(`Categories deleted for user ID: ${userId}`);
+    // logInfo(`Categories deleted for user ID: ${userId}`);
 
     return res.status(200).json({
       success: true,
-      msg: `All categories and their associated records have been deleted.`,
+      msg: "All categories and their associated records have been deleted.",
     });
   } catch (error) {
     logError("Error deleting all categories:", error);

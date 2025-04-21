@@ -8,7 +8,7 @@ export const logout = (req, res) => {
     } else if (req.headers["authorization"]) {
       logInfo(
         "No cookies found, but found token:",
-        req.headers["authorization"]
+        req.headers["authorization"],
       );
     } else {
       logInfo("No cookies or token found.");

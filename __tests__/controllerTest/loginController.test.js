@@ -47,7 +47,7 @@ describe("loginController", () => {
     expect(response.status).toBe(401);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe(
-      "No user was found associated with the provided email address. Please verify your email and try again or register if you are a new user."
+      "No user was found associated with the provided email address. Please verify your email and try again or register if you are a new user.",
     );
   });
 
@@ -64,7 +64,7 @@ describe("loginController", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.error).toBe(
-      "BAD REQUEST: Email and password are required."
+      "BAD REQUEST: Email and password are required.",
     );
   });
 
@@ -81,7 +81,7 @@ describe("loginController", () => {
     expect(response.status).toBe(401);
     expect(response.body.success).toBe(false);
     expect(response.body.msg).toBe(
-      "The password provided is incorrect. Please verify your password and try again."
+      "The password provided is incorrect. Please verify your password and try again.",
     );
   });
 
@@ -109,7 +109,7 @@ describe("loginController", () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
     expect(response.body.error).toBe(
-      "BAD REQUEST: Invalid fields present in the request."
+      "BAD REQUEST: Invalid fields present in the request.",
     );
   });
 

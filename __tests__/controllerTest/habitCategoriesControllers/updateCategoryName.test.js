@@ -5,8 +5,6 @@ import {
   clearMockDatabase,
 } from "../../../__testUtils__/dbMock.js";
 import app from "../../../app.js";
-import HabitCategory from "../../../models/habitCategory.js";
-import { logInfo } from "../../../util/logging.js";
 
 const request = supertest(app);
 
@@ -92,7 +90,7 @@ describe("Update an existing habit-category name (test route)", () => {
 
     expect(response.status).toBe(400);
     expect(response.body.message).toBe(
-      "BAD REQUEST: Category name is required."
+      "BAD REQUEST: Category name is required.",
     );
   });
 
@@ -106,7 +104,7 @@ describe("Update an existing habit-category name (test route)", () => {
 
     expect(response.status).toBe(400);
     expect(response.body.message).toBe(
-      "BAD REQUEST: Category name is required."
+      "BAD REQUEST: Category name is required.",
     );
   });
 
@@ -124,7 +122,7 @@ describe("Update an existing habit-category name (test route)", () => {
 
     expect(response.status).toBe(400);
     expect(response.body.message).toBe(
-      "BAD REQUEST: the following properties are not allowed to be set: invalidField, invalidField2"
+      "BAD REQUEST: the following properties are not allowed to be set: invalidField, invalidField2",
     );
   });
 
@@ -185,7 +183,7 @@ describe("Update an existing habit-category name (test route)", () => {
 
     expect(response.status).toBe(403);
     expect(response.body.message).toBe(
-      "Forbidden: You are not authorized to update this category."
+      "Forbidden: You are not authorized to update this category.",
     );
   });
 
@@ -201,7 +199,7 @@ describe("Update an existing habit-category name (test route)", () => {
 
     expect(response.status).toBe(400);
     expect(response.body.message).toBe(
-      "BAD REQUEST: Category name must contain only letters, numbers, spaces, hyphens, or exclamation marks, and have a maximum length of 15 characters."
+      "BAD REQUEST: Category name must contain only letters, numbers, spaces, hyphens, or exclamation marks, and have a maximum length of 15 characters.",
     );
   });
 
@@ -217,7 +215,7 @@ describe("Update an existing habit-category name (test route)", () => {
 
     expect(response.status).toBe(400);
     expect(response.body.message).toBe(
-      "BAD REQUEST: Category name must contain only letters, numbers, spaces, hyphens, or exclamation marks, and have a maximum length of 15 characters."
+      "BAD REQUEST: Category name must contain only letters, numbers, spaces, hyphens, or exclamation marks, and have a maximum length of 15 characters.",
     );
   });
 });

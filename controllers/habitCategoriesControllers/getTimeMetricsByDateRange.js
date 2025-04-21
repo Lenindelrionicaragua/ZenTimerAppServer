@@ -15,7 +15,7 @@ import {
 // Controller to get categories time based on user and specified time period
 export const getTimeMetricsByDateRange = async (req, res) => {
   const userId = req.userId;
-  let { startDate, endDate, categoryId } = req.query;
+  const { startDate, endDate, categoryId } = req.query;
 
   // Convert start and end date strings to Date objects and ensure valid dates
   let start = new Date(startDate);
@@ -86,7 +86,7 @@ export const getTimeMetricsByDateRange = async (req, res) => {
         // Calculate total minutes for the category
         const totalCategoryMinutes = categoryRecords.reduce(
           (total, record) => total + (record.totalDailyMinutes || 0),
-          0
+          0,
         );
 
         return {
@@ -94,10 +94,11 @@ export const getTimeMetricsByDateRange = async (req, res) => {
           totalMinutes: totalCategoryMinutes,
           records: simplifiedRecords,
         };
-      })
+      }),
     );
 
     const cleanedCategoryStats = categoryData.map((category) => {
+      // eslint-disable-next-line no-unused-vars
       const { records, ...cleanCategory } = category; // Remove records
       return cleanCategory;
     });
@@ -112,23 +113,23 @@ export const getTimeMetricsByDateRange = async (req, res) => {
     // Add percentage data to each category
     const categoryStats = calculateCategoryPercentages(
       cleanedCategoryStats,
-      totalMinutes
+      totalMinutes,
     );
 
     // Log the response data for debugging
-    logInfo(
-      `Response data: ${JSON.stringify(
-        {
-          success: true,
-          totalMinutes: totalMinutes,
-          categoryCount: categoryCount,
-          daysWithRecords: daysWithRecords,
-          categoryData: categoryStats,
-        },
-        null,
-        2
-      )}`
-    );
+    // logInfo(
+    //   `Response data getTimeMetricsByDateRange: ${JSON.stringify(
+    //     {
+    //       success: true,
+    //       totalMinutes: totalMinutes,
+    //       categoryCount: categoryCount,
+    //       daysWithRecords: daysWithRecords,
+    //       categoryData: categoryStats,
+    //     },
+    //     null,
+    //     2,
+    //   )}`,
+    // );
 
     // Return the response
     return res.status(200).json({

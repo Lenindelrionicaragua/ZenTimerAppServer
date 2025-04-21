@@ -36,8 +36,8 @@ testRouter.post("/seed", async (req, res) => {
       if (errorList.length > 0) {
         const err = new Error(
           `Invalid user in seed data. Errors: ${validationErrorMessage(
-            errorList
-          )}. User attempting to be inserted: ${JSON.stringify(user)}`
+            errorList,
+          )}. User attempting to be inserted: ${JSON.stringify(user)}`,
         );
 
         logError(err);

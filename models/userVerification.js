@@ -22,7 +22,7 @@ const UserVerificationSchema = new Schema({
 
 const UserVerification = mongoose.model(
   "UserVerification",
-  UserVerificationSchema
+  UserVerificationSchema,
 );
 
 export default UserVerification;

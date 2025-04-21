@@ -47,7 +47,7 @@ describe("getUsers Controller", () => {
     await Promise.all(
       users.map(async (user) => {
         await request.post("/api/auth/sign-up").send({ user });
-      })
+      }),
     );
 
     const loginUser = {
@@ -104,7 +104,7 @@ describe("getUsers Controller", () => {
     await Promise.all(
       users.map(async (user) => {
         await request.post("/api/auth/sign-up").send({ user });
-      })
+      }),
     );
 
     const loginUser = {
@@ -123,7 +123,7 @@ describe("getUsers Controller", () => {
     // Modify the session cookie to simulate a token mismatch
     const modifiedSessionCookie = validSessionCookie.replace(
       /session=[^;]*/,
-      "session=invalid_session_token"
+      "session=invalid_session_token",
     );
 
     // Make the request with the invalid session cookie
@@ -157,7 +157,7 @@ describe("getUsers Controller", () => {
     await Promise.all(
       users.map(async (user) => {
         await request.post("/api/auth/sign-up").send({ user });
-      })
+      }),
     );
 
     const loginUser = {
@@ -176,7 +176,7 @@ describe("getUsers Controller", () => {
     // Modify the session cookie to simulate missing userId in token
     const modifiedSessionCookie = validSessionCookie.replace(
       /session=[^;]*/,
-      "session=invalid_userId_token"
+      "session=invalid_userId_token",
     );
 
     // Make the request with the invalid session cookie

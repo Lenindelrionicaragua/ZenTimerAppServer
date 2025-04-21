@@ -21,7 +21,7 @@ describe("User Model Middleware", () => {
     }
 
     throw new Error(
-      "Expected the user save operation to fail, but it succeeded."
+      "Expected the user save operation to fail, but it succeeded.",
     );
   });
 
@@ -45,7 +45,7 @@ describe("User Model Middleware", () => {
     }
 
     throw new Error(
-      "Expected the user save operation to fail, but it succeeded."
+      "Expected the user save operation to fail, but it succeeded.",
     );
   });
 
@@ -63,14 +63,14 @@ describe("User Model Middleware", () => {
       Object.values(error.errors).forEach((validationError) => {
         expect(validationError).toHaveProperty(
           "message",
-          `Path \`${validationError.path}\` is required.`
+          `Path \`${validationError.path}\` is required.`,
         );
       });
       return;
     }
 
     throw new Error(
-      "Expected the user save operation to fail, but it succeeded."
+      "Expected the user save operation to fail, but it succeeded.",
     );
   });
 
@@ -91,7 +91,7 @@ describe("User Model Middleware", () => {
     } catch (error) {
       expect(error).toBeUndefined();
       throw new Error(
-        "Expected the user save operation to succeed, but it failed with an error."
+        "Expected the user save operation to succeed, but it failed with an error.",
       );
     }
   });

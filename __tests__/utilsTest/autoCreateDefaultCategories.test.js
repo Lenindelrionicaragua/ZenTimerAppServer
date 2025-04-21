@@ -6,7 +6,6 @@ import {
 } from "../../__testUtils__/dbMock.js";
 import app from "../../app.js";
 import { autoCreateDefaultCategories } from "../../util/autoCreateDefaultCategories.js";
-import HabitCategory from "../../models/habitCategory.js";
 
 const request = supertest(app);
 
@@ -63,9 +62,14 @@ describe("Auto-create default categories", () => {
     expect(categoriesResponse.body.categories.length).toBe(6);
 
     defaultCategoryNames.forEach((name) => {
-      expect(
-        categoriesResponse.body.categories.some((cat) => cat.name === name)
-      ).toBe(true);
+      const category = categoriesResponse.body.categories.find(
+        (cat) => cat.name === name,
+      );
+      expect(category).toBeTruthy();
+      expect(category.id).toBeDefined();
+      expect(category.createdBy).toBeDefined();
+      expect(category.createdAt).toBeDefined();
+      expect(category.dailyGoal).toBeDefined();
     });
   });
 

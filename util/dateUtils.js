@@ -30,7 +30,7 @@ export const getMonthRange = (month, year) => {
   // Validate that the month is an integer and within range (1-12)
   if (!Number.isInteger(monthNumber) || monthNumber < 1 || monthNumber > 12) {
     throw new Error(
-      "Invalid month number provided. It should be an integer between 1 and 12."
+      "Invalid month number provided. It should be an integer between 1 and 12.",
     );
   }
 
