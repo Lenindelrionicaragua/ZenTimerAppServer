@@ -16,6 +16,7 @@
     "prettier": "prettier ./ --check",
     "prettier:fix": "prettier ./ --write",
     "test": "jest",
+    "test:ci": "jest --runInBand --detectOpenHandles --no-cache",
     "test:watch": "jest --watch",
     "prepare": "husky install"
   },
