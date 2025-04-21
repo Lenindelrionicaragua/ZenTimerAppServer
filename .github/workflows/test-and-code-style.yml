@@ -50,7 +50,7 @@ jobs:
         run: rm -rf ~/.cache/mongodb-binaries/*.lock
 
       - name: Run Tests
-        run: npm run test -- --no-watch
+        run: npm run test:ci -- --no-watch
 
       - name: Run Code Style Checks
         run: npm run code-style-check
